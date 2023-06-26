@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormControlName, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, FormControlName, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, merge } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
@@ -25,7 +25,7 @@ export class OutsourcedpaymentComponent implements OnInit {
   pageTitle="New Outsourced Staff ticket"
   staffid=2;
   errorMessage= '';
-  paymentForm!: FormGroup;
+  paymentForm!: UntypedFormGroup;
   paymentmodes!:PaymentMode[];
   vouchers!: Voucher[];
   payment!: Payment;
@@ -34,16 +34,16 @@ export class OutsourcedpaymentComponent implements OnInit {
   private validationMessages!: { [key: string]: { [key: string]: string } };
   private genericValidator!: GenericValidator;
 
-  constructor(private fboutsd: FormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService) {
+  constructor(private fboutsd: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService) {
 
    }
 
   ngOnInit(): void {
 
       this.paymentForm = this.fboutsd.group({
-        custCode: new FormControl('',[Validators.required,Validators.minLength(3)]),
-        voucherId: new FormControl('',[Validators.required,Validators.min(1)]),
-        paymentmodeid: new FormControl('',[Validators.required,Validators.min(1)])
+        custCode: new UntypedFormControl('',[Validators.required,Validators.minLength(3)]),
+        voucherId: new UntypedFormControl('',[Validators.required,Validators.min(1)]),
+        paymentmodeid: new UntypedFormControl('',[Validators.required,Validators.min(1)])
 
       });
       // this.voucherForm=this.fb2.group({

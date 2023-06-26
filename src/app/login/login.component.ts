@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 
@@ -9,13 +9,13 @@ import { AuthService } from './../auth/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  form!: FormGroup;                    // {1}
+  form!: UntypedFormGroup;                    // {1}
   private formSubmitAttempt!: boolean; // {2}
   loginMessage='';
   notLoggedIn$!: Observable<boolean>;
 
   constructor(
-    private fb: FormBuilder,         // {3}
+    private fb: UntypedFormBuilder,         // {3}
     private authService: AuthService // {4}
   ) {}
 

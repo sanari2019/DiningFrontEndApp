@@ -1,6 +1,6 @@
 // import * as nodemailer from 'nodemailer';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
@@ -16,11 +16,11 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./forgot-password.component.scss']
 })
 export class ForgotPasswordComponent implements OnInit {
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   private formSubmitAttempt: boolean = false;
   errorMessage: string | undefined;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) { }
+  constructor(private fb: UntypedFormBuilder, private http: HttpClient) { }
 
   ngOnInit() {
     this.form = this.fb.group({
