@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup,FormBuilder,Validators, AbstractControl, ValidatorFn, FormControl } from '@angular/forms';
+import { UntypedFormGroup,UntypedFormBuilder,Validators, AbstractControl, ValidatorFn, UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EncrDecrService } from '../shared/EncrDecrService.service';
 import { Voucher } from '../voucher/voucher.model';
@@ -14,7 +14,7 @@ import { CustomerTypeService } from './customertype.service';
 })
 export class VoucherNewComponent implements OnInit {
 
-  voucherForm!: FormGroup;
+  voucherForm!: UntypedFormGroup;
   voucher: Voucher=new Voucher;
   errorMessage: string | undefined;
   vouchers!: Voucher[];
@@ -23,7 +23,7 @@ export class VoucherNewComponent implements OnInit {
   private validationMessages: { [key: string]: { [key: string]: string } };
 
 
-  constructor(private fb: FormBuilder, private router: Router, private voucherservice: VoucherService,private customertypeservice:CustomerTypeService, private encdecservice:EncrDecrService) {
+  constructor(private fb: UntypedFormBuilder, private router: Router, private voucherservice: VoucherService,private customertypeservice:CustomerTypeService, private encdecservice:EncrDecrService) {
     this.validationMessages = {
       custTypeId: {
         required: 'Customer Type is required.',
@@ -44,9 +44,9 @@ export class VoucherNewComponent implements OnInit {
       // cutomerType:['',[Validators.required,Validators.minLength(3)]],
       // description:['',[Validators.required,Validators.maxLength(50)]],
       // amount:['',[Validators.required,Validators.maxLength(50)]],
-      custtypeid: new FormControl(''),
-      description: new FormControl(''),
-      amount: new FormControl(''),
+      custtypeid: new UntypedFormControl(''),
+      description: new UntypedFormControl(''),
+      amount: new UntypedFormControl(''),
 
     });
     this.getCustomerTypes();

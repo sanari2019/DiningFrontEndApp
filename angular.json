@@ -126,5 +126,7 @@
       }
     }
   },
-  "defaultProject": "angular-responsive-sidebar"
+  "cli": {
+    "analytics": false
+  }
 }

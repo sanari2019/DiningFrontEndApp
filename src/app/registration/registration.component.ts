@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup,FormBuilder,Validators, AbstractControl, ValidatorFn, FormControl } from '@angular/forms';
+import { UntypedFormGroup,UntypedFormBuilder,Validators, AbstractControl, ValidatorFn, FormControl } from '@angular/forms';
 import { Registration } from './registration.model';
 import { RegistrationService } from './registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,7 +17,7 @@ import { customerType } from '../shared/customertype.model';
 })
 export class RegistrationComponent implements OnInit {
 
-  registrationForm!: FormGroup;
+  registrationForm!: UntypedFormGroup;
   customerTypes: customerType[] = []; // Array to store customer types
   registration: Registration=new Registration;
   errorMessage: string | undefined;
@@ -27,7 +27,7 @@ export class RegistrationComponent implements OnInit {
   private validationMessages: { [key: string]: { [key: string]: string } };
 
 
-  constructor(private fb: FormBuilder, private router: Router, private registrationservice: RegistrationService, private encdecservice:EncrDecrService) {
+  constructor(private fb: UntypedFormBuilder, private router: Router, private registrationservice: RegistrationService, private encdecservice:EncrDecrService) {
 
     // Defines all of the validation messages for the form.
     //These could instead be retrieved from a file or database.

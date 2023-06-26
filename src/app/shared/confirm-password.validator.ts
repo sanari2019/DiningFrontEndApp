@@ -1,8 +1,8 @@
-import { AbstractControl, FormGroup } from "@angular/forms";
+import { AbstractControl, UntypedFormGroup } from "@angular/forms";
 
 
 export function ConfirmPasswordValidator(controlName: string, matchingControlName: string) {
-    return (formGroup: FormGroup) => {
+    return (formGroup: UntypedFormGroup) => {
       let control = formGroup.controls[controlName];
       let matchingControl = formGroup.controls[matchingControlName]
       if (

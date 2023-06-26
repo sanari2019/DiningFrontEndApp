@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, FormArray, Validators, FormControlName } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, FormControl, FormArray, Validators, FormControlName } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, fromEvent, merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
 
   pageTitle = 'Registration Edit';
   errorMessage= '';
-  registrationForm!: FormGroup;
+  registrationForm!: UntypedFormGroup;
   registration!: Registration;
   private sub!: Subscription;
 
@@ -33,7 +33,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
   private validationMessages: { [key: string]: { [key: string]: string } };
   private genericValidator: GenericValidator;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private registrationservice: RegistrationService,private encdecservice:EncrDecrService) {

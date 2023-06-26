@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormControlName, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, FormControlName, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, merge } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
@@ -26,7 +26,7 @@ export class GuestpaymentComponent implements OnInit {
   pageTitle = "New Guest/Staff ticket"
   staffid = 3;
   errorMessage = '';
-  orderedMealForm!: FormGroup;
+  orderedMealForm!: UntypedFormGroup;
   // voucherForm!:FormGroup;
   menus!: Menu[];
   menu!: Menu;
@@ -36,17 +36,17 @@ export class GuestpaymentComponent implements OnInit {
   private validationMessages!: { [key: string]: { [key: string]: string } };
   private genericValidator!: GenericValidator;
 
-  constructor(private ordmealfb: FormBuilder, private router: Router, private menuservice: MenuService, private ordmealservice: OrderedMealService, private paymentservice: PaymentService, private encdecservice: EncrDecrService) {
+  constructor(private ordmealfb: UntypedFormBuilder, private router: Router, private menuservice: MenuService, private ordmealservice: OrderedMealService, private paymentservice: PaymentService, private encdecservice: EncrDecrService) {
 
   }
 
   ngOnInit(): void {
 
     this.orderedMealForm = this.ordmealfb.group({
-      guest: new FormControl(''),
+      guest: new UntypedFormControl(''),
       // Amount: ['', Validators.required,Validators.minLength(3)]
-      mealid: new FormControl(''),
-      amount: new FormControl({ value: '', disabled: true })
+      mealid: new UntypedFormControl(''),
+      amount: new UntypedFormControl({ value: '', disabled: true })
 
     });
     // this.voucherForm=this.fb2.group({

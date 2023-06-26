@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormControlName, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, FormControlName, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, merge } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
@@ -39,7 +39,7 @@ export class StaffpaymentComponent implements OnInit {
   staffid=1;
   errorMessage= '';
   loggedInUser: any;
-  paymentForm!: FormGroup;
+  paymentForm!: UntypedFormGroup;
   private formSubmitAttempt!: boolean;
   vouchers!: Voucher[];
   paymentmodes!:PaymentMode[];
@@ -79,7 +79,7 @@ export class StaffpaymentComponent implements OnInit {
     // Implement your payment gateway logic here
   }
 
-  constructor(private fbstaff: FormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService) {
+  constructor(private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService) {
       // this.validationMessages = {
       //   employeeNo: {
       //     required: 'Employee No is required.',
@@ -111,10 +111,10 @@ export class StaffpaymentComponent implements OnInit {
       // Retrieve the custId value from local storage
       this.loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
       this.paymentForm = this.fbstaff.group({
-        custCode: new FormControl(this.loggedInUser?.custId, [Validators.required,Validators.minLength(3)]),
-        voucherId: new FormControl('',[Validators.required,Validators.min(1)]),
-        paymentmodeid: new FormControl('',[Validators.required,Validators.min(1)]),
-        unit: new FormControl('', Validators.required)
+        custCode: new UntypedFormControl(this.loggedInUser?.custId, [Validators.required,Validators.minLength(3)]),
+        voucherId: new UntypedFormControl('',[Validators.required,Validators.min(1)]),
+        paymentmodeid: new UntypedFormControl('',[Validators.required,Validators.min(1)]),
+        unit: new UntypedFormControl('', Validators.required)
 
       });
       // this.voucherForm=this.fb2.group({
