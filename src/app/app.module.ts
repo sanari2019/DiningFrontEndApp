@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { Angular4PaystackModule } from 'angular4-paystack';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -40,6 +41,7 @@ import { OnlinepaymentComponent } from './onlinepayment/onlinepayment.component'
 @NgModule({
   declarations: [AppComponent,AppMenuComponent, HomeComponent, ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent],
   imports: [
+    Angular4PaystackModule.forRoot('pk_test_b8671f2cd36f4a71cd4564c7f0de6498c803ac25'),
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

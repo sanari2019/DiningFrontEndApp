@@ -53,6 +53,7 @@ export class StaffpaymentComponent implements OnInit {
 
   paymentDetails: PaymentDetail[] = [];
   Id: number = 0;
+  reference = '';
 
   selectAll: boolean = false;
 
@@ -91,11 +92,26 @@ export class StaffpaymentComponent implements OnInit {
 
      }
 
+     paymentInit() {
+      console.log('Payment initialized');
+    }
+
+    paymentDone(ref: any) {
+      // this.title = 'Payment successfull';
+      // console.log(this.title, ref);
+    }
+
+    paymentCancel() {
+      console.log('payment failed');
+    }
+
+
      ngOnInit(): void {
+      this.reference = `ref-${Math.ceil(Math.random() * 10e13)}`;
       // Retrieve the custId value from local storage
       this.loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
       this.paymentForm = this.fbstaff.group({
-        custCode: new FormControl('',[Validators.required,Validators.minLength(3)]),
+        custCode: new FormControl(this.loggedInUser?.custId, [Validators.required,Validators.minLength(3)]),
         voucherId: new FormControl('',[Validators.required,Validators.min(1)]),
         paymentmodeid: new FormControl('',[Validators.required,Validators.min(1)]),
         unit: new FormControl('', Validators.required)
@@ -201,3 +217,4 @@ export class StaffpaymentComponent implements OnInit {
     this.ngOnInit();
   }
 }
+
