@@ -7,6 +7,7 @@ export class Payment {
   unit: number;
   Amount: number;
   paymentmodeid: number;
+  servedby: string;
 
 constructor() {
     this.id = 0;
@@ -17,5 +18,6 @@ constructor() {
     this.unit=0;
     this.Amount=0;
     this.paymentmodeid=0;
+    this.servedby="";
   }
 }

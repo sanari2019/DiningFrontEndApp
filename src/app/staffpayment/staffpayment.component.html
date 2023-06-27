@@ -153,14 +153,12 @@
     <div class="text-right mt-3">
       <button
       angular4-paystack
-      [key]="'pk_test_xxxxxxxxxxxxxxxxxxxxxxx'"
-      [email]="'mailexample@mail.com'"
-      [amount]="5000000"
-      [ref]="reference"
-      [class]="'btn btn-primary'"
+      [paystackOptions]="options"
       (paymentInit)="paymentInit()"
       (onClose)="paymentCancel()"
       (callback)="paymentDone($event)"
+      [disabled]="!isAnyCheckboxSelected()"
+      class="btn btn-primary mr-3"
     >
       Pay with Paystack
     </button>

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren } from '@angular/core';
+import { PaystackOptions } from 'angular4-paystack';
 import { UntypedFormBuilder, UntypedFormControl, FormControlName, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, merge } from 'rxjs';
@@ -43,7 +44,7 @@ export class StaffpaymentComponent implements OnInit {
   private formSubmitAttempt!: boolean;
   vouchers!: Voucher[];
   paymentmodes!:PaymentMode[];
-  payment!: Payment;
+  payment: Payment=new Payment();
   public registration: Registration | undefined;
   private sub!: Subscription;
   private validationMessages!: { [key: string]: { [key: string]: string } };
@@ -53,32 +54,20 @@ export class StaffpaymentComponent implements OnInit {
 
   paymentDetails: PaymentDetail[] = [];
   Id: number = 0;
-  reference = '';
+  reference='';
+
 
   selectAll: boolean = false;
 
-  selectAllItems(): void {
-    for (const pymtdetails of this.paymentDetails) {
-      pymtdetails.selected = this.selectAll;
-    }
-  }
 
-  isAnyCheckboxSelected(): boolean {
-    return this.paymentDetails.some(pymtdetails => pymtdetails.selected);
-  }
+  options: PaystackOptions = {
+    amount: 0, // Prepopulate with the total amount from selected checkboxes
+    email: 'newemail', // Prepopulate with the user's email
+    ref: `${Math.ceil(Math.random() * 10e10)}`
+  };
+  
 
-  removeItem(pymtdetails: PaymentDetail) {
-    const index = this.paymentDetails.indexOf(pymtdetails);
-    if (index > -1) {
-      this.paymentDetails.splice(index, 1);
-    }
-  }
-
-  checkout() {
-    // Function called when the Checkout button is clicked
-    // Implement your payment gateway logic here
-  }
-
+  
   constructor(private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService) {
       // this.validationMessages = {
       //   employeeNo: {
@@ -102,12 +91,38 @@ export class StaffpaymentComponent implements OnInit {
     }
 
     paymentCancel() {
+      this.options.amount = 0;
+      this.options.ref = `${Math.random() * 10000000000000}`;
       console.log('payment failed');
+    }
+    setRandomPaymentRef() {
+      this.reference = `${Math.random() * 10000000000000}`;
     }
 
 
+    // onClose(){
+    //   this.options.amount = 0;
+    //   this.options.ref = '';
+    // }
+
+
+
      ngOnInit(): void {
-      this.reference = `ref-${Math.ceil(Math.random() * 10e13)}`;
+      // Fetch user payment details from the API (assuming it populates the `paymentDetails` array)
+      const userId = this.Id; // Replace 'userid' with the actual user ID
+      this.paymentdetailService.getPaymentDetailsByUserId(userId).subscribe(
+        (pymtdetails: PaymentDetail[]) => {
+          this.paymentDetails = pymtdetails;
+          // this.filteredPaymentDetails = this.paymentDetails;
+        });
+
+        // Initialize other data (e.g., user's email)
+    const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+    this.options.email = loggedInUser?.userName;
+    this.setRandomPaymentRef();
+  
+   
+
       // Retrieve the custId value from local storage
       this.loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
       this.paymentForm = this.fbstaff.group({
@@ -126,7 +141,7 @@ export class StaffpaymentComponent implements OnInit {
       this.getVouchers();
       this.getpaymentmodes();
        // Fetch user payment details from the API
-      const userId = 'userid'; // Replace 'userid' with the actual user ID
+      // const userId = 'userid'; // Replace 'userid' with the actual user ID
        // Initialize other data (vouchers, units, payment modes, etc.)
     this.vouchers = []; // Initialize with the available vouchers
     // this.Units = []; // Initialize with the available units
@@ -153,6 +168,58 @@ export class StaffpaymentComponent implements OnInit {
 
 
     }
+
+    selectAllItems(): void {
+      for (const pymtdetails of this.paymentDetails) {
+        pymtdetails.selected = this.selectAll;
+      }
+      this.updateTotalAmount(); // Update the total amount when selection changes
+    }
+
+
+    updateTotalAmount(): void {
+      const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+      const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount *100 , 0);
+      this.options.amount = 5*100;
+    }
+  
+    removeItem(pymtdetails: PaymentDetail): void {
+          // Remove the item from the `paymentDetails` array
+      const index = this.paymentDetails.indexOf(pymtdetails);
+      if (index > -1) {
+        this.paymentDetails.splice(index, 1);
+      }
+      this.updateTotalAmount(); // Update the total amount when an item is removed
+      this.payment.Amount=pymtdetails.amount;
+      this.payment.custCode=pymtdetails.custCode;
+      this.payment.dateEntered=pymtdetails.dateEntered;
+      this.payment.enteredBy=pymtdetails.enteredBy;
+      this.payment.id=pymtdetails.id;
+      this.payment.paymentmodeid=pymtdetails.paymentmodeid;
+      this.payment.unit=pymtdetails.unit;
+      this.payment.voucherId=pymtdetails.voucherid;
+      this.payment.servedby = "";
+      this.paymentdetailService.removePymtdetails(this.payment)
+            .subscribe({
+              next: () => this.onSaveComplete(),
+              error: err => this.errorMessage = err
+            });
+    }
+
+    isAnyCheckboxSelected(): boolean {
+      const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+      const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount * 100, 0);
+      this.options.amount = 5*100;
+      return selectedItems.length > 0;
+    }
+    
+  
+    checkout() {
+      // Function called when the Checkout button is clicked
+      // Implement your payment gateway logic here
+    }
+  
+
     isFieldInvalid(field: string) {
       return (
         (!this.paymentForm.get(field)?.valid && this.paymentForm.get(field)?.touched) ||
