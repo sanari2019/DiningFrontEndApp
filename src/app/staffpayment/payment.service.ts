@@ -103,7 +103,8 @@ export class PaymentService {
       voucherId: 0,
       unit:0,
       Amount:0,
-      paymentmodeid:0
+      paymentmodeid:0,
+      servedby:"",
     };
   }
 

@@ -2,7 +2,7 @@ export class PaymentDetail {
   id: number;
   customerName: string;
   dateEntered: Date;
-  enteredBy: string;
+  enteredBy: number;
   voucherDescription: string;
   amount: number;
   custCode: string;
@@ -20,7 +20,7 @@ export class PaymentDetail {
     this.id = 0;
     this.customerName = "";
     this.dateEntered = new Date();
-    this.enteredBy = "";
+    this.enteredBy = 0;
     this.voucherDescription = "";
     this.amount = 0.0;
     this.custCode = "";

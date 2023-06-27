@@ -4,6 +4,7 @@ import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http"
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { Payment } from '../staffpayment/payment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,15 @@ export class PaymentDetailService {
   getPaymentDetailsByUserId(userId: number): Observable<PaymentDetail[]> {
     const url = `${this.envUrl.urlAddress}/PaymentDetails/${userId}`;
     return this.http.get<PaymentDetail[]>(url)
+  }
+  removePymtdetails(pymtMain: Payment): Observable<{}> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = `${this.envUrl.urlAddress}/PaymentMain/deletepymtmain`;
+    return this.http.post<Payment>(url,pymtMain)
+      .pipe(
+        tap(data => console.log('deletePayment: ' + pymtMain.id)),
+        catchError(this.handleError)
+      );
   }
 
 
