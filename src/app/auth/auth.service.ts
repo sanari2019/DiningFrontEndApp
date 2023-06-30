@@ -5,6 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 import { Registration } from '../registration/registration.model';
 import { RegistrationService } from '../registration/registration.service';
 import { EncrDecrService } from '../shared/EncrDecrService.service';
+import { UserService } from '../forgot-password/user.service';
+
 
 
 @Injectable()
@@ -23,7 +25,7 @@ export class AuthService {
   }
 
   constructor(
-    private router: Router, private regservice:RegistrationService, private encservice:EncrDecrService
+    private router: Router, private regservice:RegistrationService, private encservice:EncrDecrService, private userService: UserService
   ) {}
 
 //   login(reg: Registration): Number{

@@ -1,105 +1,87 @@
-// import * as nodemailer from 'nodemailer';
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AuthService } from './../auth/auth.service';
-// import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-
-
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormGroup,UntypedFormBuilder,AbstractControl, ValidatorFn, FormControl } from '@angular/forms';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss']
 })
-export class ForgotPasswordComponent implements OnInit {
-  form!: UntypedFormGroup;
-  private formSubmitAttempt: boolean = false;
-  errorMessage: string | undefined;
+export class ForgotPasswordComponent {
+  forgotpasswordForm!: UntypedFormGroup;
+  form: FormGroup;
+  submitted: boolean = false;
+  userExists: boolean = false;
+  isPasswordReset: boolean = false;
+  isPasswordMismatch: boolean = false;
+  errorMessage: string = '';
+  pageTitle: string = 'Forgot Password';
 
-  constructor(private fb: UntypedFormBuilder, private http: HttpClient) { }
-
-  ngOnInit() {
-    this.form = this.fb.group({
-      userName: ['', Validators.required]
+  constructor(
+    private fb: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
+    private userService: UserService
+  ) {
+    this.form = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmNewPassword: ['', [Validators.required]]
     });
   }
 
-  isFieldInvalid(field: string) {
-    return (
-      (!this.form.get(field)?.valid && this.form.get(field)?.touched) ||
-      (this.form.get(field)?.untouched && this.formSubmitAttempt)
-    );
+  ngOnInit() {}
+
+  isFieldInvalid(fieldName: string) {
+    const control = this.form.get(fieldName);
+    return control?.invalid && (control?.touched || control?.dirty);
   }
+  
 
-
-
-  onSubmit() {
-    this.formSubmitAttempt = true;
+  checkEmail() {
     if (this.form.valid) {
-      const userName = this.form.get('userName')?.value;
+      const email = this.form.get('email')?.value;
+      console.log('Email:', email);
 
-      // Make an API request to fetch the password from the backend
-      // this.retrievePassword(userName);
-    } else {
-      this.errorMessage = 'Please enter a valid username.';
+      this.userService.checkEmail(email).subscribe((exists: boolean) => {
+        console.log('User exists:', exists);
+        this.userExists = exists;
+      });
     }
   }
 
-  // retrievePassword(userName: string) {
-  //   // Replace the placeholder URL with your actual backend API endpoint for retrieving the password
-  //   const passwordEndpoint = 'https://your-api-endpoint.com/password';
+  resetPassword() {
+    this.submitted = true;
+    this.isPasswordMismatch = false;
 
-  //   // Send a request to the backend API to retrieve the password
-  //   this.http.get(passwordEndpoint, { params: { username: userName } }).subscribe(
-  //     (response: any) => {
-  //       const password = response.password;
+    if (this.form.invalid) {
+      return;
+    }
 
-  //       // Send the email with the password to the user
-  //       this.sendEmail(userName, password);
+    const newPassword = this.form.value.newPassword;
+    const confirmNewPassword = this.form.value.confirmNewPassword;
 
-  //       console.log(`Password has been sent to ${userName}`);
-  //       // You can also navigate to a success page or display a success message here
-  //     },
-  //     (error: any) => {
-  //       console.error('Failed to retrieve the password:', error);
-  //       this.errorMessage = 'Failed to retrieve the password. Please try again later.';
-  //     }
-  //   );
-  // }
+    if (newPassword !== confirmNewPassword) {
+      this.isPasswordMismatch = true;
+      return;
+    }
 
-  // sendEmail(userName: string, password: string) {
-  //   // Create a Nodemailer transporter
-  //   const transporter = nodemailer.createTransport({
-  //     host: 'smtp.office365.com',
-  //     port: 587, // or the appropriate port number
-  //     secure: true, // Set to true if using SSL/TLS
-  //     auth: {
-  //       user: 'samuel.anari@evercare.ng',
-  //       pass: 'Flyhigh2009'
-  //     }
-  //   });
+    const email = this.form.value.email;
 
-  //   // Setup email data
-  //   const mailOptions = {
-  //     from: 'samuel.anari@evercare.ng',
-  //     to: userName,
-  //     subject: 'Password Recovery',
-  //     text: `Dear User, your password is: ${password}`
-  //   };
+    console.log('Resetting password for email:', email);
 
-  //   // Send email using the transporter
-  //   transporter.sendMail(mailOptions, (error, info) => {
-  //     if (error) {
-  //       console.error('Failed to send email:', error);
-  //       this.errorMessage = 'Failed to send email. Please try again later.';
-  //     } else {
-  //       console.log('Email sent:', info.response);
-  //       // Optionally, you can show a success message to the user
-  //     }
-  //   });
-  // }
+    this.userService.updatePassword(email, newPassword).subscribe(
+      () => {
+        // Password update successful
+        // You can redirect to a success page or display a success message
+        console.log('Password update successful');
+        this.isPasswordReset = true;
+        this.errorMessage = '';
+      },
+      (error: any) => {
+        this.errorMessage = 'Error occurred while updating password.';
+        console.error('Password update error:', error);
+      }
+    );
+  }
 }

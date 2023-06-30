@@ -7,6 +7,8 @@ import { EnvironmentUrlService } from '../shared/services/environment-url.servic
 import { CustomerType } from '../payment/customertype.model';
 import { customerType } from '../shared/customertype.model';
 import { ServiceUrl } from '../shared/serviceurl.model';
+import { EmailService } from '../shared/email.service'; // Import the email service
+
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +24,7 @@ export class RegistrationService {
   // serviceUrl:ServiceUrl|undefined;
   private ctypeURL = ServiceUrl.url + "customertype"
 
-  constructor(private http: HttpClient,private envUrl: EnvironmentUrlService) { }
+  constructor(private http: HttpClient,private envUrl: EnvironmentUrlService,private emailService: EmailService ) { }
 
   getUsers(): Observable<Registration[]> {
     return this.http.get<Registration[]>(this.userURL)
@@ -63,7 +65,10 @@ export class RegistrationService {
     registration.id = 0;
     return this.http.post<Registration>(this.envUrl.urlAddress+'/user', registration, { headers })
       .pipe(
-        tap(data => console.log('createUser: ' + JSON.stringify(data))),
+        tap(data => {
+          console.log('createUser: ' + JSON.stringify(data));
+          this.sendRegistrationEmail(data); // Send registration email after successful registration
+        }),
         catchError(this.handleError)
       );
   }
@@ -113,6 +118,23 @@ export class RegistrationService {
     //   tap(data => this.getUserdata(data)),
     //   catchError(this.handleError)
     // );
+  }
+
+  private sendRegistrationEmail(registration: Registration): void {
+    const emailData = {
+      to: registration.userName, 
+      subject: 'Registration Successful',
+      body: `Dear ${registration.firstName},\n\nThank you for registering on our Dining payment Application. Your registration was successful.\n\nRegards,\nThe Team`
+    };
+
+    this.emailService.sendEmail(emailData).subscribe(
+      () => {
+        console.log('Registration email sent successfully.');
+      },
+      (error: any) => {
+        console.error('Failed to send registration email:', error);
+      }
+    );
   }
 
   private initializeCustType(): customerType {

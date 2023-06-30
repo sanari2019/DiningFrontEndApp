@@ -34,7 +34,10 @@ export class AppComponent implements OnInit {
 
     if (custTypeId === 1) {
       this.router.navigate(['/staffpayment']);
-    } else {
+    } else if(custTypeId === 2){
+      this.router.navigate(['/outsourcedpayment']);
+    }
+    else {
       this.router.navigate(['/payment']);
     }
   }

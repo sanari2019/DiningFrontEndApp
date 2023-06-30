@@ -5,7 +5,7 @@ import { OnlinePayment } from './onlinepayment.model';
 
 
 
-export interface OnlinePayment {
+export interface OnlinePaymentService {
     id: number;
     TransRefNo: string;
     TransDate: number;
