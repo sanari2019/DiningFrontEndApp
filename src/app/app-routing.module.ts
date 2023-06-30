@@ -18,6 +18,8 @@ import { PaymentDetailComponent } from './payment-detail/payment-detail.componen
 import { VoucherNewComponent } from './voucher-new/voucher-new.component';
 import { OutsourcedpaymentComponent } from './outsourcedpayment/outsourcedpayment.component';
 import { GuestpaymentComponent } from './guestpayment/guestpayment.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+
 
 
 const routes: Routes = [
@@ -30,6 +32,7 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent,
   },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
   {
     path: 'registrations',
     component: RegistrationListComponent, canActivate:[AuthGuard]

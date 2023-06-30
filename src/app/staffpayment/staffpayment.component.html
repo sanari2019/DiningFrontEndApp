@@ -55,10 +55,7 @@
         <div class="col-md-8">
           <select class="form-control" placeholder="Payment Mode (required)" formControlName="paymentmodeid">
             <option value="0">--Select--</option>
-            <option *ngFor="let pymtmode of paymentmodes"
-                    value={{pymtmode.id}}>
-                {{pymtmode.name}}
-            </option>
+            <option [value]="paymentmodes[2]?.id">{{ paymentmodes[2]?.name }}</option>
         </select>
         </div>
       </div>

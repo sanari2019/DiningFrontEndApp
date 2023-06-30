@@ -17,6 +17,9 @@ import { Registration } from '../registration/registration.model';
 import { CartService } from '../shared/cart.service';
 import { PaymentDetailService } from '../payment-detail/paymentdetail.service';
 import { PaymentDetail } from '../payment-detail/paymentdetail.model';
+import { OnlinePayment } from '../shared/onlinepayment.model';
+import { OnlinePaymentService } from '../shared/onlinepayment.service';
+import { Console } from 'console';
 
 interface CartItem {
   id: number;
@@ -68,7 +71,7 @@ export class StaffpaymentComponent implements OnInit {
   
 
   
-  constructor(private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService) {
+  constructor(private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinepaymentService: OnlinePaymentService) {
       // this.validationMessages = {
       //   employeeNo: {
       //     required: 'Employee No is required.',
@@ -86,9 +89,26 @@ export class StaffpaymentComponent implements OnInit {
     }
 
     paymentDone(ref: any) {
-      // this.title = 'Payment successfull';
-      // console.log(this.title, ref);
+      const payment: OnlinePayment = {
+        id: 0, // Update with the appropriate ID
+        TransRefNo: ref,
+        TransDate: Date.now(), // Update with the appropriate date
+        Paidby: 0, // Update with the appropriate user ID or payment source
+        AmountPaid: this.options.amount.toString() // Update with the appropriate amount
+      };
+    
+      this.onlinepaymentService.postOnlinePayment(payment).subscribe(
+        () => {
+          // Handle success, e.g., show a success message or navigate to a success page
+          console.log("Successful");
+          
+        },
+        error => {
+          console.log("Not successful");
+        }
+      );
     }
+    
 
     paymentCancel() {
       this.options.amount = 0;
@@ -180,7 +200,7 @@ export class StaffpaymentComponent implements OnInit {
     updateTotalAmount(): void {
       const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
       const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount *100 , 0);
-      this.options.amount = 5*100;
+      this.options.amount = totalAmount;
     }
   
     removeItem(pymtdetails: PaymentDetail): void {
@@ -209,7 +229,7 @@ export class StaffpaymentComponent implements OnInit {
     isAnyCheckboxSelected(): boolean {
       const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
       const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount * 100, 0);
-      this.options.amount = 5*100;
+      this.options.amount = totalAmount;
       return selectedItems.length > 0;
     }
     
