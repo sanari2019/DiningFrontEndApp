@@ -1,0 +1,44 @@
+.welcome-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5%;
+  }
+  
+  .middle-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .carousel-container {
+    margin-right: 20px;
+  }
+  
+  .carousel-item img {
+    object-fit: cover;
+    height: 500px; /* Adjust the height as desired */
+    width: 100%;
+  }
+  
+  .button-container {
+    margin-left: 20px;
+  }
+  
+  .checkout-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 5px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .checkout-button:hover {
+    background-color: #333;
+  }
+  

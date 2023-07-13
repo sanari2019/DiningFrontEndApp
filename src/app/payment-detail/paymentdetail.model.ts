@@ -2,7 +2,7 @@ export class PaymentDetail {
   id: number;
   customerName: string;
   dateEntered: Date;
-  enteredBy: number;
+  enteredBy: string;
   voucherDescription: string;
   amount: number;
   custCode: string;
@@ -14,13 +14,14 @@ export class PaymentDetail {
   paymentmodeid: number;
   unit: number;
   selected: boolean;
+  totalAmount: number;
 
 
   constructor() {
     this.id = 0;
     this.customerName = "";
     this.dateEntered = new Date();
-    this.enteredBy = 0;
+    this.enteredBy = "";
     this.voucherDescription = "";
     this.amount = 0.0;
     this.custCode = "";
@@ -32,5 +33,6 @@ export class PaymentDetail {
     this.paymentmodeid = 0;
     this.unit = 0;
     this.selected = false;
+    this.totalAmount=0;
   }
 }

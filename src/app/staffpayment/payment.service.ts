@@ -4,6 +4,8 @@ import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http"
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { PaymentDetail } from '../users-payment-info/paymentdetail.model';
+import { Served } from '../users-payment-info/served.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +28,7 @@ export class PaymentService {
     //   catchError(this.handleError)
     // );
   }
+  
 
   getPymtdata(data: Payment[]) {
     console.log(JSON.stringify(data))
@@ -53,6 +56,23 @@ export class PaymentService {
         catchError(this.handleError)
       );
   }
+  Serve(serv: Served): Observable<Served> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    serv.id = 0;
+    return this.http.post<Served>(this.envUrl.urlAddress+'/Served', serv, { headers })
+      .pipe(
+        tap(data => console.log('Served: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+
+  // getPaidPaymentsByCust(enteredBy: string): Observable<PaymentMain[]> {
+  //   const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymtsbyCust?enteredBy=${enteredBy}`;
+  //   const headers = new HttpHeaders({ '': 'application/json' }); // Update the headers
+  //   return this.http.get<PaymentMain[]>(url, { headers }).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
 
 
   deletePayment(pymt: Payment): Observable<{}> {
@@ -67,10 +87,10 @@ export class PaymentService {
 
   updatePayment(pymt: Payment): Observable<Payment> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const url = `${this.envUrl.urlAddress+'/paymentmain'}/${pymt.id}`;
+    const url = `${this.envUrl.urlAddress+'/paymentmain'}/updatepayment`;
     return this.http.put<Payment>(url, pymt, { headers })
       .pipe(
-        tap(() => console.log('updatePayment: ' + pymt.id)),
+        tap(() => console.log('updatePayment: ' + pymt)),
         // Return the product on an update
         map(() => pymt),
         catchError(this.handleError)
@@ -98,13 +118,16 @@ export class PaymentService {
     return {
       id: 0,
       dateEntered: new Date(),
-      enteredBy: 0,
+      enteredBy: "",
       custCode: "",
       voucherId: 0,
       unit:0,
-      Amount:0,
+      amount:0,
       paymentmodeid:0,
       servedby:"",
+      opaymentid: 0,
+      paid: false,
+      timepaid: new Date(),
     };
   }
 

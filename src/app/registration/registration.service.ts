@@ -67,7 +67,7 @@ export class RegistrationService {
       .pipe(
         tap(data => {
           console.log('createUser: ' + JSON.stringify(data));
-          this.sendRegistrationEmail(data); // Send registration email after successful registration
+          // this.sendRegistrationEmail(data); // Send registration email after successful registration
         }),
         catchError(this.handleError)
       );
@@ -120,22 +120,7 @@ export class RegistrationService {
     // );
   }
 
-  private sendRegistrationEmail(registration: Registration): void {
-    const emailData = {
-      to: registration.userName, 
-      subject: 'Registration Successful',
-      body: `Dear ${registration.firstName},\n\nThank you for registering on our Dining payment Application. Your registration was successful.\n\nRegards,\nThe Team`
-    };
 
-    this.emailService.sendEmail(emailData).subscribe(
-      () => {
-        console.log('Registration email sent successfully.');
-      },
-      (error: any) => {
-        console.error('Failed to send registration email:', error);
-      }
-    );
-  }
 
   private initializeCustType(): customerType {
     return {

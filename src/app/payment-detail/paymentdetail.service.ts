@@ -5,6 +5,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 import { Payment } from '../staffpayment/payment.model';
+import { PaymentByCust } from '../users-payment-info/PaymentByCust.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +19,20 @@ export class PaymentDetailService {
 
   constructor(private http: HttpClient,  private envUrl: EnvironmentUrlService) { }
 
-  getPaymentDetails(): Observable<PaymentDetail[]> {
-    return this.http.get<PaymentDetail[]>(this.PaymentDetailURL)
+  getPaidPayments(): Observable<PaymentByCust[]> {
+    const url =`${this.envUrl.urlAddress}/PaymentMain/getpaidpymts`;
+    return this.http.get<PaymentByCust[]>(url)
   }
+  // getPaymentDetails(): Observable<PaymentDetail[]> {
+  //   return this.http.get<PaymentDetail[]>(this.PaymentDetailURL)
+  // }
+  getPaidPaymentsByCust(paymentByCust: PaymentByCust): Observable<Payment[]> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymtsbyCust`;
+    return this.http.post<Payment[]>(url,paymentByCust);
+  }
+  
+  
 
   getPaymentDetailsByUserId(userId: number): Observable<PaymentDetail[]> {
     const url = `${this.envUrl.urlAddress}/PaymentDetails/${userId}`;
@@ -42,16 +54,16 @@ export class PaymentDetailService {
   }
 
  
-  updatePaymentDetails(paymentdetail: PaymentDetail): Observable<PaymentDetail> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const url = `${this.PaymentmainURL}/${paymentdetail.id}`;
-    return this.http.put<PaymentDetail>(url, paymentdetail, { headers })
-      .pipe(
-        tap(() => console.log('updatePaymentDetail: ' + paymentdetail.id)),
-        map(() => paymentdetail),
-        catchError(this.handleError)
-      );
-  }
+  // updatePaymentDetails(paymentdetail: PaymentDetail): Observable<PaymentDetail> {
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //   const url = `${this.PaymentmainURL}/${paymentdetail.id}`;
+  //   return this.http.put<PaymentDetail>(url, paymentdetail, { headers })
+  //     .pipe(
+  //       tap(() => console.log('updatePaymentDetail: ' + paymentdetail.id)),
+  //       map(() => paymentdetail),
+  //       catchError(this.handleError)
+  //     );
+  // }
 
   private handleError(err: { error: { message: any; }; status: any; body: { error: any; }; }): Observable<never> {
     // in a real world app, we may send the server to some remote logging infrastructure

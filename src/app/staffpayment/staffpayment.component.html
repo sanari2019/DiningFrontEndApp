@@ -93,15 +93,15 @@
             <th style="display: none">id</th>
             <th>
               <label class="checkbox">
-                <input type="checkbox" [(ngModel)]="selectAll" (change)="selectAllItems()" />
+                <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" hidden/>
                 <span class="checkmark"></span>
               </label>
             </th>
             <!--<th>Customer Type</th>-->
             <!--<th>Customer Code</th>-->
             <th>Date Entered</th>
+            <th>VoucherType</th>
             <th>Quantity</th>
-            <th>Voucher</th>
             <th>Amount</th>
             <th>Total Amount</th> <!-- Added column for Total Amount -->
             <th style="display: none">custtypeid</th>
@@ -116,7 +116,7 @@
             <td style="display: none">{{ pymtdetails.id }}</td>
             <td>
               <label class="checkbox">
-                <input type="checkbox" [(ngModel)]="pymtdetails.selected" />
+                <input type="checkbox" [(ngModel)]="pymtdetails.selected" (change)="updateLocalStorage(pymtdetails)" />
                 <span class="checkmark"></span>
               </label>
             </td>
@@ -125,8 +125,8 @@
             <td>{{ pymtdetails.dateEntered | date :'medium' }}</td>
             <td>{{ pymtdetails.voucherDescription }}</td>
             <td>{{ pymtdetails.unit }}</td>
-            <td>{{ pymtdetails.amount }}</td>
-            <td>{{ pymtdetails.unit * pymtdetails.amount }}</td> <!-- Calculate and display the Total Amount -->
+            <td>{{ formatWithCommas(pymtdetails.amount) }}</td>
+            <td>{{ formatWithCommas(pymtdetails.unit * pymtdetails.amount) }}</td> <!-- Calculate and display the Total Amount -->
             <td>
               <button class="btn btn-danger btn-sm" (click)="removeItem(pymtdetails)">Remove</button> <!-- Remove button -->
             </td>
@@ -154,10 +154,9 @@
       (paymentInit)="paymentInit()"
       (onClose)="paymentCancel()"
       (callback)="paymentDone($event)"
-      [disabled]="!isAnyCheckboxSelected()"
       class="btn btn-primary mr-3"
     >
-      Pay with Paystack
+      Make Payment
     </button>
     </div>
   </div>
