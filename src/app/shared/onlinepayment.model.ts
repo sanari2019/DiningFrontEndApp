@@ -1,9 +1,9 @@
 export interface OnlinePayment {
     id: number;
     TransRefNo: string;
-    TransDate: number;
+    TransDate: Date;
     Paidby: number;
-    AmountPaid: string;
+    AmountPaid: number;
 
   
 

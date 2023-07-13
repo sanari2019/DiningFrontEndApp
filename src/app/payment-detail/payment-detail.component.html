@@ -21,16 +21,16 @@
 
     <div class="table-responsive">
       <table class="table mb-0"
-             *ngIf="paymentDetails && paymentDetails.length">
+             *ngIf=" pymtByCust && pymtByCust.length">
         <thead>
           <tr>
             <th style="display: none">id</th>
-            <th>Customer Type</th>
+            <th style="display: none">Customer Type</th>
             <th>Customer Code</th>
-            <th>Date Entered</th>
+            <th style="display: none">Date Entered</th>
             <th>Entered By</th>
-            <th>Voucher Description</th>
-            <th>Amount</th>
+            <th style="display: none">Voucher Description</th>
+            <th> Available Amount</th>
             <th style="display: none">custtypeid</th>
             <th style="display: none">voucherid</th>
             <th style="display: none">paymentmodeid</th>
@@ -39,24 +39,25 @@
         </thead>
         <tbody>
           <tr *ngFor="let pymtdetails of filteredPaymentDetails">
-            <td style="display: none">{{ pymtdetails.id }}</td>
-            <td>{{ pymtdetails.customerName }}</td>
+           
             <td>{{ pymtdetails.custCode }}</td>
-            <td>{{ pymtdetails.dateEntered | date :'medium' }}</td>
+           
             <td>{{ pymtdetails.enteredBy }}</td>
-            <td>{{ pymtdetails.voucherDescription }}</td>
-            <td>{{ pymtdetails.amount }}</td>
-            <td style="display: none">{{ pymtdetails.custtypeid }}</td>
-            <td style="display: none">{{ pymtdetails.voucherid }}</td>
-            <td style="display: none">{{ pymtdetails.paymentmodeid }}</td>
+          
+            <td>{{ formatWithCommas(pymtdetails.totalAmount) }}</td>
+           
             <!-- <td>{{ registration.password }}</td> -->
             <td>
             </td>
             <td>
-              <button class="btn btn-outline-primary btn-sm"
+              <!-- <button class="btn btn-outline-primary btn-sm"
               (click)="updatepayment(pymtdetails)">
                 Served
+              </button> -->
+              <button class="btn btn-outline-primary btn-sm" (click)="navigateToDetails(pymtdetails)">
+                View Details
               </button>
+              
             </td>
           </tr>
         </tbody>

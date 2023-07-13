@@ -36,3 +36,6 @@ export class PaymentDetail {
     this.totalAmount=0;
   }
 }
+
+
+

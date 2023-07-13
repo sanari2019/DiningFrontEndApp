@@ -1,23 +1,29 @@
 export class Payment {
   id: number;
   dateEntered: Date;
-  enteredBy: number;
+  enteredBy: string;
   custCode: string;
   voucherId: number;
   unit: number;
-  Amount: number;
+  amount: number;
   paymentmodeid: number;
   servedby: string;
+  opaymentid:number;
+  paid: boolean;
+  timepaid: Date;
 
 constructor() {
     this.id = 0;
     this.dateEntered = new Date();
-    this.enteredBy = 0;
+    this.enteredBy = "";
     this.custCode = "";
     this.voucherId = 0;
     this.unit=0;
-    this.Amount=0;
+    this.amount=0;
     this.paymentmodeid=0;
     this.servedby="";
+    this.opaymentid=0;
+    this.paid= false;
+    this.timepaid = new Date();
   }
 }

@@ -29,6 +29,12 @@ export class AppComponent implements OnInit {
 
   constructor(private observer: BreakpointObserver, private router: Router, public authService: AuthService) { }
 
+  navigateToWelcomePage(): void {
+    this.router.navigate(['/welcome']); // Update the route to match the path of your WelcomeComponent
+  }
+  
+  
+
   onPaymentClick(): void {
     const custTypeId = this.authService.registration?.custTypeId;
 
@@ -68,6 +74,7 @@ export class AppComponent implements OnInit {
   onLogout() {
     this.authService.logout();
     localStorage.removeItem('user');
+    localStorage.clear(); // Clear local storage
    this.loggedinUser='';
    this.isLoggedIn$=this.authService.isLoggedIn;
 

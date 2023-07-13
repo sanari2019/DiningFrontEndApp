@@ -17,6 +17,12 @@ import { VoucherService } from '../voucher/voucher.service';
 import { CartService } from '../shared/cart.service';
 import { PaymentDetailService } from '../payment-detail/paymentdetail.service';
 import { PaymentDetail } from '../payment-detail/paymentdetail.model';
+import { OnlinePayment } from '../shared/onlinepayment.model';
+import { OnlinePaymentService } from '../shared/onlinepayment.service';
+import { Console } from 'console';
+import { HttpClient } from '@angular/common/http';
+import { EmailService } from '../shared/email.service';
+import { EmailModel } from '../shared/email.model';
 
 interface CartItem {
   id: number;
@@ -57,18 +63,19 @@ export class OutsourcedpaymentComponent implements OnInit {
   reference='';
 
 
-  selectAll: boolean = false;
+  // selectAll: boolean = false;
 
 
   options: PaystackOptions = {
     amount: 0, // Prepopulate with the total amount from selected checkboxes
     email: 'newemail', // Prepopulate with the user's email
-    ref: `${Math.ceil(Math.random() * 10e10)}`
+    ref: `${Math.ceil(Math.random() * 10000000000000)}`
   };
+  
 
 
 
-  constructor(private fboutsd: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService) {
+  constructor(private httpClient: HttpClient,private fboutsd: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService,private emailService: EmailService) {
 
 
 
@@ -79,22 +86,88 @@ export class OutsourcedpaymentComponent implements OnInit {
     this.genericValidator = new GenericValidator(this.validationMessages);
    }
 
-   paymentInit() {
+
+   formatWithCommas(value: number | null): string {
+    if (value === null) {
+      return '';
+    }
+    
+    const formatter = new Intl.NumberFormat('en-US');
+    return formatter.format(value);
+  }
+  
+  paymentInit() {
     console.log('Payment initialized');
   }
 
   paymentDone(ref: any) {
-    // this.title = 'Payment successfull';
-    // console.log(this.title, ref);
+    // localStorage.removeItem('selectedPaymentItems');
+
+
+      // Retrieve selectedPaymentItems from local storage
+    const selectedPaymentItems: Payment[] = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+    const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    const payment: OnlinePayment = {
+      id: 0, // Update with the appropriate ID
+      TransRefNo: this.options.ref.toString(),
+      TransDate: new Date(),
+      Paidby: this.loggedInUser.id,
+      AmountPaid: this.options.amount/100
+    };
+
+    this.onlinePaymentService.postOnlinePayment(payment).subscribe(
+      (result: any) => {
+        // Handle success, e.g., show a success message or navigate to a success page
+        console.log("Successful");
+
+        this.ngOnInit();
+
+
+    // Call the updatePayment method for each selected payment item
+    for (const paymentItem of selectedPaymentItems) {
+      paymentItem.opaymentid = result.id; // Use the ID returned from the onlinePaymentService
+      paymentItem.timepaid= new Date();
+      paymentItem.paid = true;
+      
+      
+
+      // Call the updatePayment method in your service to update the payment item
+      this.paymentservice.updatePayment(paymentItem).subscribe(
+        (updatedPaymentItem: Payment) => {
+          // Handle successful update if needed
+          console.log("Update")
+        },
+        (error: any) => {
+          // Handle error if necessary
+          console.log("failed")
+        }
+      );
+    }
+
+    // Optionally, update the selectedPaymentitems array in local storage if needed
+    // localStorage.setItem('selectedPaymentitems', JSON.stringify(selectedPaymentItems));
+     this.ngOnInit();
+      },
+
+      
+      error => {
+        console.log("Not successful");
+      }
+    );
+
+    
   }
 
   paymentCancel() {
-    this.options.amount = 0;
+    this.calculateTotalAmount();
     this.options.ref = `${Math.random() * 10000000000000}`;
     console.log('payment failed');
+    // this.options.ref = ref;
   }
   setRandomPaymentRef() {
     this.reference = `${Math.random() * 10000000000000}`;
+    this.options.ref = this.reference;
   }
 
 
@@ -181,7 +254,7 @@ export class OutsourcedpaymentComponent implements OnInit {
         this.paymentDetails.splice(index, 1);
       }
       this.updateTotalAmount(); // Update the total amount when an item is removed
-      this.payment.Amount=pymtdetails.amount;
+      this.payment.amount=pymtdetails.amount;
       this.payment.custCode=pymtdetails.custCode;
       this.payment.dateEntered=pymtdetails.dateEntered;
       this.payment.enteredBy=pymtdetails.enteredBy;
@@ -217,6 +290,63 @@ export class OutsourcedpaymentComponent implements OnInit {
         (this.paymentForm.get(field)?.untouched && this.formSubmitAttempt)
        );
     } 
+
+    calculateTotalAmount(): void {
+      const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+      const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount, 0);
+      this.options.amount = totalAmount * 100; // Multiply by 100 to convert to kobo (Paystack's currency unit)
+    }
+
+    selectAll: boolean = false;
+    // isButtonDisabled = true;
+
+    toggleSelectAll() {
+      if (this.selectAll) {
+        // Add all items to local storage
+        this.paymentDetails.forEach(item => {
+          if (!item.selected) {
+            item.selected = true;
+            this.addToLocalStorage(item);
+          }
+        });
+      } else {
+        // Remove all items from local storage
+        this.paymentDetails.forEach(item => {
+          if (item.selected) {
+            item.selected = false;
+            this.removeFromLocalStorage(item);
+          }
+        });
+      }
+      // // Check if at least one item is selected
+      // const atLeastOneSelected = this.paymentDetails.some(item => item.selected);
+      // this.isButtonDisabled = !atLeastOneSelected;
+      this.calculateTotalAmount(); // Calculate and update the total amount
+    }
+    
+
+updateLocalStorage(item: PaymentDetail) {
+  if (item.selected) {
+    this.addToLocalStorage(item);
+  } else {
+    this.removeFromLocalStorage(item);
+  }
+  this.calculateTotalAmount(); // Calculate and update the total amount
+}
+
+addToLocalStorage(item: PaymentDetail) {
+  const selectedItems = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+  selectedItems.push(item);
+  localStorage.setItem('selectedPaymentItems', JSON.stringify(selectedItems));
+}
+
+removeFromLocalStorage(item: PaymentDetail) {
+  let selectedItems = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+  selectedItems = selectedItems.filter((selectedItem: PaymentDetail) => selectedItem.id !== item.id);
+  localStorage.setItem('selectedPaymentItems', JSON.stringify(selectedItems));
+}
+
+
     savePayment(): void {
       // console.log(this.registrationForm);
       // console.log('Saved: ' + JSON.stringify(this.registrationForm.value));

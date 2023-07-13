@@ -1,43 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { Registration } from '../registration/registration.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private userURL = 'https://localhost:7146/user';
-  private envUrl: string;
+  private userURL = "https://localhost:7146/user";
 
-  constructor(private http: HttpClient, private envUrlService: EnvironmentUrlService) {
-    this.envUrl = envUrlService.urlAddress;
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
+
+  getUserByUsername(username: string): Observable<Registration> {
+    const url = `${this.envUrl.urlAddress}/user/getuser/${username}`;
+    return this.http.get<Registration>(url)
+      .pipe(
+        tap(data => console.log('getUserByUsername: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      );
   }
 
-  checkEmail(email: string): Observable<boolean> {
-    const url = `${this.envUrl}/user/checkemail/${email}`;
-    return this.http.get<boolean>(url).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  updatePassword(email: string, newPassword: string): Observable<boolean> {
-    const url = `${this.envUrl}/user/resetpassword`;
+  updatePassword(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const user = { email, newPassword };
-    return this.http.post<boolean>(url, user, { headers }).pipe(
-      catchError(this.handleError)
-    );
+    const url = `${this.userURL}/${registration.id}`;
+    return this.http.put<Registration>(url, registration, { headers })
+      .pipe(
+        tap(() => console.log('updatePassword: ' + registration.id)),
+        catchError(this.handleError)
+      );
   }
 
   private handleError(err: any): Observable<never> {
-    let errorMessage = '';
+    let errorMessage: string;
     if (err.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = `An error occurred: ${err.error.message}`;
     } else {
-      // Server-side error
       errorMessage = `Backend returned code ${err.status}: ${err.error}`;
     }
     console.error(err);

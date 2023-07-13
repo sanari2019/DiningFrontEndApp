@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { EmailModel } from './email.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmailService {
-  private emailApiUrl = 'https://localhost:7146/send-email'; // Replace with your email sending API endpoint
+  private readonly baseUrl = 'https://localhost:7146/send-email'; // Replace with your API base URL
 
   constructor(private http: HttpClient) {}
 
-  sendEmail(emailData: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(this.emailApiUrl, emailData, { headers });
+  sendEmail(message: EmailModel): Promise<void> {
+    const url = `${this.baseUrl}/email/send`;
+
+    return this.http.post<void>(url, message).toPromise();
   }
 }

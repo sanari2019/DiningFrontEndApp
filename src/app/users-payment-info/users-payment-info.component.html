@@ -1,0 +1,90 @@
+<div class="card">
+    <div class="card-header">
+      {{ pageTitle }}
+    </div>
+  
+    <div class="card-body">
+      
+      <!-- <div class="row" *ngIf="listFilter" style="height: 20PX; margin: 8px 8px;">
+        <div class="col-md-6">
+          <h4>Filtered by: {{ listFilter }}</h4>
+        </div>
+      </div> -->
+  
+      <div class="table-responsive" style="height: 30vh; overflow-y: scroll;">
+        <table class="table mb-0" *ngIf="pymtMain && pymtMain.length">
+          <thead>
+            <tr>
+              <th style="display: none">id</th>
+             
+              <th>Customer Code</th>
+              <th>Date Entered</th>
+              <th>Amount</th>
+              <th>Quantity</th>
+              <th style="display: none">custtypeid</th>
+              <th style="display: none">voucherid</th>
+              <th style="display: none">paymentmodeid</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pymtmm of pymtMain">
+            
+            
+              <td>{{ pymtmm.custCode }}</td>
+              <td>{{ pymtmm.dateEntered | date: 'medium' }}</td>
+              <td>{{ formatWithCommas(pymtmm.amount) }}</td>
+              <td>{{ pymtmm.unit }}</td>
+              
+              
+            
+              <td>
+                <button class="btn btn-outline-primary btn-sm " (click)="addItem(pymtmm)">
+                  Add
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  <hr style="color: blue;">
+  <div class="table-responsive" style="height: 33vh; overflow-y: scroll;margin: 8px 8px;">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+            <th>Item ID</th>
+            <th>Date Entered</th>
+            <th>Customer Code</th>
+            <!-- <th>Payment ID</th> -->
+            <th>Payment Amount</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cartItems">
+            <td>{{ item.id }}</td>
+            <td>{{ item.paymentMain.dateEntered | date }}</td>
+            <td>{{ item.paymentMain.custCode }}</td>
+            <!-- <td>{{ item?.ServedBy }}</td>
+            <td>{{ item.paymentMain.id }}</td> -->
+            <!-- <td>{{ item.paymentMain.custCode }}</td> -->
+            <td>{{ formatWithCommas(item.paymentMain.amount) }}</td>
+          <td>
+            <button class="btn btn-outline-danger btn-sm" (click)="removeItem(item)">
+              Remove
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  
+  
+
+      <button  class="btn btn-primary mr-3" (click)="serveItems()">
+        Served
+    </button>
+    </div>
+  </div>
+  

@@ -19,14 +19,16 @@ import { VoucherNewComponent } from './voucher-new/voucher-new.component';
 import { OutsourcedpaymentComponent } from './outsourcedpayment/outsourcedpayment.component';
 import { GuestpaymentComponent } from './guestpayment/guestpayment.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-info.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 
 
 const routes: Routes = [
   {
-    path: '', component:HomeComponent, canActivate:[AuthGuard]
+    path: '', component:PaymentComponent, canActivate:[AuthGuard]
     // pathMatch: 'full',
-    // redirectTo: 'login',
+    // redirectTo: 'payment',
   },
   {
     path: 'login',
@@ -37,6 +39,8 @@ const routes: Routes = [
     path: 'registrations',
     component: RegistrationListComponent, canActivate:[AuthGuard]
   },
+  { path: 'home', component: HomeComponent }, 
+  { path: 'users-payment-info', component: UsersPaymentInfoComponent },
   {
     path: 'payment',
     component: PaymentComponent,
@@ -95,6 +99,7 @@ const routes: Routes = [
     path: '**',
     component: NotFoundComponent,
   },
+  
 ];
 
 @NgModule({

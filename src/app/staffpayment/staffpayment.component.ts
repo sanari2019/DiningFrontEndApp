@@ -20,6 +20,12 @@ import { PaymentDetail } from '../payment-detail/paymentdetail.model';
 import { OnlinePayment } from '../shared/onlinepayment.model';
 import { OnlinePaymentService } from '../shared/onlinepayment.service';
 import { Console } from 'console';
+import { HttpClient } from '@angular/common/http';
+import { EmailService } from '../shared/email.service';
+import { EmailModel } from '../shared/email.model';
+// import { DecimalPipe } from '@angular/common';
+
+
 
 interface CartItem {
   id: number;
@@ -60,18 +66,16 @@ export class StaffpaymentComponent implements OnInit {
   reference='';
 
 
-  selectAll: boolean = false;
-
 
   options: PaystackOptions = {
     amount: 0, // Prepopulate with the total amount from selected checkboxes
     email: 'newemail', // Prepopulate with the user's email
-    ref: `${Math.ceil(Math.random() * 10e10)}`
+    ref: `${Math.ceil(Math.random() * 10000000000000)}`
   };
   
 
   
-  constructor(private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinepaymentService: OnlinePaymentService) {
+  constructor(private httpClient: HttpClient,private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService,private emailService: EmailService) {
       // this.validationMessages = {
       //   employeeNo: {
       //     required: 'Employee No is required.',
@@ -81,53 +85,98 @@ export class StaffpaymentComponent implements OnInit {
 
       this.genericValidator = new GenericValidator(this.validationMessages);
 
-
      }
+
+     formatWithCommas(value: number | null): string {
+      if (value === null) {
+        return '';
+      }
+      
+      const formatter = new Intl.NumberFormat('en-US');
+      return formatter.format(value);
+    }
+    
+    
 
      paymentInit() {
       console.log('Payment initialized');
     }
 
     paymentDone(ref: any) {
+      // localStorage.removeItem('selectedPaymentItems');
+  
+
+        // Retrieve selectedPaymentItems from local storage
+      const selectedPaymentItems: Payment[] = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+
       const payment: OnlinePayment = {
         id: 0, // Update with the appropriate ID
-        TransRefNo: ref,
-        TransDate: Date.now(), // Update with the appropriate date
-        Paidby: 0, // Update with the appropriate user ID or payment source
-        AmountPaid: this.options.amount.toString() // Update with the appropriate amount
+        TransRefNo: this.options.ref.toString(),
+        TransDate: new Date(),
+        Paidby: this.loggedInUser.id,
+        AmountPaid: this.options.amount/100
       };
-    
-      this.onlinepaymentService.postOnlinePayment(payment).subscribe(
-        () => {
+  
+      this.onlinePaymentService.postOnlinePayment(payment).subscribe(
+        (result: any) => {
           // Handle success, e.g., show a success message or navigate to a success page
           console.log("Successful");
-          
+
+          this.ngOnInit();
+
+
+      // Call the updatePayment method for each selected payment item
+      for (const paymentItem of selectedPaymentItems) {
+        paymentItem.opaymentid = result.id; // Use the ID returned from the onlinePaymentService
+        paymentItem.timepaid= new Date();
+        paymentItem.paid = true;
+        
+        
+
+        // Call the updatePayment method in your service to update the payment item
+        this.paymentservice.updatePayment(paymentItem).subscribe(
+          (updatedPaymentItem: Payment) => {
+            // Handle successful update if needed
+            console.log("Update")
+          },
+          (error: any) => {
+            // Handle error if necessary
+            console.log("failed")
+          }
+        );
+      }
+
+      // Optionally, update the selectedPaymentitems array in local storage if needed
+      // localStorage.setItem('selectedPaymentitems', JSON.stringify(selectedPaymentItems));
+       this.ngOnInit();
         },
+
+        
         error => {
           console.log("Not successful");
         }
       );
+
+      
     }
-    
 
     paymentCancel() {
-      this.options.amount = 0;
+      this.calculateTotalAmount();
       this.options.ref = `${Math.random() * 10000000000000}`;
       console.log('payment failed');
+      // this.options.ref = ref;
     }
     setRandomPaymentRef() {
       this.reference = `${Math.random() * 10000000000000}`;
+      this.options.ref = this.reference;
     }
-
-
-    // onClose(){
-    //   this.options.amount = 0;
-    //   this.options.ref = '';
-    // }
 
 
 
      ngOnInit(): void {
+      this.setRandomPaymentRef() 
+      localStorage.removeItem('selectedPaymentItems');
       // Fetch user payment details from the API (assuming it populates the `paymentDetails` array)
       const userId = this.Id; // Replace 'userid' with the actual user ID
       this.paymentdetailService.getPaymentDetailsByUserId(userId).subscribe(
@@ -165,7 +214,7 @@ export class StaffpaymentComponent implements OnInit {
        // Initialize other data (vouchers, units, payment modes, etc.)
     this.vouchers = []; // Initialize with the available vouchers
     // this.Units = []; // Initialize with the available units
-    // this.amount = ''; // Initialize with the default amount
+    this.calculateTotalAmount();; // Initialize with the default amount
     this.paymentmodes = []; // Initialize with the available payment modes
 
     var loggeinuser = localStorage.getItem('user');
@@ -178,6 +227,7 @@ export class StaffpaymentComponent implements OnInit {
       this.Id = this.registration?.id;
       // const registrationId: number = this.registration.id;
     }
+    
 
 
     this.paymentdetailService.getPaymentDetailsByUserId(this.Id).subscribe(
@@ -186,22 +236,32 @@ export class StaffpaymentComponent implements OnInit {
         // this.filteredPaymentDetails = this.paymentDetails;
       });
 
+      //  // Check local storage for saved payment items
+      // const savedItems = localStorage.getItem('selectedPaymentItems');
+      // if (savedItems) {
+      //   this.paymentDetails = JSON.parse(savedItems);
+      // }
+      
+
 
     }
 
-    selectAllItems(): void {
-      for (const pymtdetails of this.paymentDetails) {
-        pymtdetails.selected = this.selectAll;
-      }
-      this.updateTotalAmount(); // Update the total amount when selection changes
-    }
+  //   updateLocalStorage(pymtdetails: PaymentDetail) {
+  //   if (pymtdetails.selected) {
+  //     // Add the item to local storage
+  //     if (!this.paymentDetails.some(item => item.id === pymtdetails.id)) {
+  //       this.paymentDetails.push(pymtdetails);
+  //     }
+  //   } else {
+  //     // Remove the item from local storage
+  //     this.paymentDetails = this.paymentDetails.filter(item => item.id !== pymtdetails.id);
+  //   }
 
+  //   // Update the local storage with the updated payment items
+  //   localStorage.setItem('selectedPaymentItems', JSON.stringify(this.paymentDetails));
+  // }
 
-    updateTotalAmount(): void {
-      const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
-      const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount *100 , 0);
-      this.options.amount = totalAmount;
-    }
+   
   
     removeItem(pymtdetails: PaymentDetail): void {
           // Remove the item from the `paymentDetails` array
@@ -209,8 +269,8 @@ export class StaffpaymentComponent implements OnInit {
       if (index > -1) {
         this.paymentDetails.splice(index, 1);
       }
-      this.updateTotalAmount(); // Update the total amount when an item is removed
-      this.payment.Amount=pymtdetails.amount;
+      this.calculateTotalAmount(); // Update the total amount when an item is removed
+      this.payment.amount=pymtdetails.amount;
       this.payment.custCode=pymtdetails.custCode;
       this.payment.dateEntered=pymtdetails.dateEntered;
       this.payment.enteredBy=pymtdetails.enteredBy;
@@ -226,18 +286,89 @@ export class StaffpaymentComponent implements OnInit {
             });
     }
 
-    isAnyCheckboxSelected(): boolean {
-      const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
-      const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount * 100, 0);
-      this.options.amount = totalAmount;
-      return selectedItems.length > 0;
-    }
+    // isAnyCheckboxSelected(): boolean {
+    //   const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+    //   const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount * 100, 0);
+    //   this.options.amount = totalAmount;
+    //   return selectedItems.length > 0;
+    // }
     
+     // selectAllItems(): void {
+    //   for (const pymtdetails of this.paymentDetails) {
+    //     pymtdetails.selected = this.selectAll;
+    //   }
+    //   this.updateTotalAmount(); // Update the total amount when selection changes
+    // }
+
+
+    // updateTotalAmount(): void {
+    //   const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+    //   const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount *100 , 0);
+    //   this.options.amount = totalAmount;
+    // }
   
     checkout() {
       // Function called when the Checkout button is clicked
       // Implement your payment gateway logic here
     }
+
+    calculateTotalAmount(): void {
+      const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+      const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount, 0);
+      this.options.amount = totalAmount * 100; // Multiply by 100 to convert to kobo (Paystack's currency unit)
+    }
+    
+
+    selectAll: boolean = false;
+    // isButtonDisabled = true;
+
+    toggleSelectAll() {
+      if (this.selectAll) {
+        // Add all items to local storage
+        this.paymentDetails.forEach(item => {
+          if (!item.selected) {
+            item.selected = true;
+            this.addToLocalStorage(item);
+          }
+        });
+      } else {
+        // Remove all items from local storage
+        this.paymentDetails.forEach(item => {
+          if (item.selected) {
+            item.selected = false;
+            this.removeFromLocalStorage(item);
+          }
+        });
+      }
+      // // Check if at least one item is selected
+      // const atLeastOneSelected = this.paymentDetails.some(item => item.selected);
+      // this.isButtonDisabled = !atLeastOneSelected;
+      this.calculateTotalAmount(); // Calculate and update the total amount
+    }
+    
+
+updateLocalStorage(item: PaymentDetail) {
+  if (item.selected) {
+    this.addToLocalStorage(item);
+  } else {
+    this.removeFromLocalStorage(item);
+  }
+  this.calculateTotalAmount(); // Calculate and update the total amount
+}
+
+addToLocalStorage(item: PaymentDetail) {
+  const selectedItems = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+  selectedItems.push(item);
+  localStorage.setItem('selectedPaymentItems', JSON.stringify(selectedItems));
+}
+
+removeFromLocalStorage(item: PaymentDetail) {
+  let selectedItems = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+  selectedItems = selectedItems.filter((selectedItem: PaymentDetail) => selectedItem.id !== item.id);
+  localStorage.setItem('selectedPaymentItems', JSON.stringify(selectedItems));
+}
+
+
   
 
     isFieldInvalid(field: string) {

@@ -38,10 +38,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { OnlinepaymentComponent } from './onlinepayment/onlinepayment.component';
 import { CommonModule } from '@angular/common';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { EmailComponent } from './email/email.component';
+import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-info.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 //import { ReactiveFormEmailValidationComponent } from "./components/reactive-form-email-validation/reactive-form-email-validation.component";
+import { CarouselModule } from 'ngx-bootstrap/carousel';
+
 
 @NgModule({
-  declarations: [AppComponent,AppMenuComponent, HomeComponent, ForgotPasswordComponent,ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent],
+  declarations: [AppComponent,AppMenuComponent, HomeComponent, ForgotPasswordComponent,ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent],
   imports: [
     Angular4PaystackModule.forRoot('pk_test_b8671f2cd36f4a71cd4564c7f0de6498c803ac25'),
     BrowserModule,
@@ -58,6 +63,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     AppMaterialModule,
     MatPaginatorModule,
     CommonModule,
+    CarouselModule.forRoot(),
 
   ],
   providers: [EncrDecrService,AuthService,AuthGuard],
