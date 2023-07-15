@@ -137,6 +137,7 @@ export class UsersPaymentInfoComponent {
   cartItems: Served[] = [];
   pymtUser: Registration=new Registration();
   // paramsvalue: number = 0;
+  userFullName: string = '';
 
   constructor(private servedService: ServedService,private route: ActivatedRoute,private paymentdetailService: PaymentDetailService,private pymtservice: PaymentService, private router: Router,private registrationservice: RegistrationService) { }
 
@@ -151,10 +152,13 @@ export class UsersPaymentInfoComponent {
     // this.paymentdetailService.
     this.route.queryParams.subscribe((params) => {
       var paramvalue = params['pymtMain'];
-      this.getUser(paramvalue);
-      if (paramvalue) {
-                this.pymtMain = JSON.parse(paramvalue);
-              }
+      
+      if (paramvalue) {    
+        this.getUser(paramvalue);
+          this.pymtMain = JSON.parse(paramvalue);
+          
+        }
+        this.userFullName = params['userFullName'] || '';
       // this.registrationservice.getUser(paramvalue)
       //     .subscribe((rslt:Registration)=>{
       //       this.pymtUser=rslt;
@@ -178,6 +182,7 @@ export class UsersPaymentInfoComponent {
   getUser(propertyValue: number): void {
     this.registrationservice.getUser(propertyValue).subscribe((user: Registration) => {
       this.pymtUser = user;
+      this.userFullName = `${this.pymtUser.firstName} ${this.pymtUser.lastName}`;
       this.getPaymentsByCustomer(this.pymtUser);
     });
   }
@@ -185,6 +190,7 @@ export class UsersPaymentInfoComponent {
     this.paymentdetailService.getPaidPaymentsByCust(customer).subscribe((payments: Payment[]) => {
       // Process the payments returned by the API
       this.pymtMain = payments;
+      this.pymtUser = customer;
     });
   }
   
@@ -258,7 +264,7 @@ export class UsersPaymentInfoComponent {
       return '';
     }
     
-    const formatter = new Intl.NumberFormat('en-US');
+    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return formatter.format(value);
   }
   

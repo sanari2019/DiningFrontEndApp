@@ -16,9 +16,9 @@
           <thead>
             <tr>
               <th style="display: none">id</th>
-             
-              <th>Customer Code</th>
               <th>Date Entered</th>
+              <th>Customer Code</th>
+              <th>Name</th>              
               <th>Amount</th>
               <th>Quantity</th>
               <th style="display: none">custtypeid</th>
@@ -30,9 +30,9 @@
           <tbody>
             <tr *ngFor="let pymtmm of pymtMain">
             
-            
-              <td>{{ pymtmm.custCode }}</td>
               <td>{{ pymtmm.dateEntered | date: 'medium' }}</td>
+              <td>{{ pymtmm.custCode }}</td>
+              <td> {{userFullName}} </td>              
               <td>{{ formatWithCommas(pymtmm.amount) }}</td>
               <td>{{ pymtmm.unit }}</td>
               
@@ -52,9 +52,10 @@
     <table class="table mb-0">
       <thead>
         <tr>
-            <th>Item ID</th>
+            <!-- <th>Item ID</th> -->
             <th>Date Entered</th>
             <th>Customer Code</th>
+            <th>Name</th>
             <!-- <th>Payment ID</th> -->
             <th>Payment Amount</th>
           <th></th>
@@ -62,9 +63,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of cartItems">
-            <td>{{ item.id }}</td>
+            <!-- <td>{{ item.id }}</td> -->
             <td>{{ item.paymentMain.dateEntered | date }}</td>
             <td>{{ item.paymentMain.custCode }}</td>
+            <td>{{ userFullName }}</td>
             <!-- <td>{{ item?.ServedBy }}</td>
             <td>{{ item.paymentMain.id }}</td> -->
             <!-- <td>{{ item.paymentMain.custCode }}</td> -->
