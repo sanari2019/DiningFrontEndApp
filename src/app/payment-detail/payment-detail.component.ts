@@ -5,6 +5,10 @@
   import { PaymentByCust } from '../users-payment-info/PaymentByCust.model';
   import { Payment } from '../staffpayment/payment.model';
   // import { DecimalPipe } from '@angular/common';
+  import { MatDialog } from '@angular/material/dialog';
+  import { UsersPaymentInfoDialogComponent } from '../users-payment-info-dialog/users-payment-info-dialog.component';
+
+
 
 
 
@@ -30,7 +34,7 @@
     pymtByCust: PaymentByCust[] = [];
     pymtMain: Payment[] = [];
 
-    constructor(private route: ActivatedRoute,private paymentdetailService: PaymentDetailService, private router: Router) { }
+    constructor(public dialog: MatDialog,private route: ActivatedRoute,private paymentdetailService: PaymentDetailService, private router: Router) { }
 
 
     // navigateToDetails(paymentbycust: PaymentByCust): void {
@@ -44,15 +48,47 @@
     //   }
       navigateToDetails(paymentbycust: PaymentByCust): void {
         const enteredBy = parseInt(paymentbycust.enteredBy, 10);
-        this.router.navigate(['/users-payment-info'], { queryParams: { pymtMain: JSON.stringify(enteredBy) } });
+        this.router.navigate(['/voucherdetails'], { queryParams: { pymtMain: JSON.stringify(enteredBy) } });
+        const dialogRef = this.dialog.open(UsersPaymentInfoDialogComponent, {
+              width: '90%',
+              data: {
+                pymtMain: JSON.stringify(enteredBy),
+                enteredBy: enteredBy,
+                paymentbycust: paymentbycust,
+                queryParams: { pymtMain: JSON.stringify(enteredBy), enteredBy: enteredBy.toString()}
+              }
+            });
+
+            dialogRef.afterClosed().subscribe(result => {
+                  // Handle dialog close event if needed
+                  console.log(`Dialog result: ${result}`);
+                });
       }
+
+      // navigateToDetails(paymentbycust: PaymentByCust): void {
+      //   const enteredBy = parseInt(paymentbycust.enteredBy, 10);
+      //   const dialogRef = this.dialog.open(UsersPaymentInfoDialogComponent, {
+      //     width: '70%',
+      //     data: {
+      //       pymtMain: JSON.stringify(enteredBy),
+      //       enteredBy: enteredBy,
+      //       paymentbycust: paymentbycust,
+      //       queryParams: { pymtMain: JSON.stringify(enteredBy), enteredBy: enteredBy.toString()}
+      //     }
+      //   });
+      
+      //   dialogRef.afterClosed().subscribe(result => {
+      //     // Handle dialog close event if needed
+      //     console.log(`Dialog result: ${result}`);
+      //   });
+      // }
 
       formatWithCommas(value: number | null): string {
         if (value === null) {
           return '';
         }
         
-        const formatter = new Intl.NumberFormat('en-US');
+        const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         return formatter.format(value);
       }
       

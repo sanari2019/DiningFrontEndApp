@@ -28,6 +28,7 @@ import { AppMaterialModule } from './app-material/app-material.module';
 import { AuthGuard } from './auth/auth.guard';
 import { PaymentComponent } from './payment/payment.component';
 import { VoucherComponent } from './voucher/voucher.component';
+import { MatTabsModule } from '@angular/material/tabs'; // Import the MatTabsModule
 import { StaffpaymentComponent } from './staffpayment/staffpayment.component';
 import { PaymentDetailComponent } from './payment-detail/payment-detail.component';
 import { VoucherNewComponent } from './voucher-new/voucher-new.component';
@@ -43,10 +44,13 @@ import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-in
 import { WelcomeComponent } from './welcome/welcome.component';
 //import { ReactiveFormEmailValidationComponent } from "./components/reactive-form-email-validation/reactive-form-email-validation.component";
 import { CarouselModule } from 'ngx-bootstrap/carousel';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { UsersPaymentInfoDialogComponent } from './users-payment-info-dialog/users-payment-info-dialog.component';
+
 
 
 @NgModule({
-  declarations: [AppComponent,AppMenuComponent, HomeComponent, ForgotPasswordComponent,ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent],
+  declarations: [AppComponent,AppMenuComponent, HomeComponent, ForgotPasswordComponent,ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent],
   imports: [
     Angular4PaystackModule.forRoot('pk_test_b8671f2cd36f4a71cd4564c7f0de6498c803ac25'),
     BrowserModule,
@@ -62,6 +66,9 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
     HttpClientModule,
     AppMaterialModule,
     MatPaginatorModule,
+    MatTabsModule, // Add MatTabsModule to the imports
+    MatButtonModule, 
+    MatDialogModule,
     CommonModule,
     CarouselModule.forRoot(),
 

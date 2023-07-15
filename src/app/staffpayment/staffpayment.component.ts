@@ -26,6 +26,11 @@ import { EmailModel } from '../shared/email.model';
 // import { DecimalPipe } from '@angular/common';
 
 
+import { Menu } from '../guestpayment/menu.model'; 
+import { MenuService } from '../guestpayment/menu.service';
+import { OrderedMeal } from '../guestpayment/orderedmeal.model';
+import { OrderedMealService } from '../guestpayment/orderedmeal.service'; 
+import { GuestpaymentComponent } from '../guestpayment/guestpayment.component';
 
 interface CartItem {
   id: number;
@@ -41,6 +46,23 @@ interface CartItem {
   styleUrls: ['./staffpayment.component.scss']
 })
 export class StaffpaymentComponent implements OnInit {
+
+  amountValue: number = 0;
+  // @ViewChildren(FormControlName, { read: ElementRef })
+  // formInputElements: ElementRef[] = [];
+  // pageTitle = "New Guest/Staff ticket"
+  // staffid = 3;
+  // errorMessage = '';
+  orderedMealForm!: UntypedFormGroup;
+  // voucherForm!:FormGroup;
+  menus!: Menu[];
+  menu!: Menu;
+  // payment!: Payment;
+  ordMeal!: OrderedMeal;
+  // private sub!: Subscription;
+  // private validationMessages!: { [key: string]: { [key: string]: string } };
+  // private genericValidator!: GenericValidator;
+
 
   @ViewChildren(FormControlName, { read: ElementRef })
   formInputElements: ElementRef[] = [];
@@ -75,7 +97,7 @@ export class StaffpaymentComponent implements OnInit {
   
 
   
-  constructor(private httpClient: HttpClient,private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService,private emailService: EmailService) {
+  constructor(private menuservice: MenuService, private ordmealservice: OrderedMealService,private httpClient: HttpClient,private fbstaff: UntypedFormBuilder, private router: Router,private paymentmodeservice:PaymentModeService,private voucherservice:VoucherService, private paymentservice: PaymentService, private encdecservice:EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService,private emailService: EmailService) {
       // this.validationMessages = {
       //   employeeNo: {
       //     required: 'Employee No is required.',
@@ -92,7 +114,7 @@ export class StaffpaymentComponent implements OnInit {
         return '';
       }
       
-      const formatter = new Intl.NumberFormat('en-US');
+      const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       return formatter.format(value);
     }
     
@@ -241,10 +263,59 @@ export class StaffpaymentComponent implements OnInit {
       // if (savedItems) {
       //   this.paymentDetails = JSON.parse(savedItems);
       // }
-      
+      this.orderedMealForm = this.fbstaff.group({
+        guest: new UntypedFormControl(''),
+        // Amount: ['', Validators.required,Validators.minLength(3)]
+        mealid: new UntypedFormControl(''),
+        amount: new UntypedFormControl({ value: '', disabled: true })
+  
+      });
+      // this.voucherForm=this.fb2.group({
+      //   'id':[null]
+      // })
+      this.getMenus(); 
 
 
     }
+    saveOrderedMeal(): void {
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const enteredBy = this.orderedMealForm.get('guest')?.value;
+      const amountValue = this.orderedMealForm.get('amount')?.value;
+
+      if (this.orderedMealForm.valid) {
+        if (this.orderedMealForm.dirty) {
+          const p = { ...this.ordMeal, ...this.orderedMealForm.value };
+          if (p.mealid !== 0) {
+            p.dateEntered = new Date();
+            p.enteredBy = loggedInUser?.id.toString();
+            p.amount=this.amountValue;
+            if (confirm(`You are about to generate a ticket for Staff: ${p.enteredBy}?`)) {
+              this.ordmealservice.createOrder(p)
+                .subscribe({
+                  next: () => this.onSaveComplete(),
+                  error: err => this.errorMessage = err
+                });
+            }
+          } else {
+            this.ordmealservice.updateOrder(p)
+              .subscribe({
+                next: () => this.onSaveComplete(),
+                error: err => this.errorMessage = err
+              });
+          }
+        }
+        else {
+          this.onSaveComplete();
+        }
+      }
+      else {
+        this.errorMessage = 'Please correct the validation errors.';
+      }
+    }
+    getMenus() {
+      this.menuservice.getMenus().subscribe(res => this.menus = res, error => this.errorMessage = <any>error);
+    }
+  
 
   //   updateLocalStorage(pymtdetails: PaymentDetail) {
   //   if (pymtdetails.selected) {
@@ -433,6 +504,17 @@ removeFromLocalStorage(item: PaymentDetail) {
 
   onSaveComplete(): void {
     this.ngOnInit();
+  }
+
+  onChange(value: any) {
+    this.menuservice.getMenu(value.value).subscribe(res => {
+      this.menu = res;
+      if (this.menu !== undefined) {
+        this.orderedMealForm.controls.amount.setValue(this.menu.amount *0.6);
+      }
+    }
+    );
+
   }
 }
 

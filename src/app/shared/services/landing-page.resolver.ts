@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot, Routes } from '@angular/router';
 import { Observable } from 'rxjs';
-import { WelcomeComponent } from './welcome/welcome.component';
+// import { WelcomeComponent } from './welcome/welcome.component';
 
 @Injectable({ providedIn: 'root' })
 export class LandingPageResolver implements Resolve<string> {

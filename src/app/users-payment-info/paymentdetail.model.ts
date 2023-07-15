@@ -1,3 +1,5 @@
+import { Registration } from "../registration/registration.model";
+
 export class PaymentDetail {
   id: number;
   customerName: string;
@@ -15,6 +17,8 @@ export class PaymentDetail {
   unit: number;
   selected: boolean;
   totalAmount: number;
+  firstName: string;
+  customerId: number;
 
 
   constructor() {
@@ -34,6 +38,8 @@ export class PaymentDetail {
     this.unit = 0;
     this.selected = false;
     this.totalAmount=0;
+    this.firstName="";
+    this.customerId=0;
   }
 }
 

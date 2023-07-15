@@ -10,7 +10,7 @@ import { EncrDecrService } from '../shared/EncrDecrService.service';
   styleUrls: ['./forgot-password.component.scss']
 })
 export class ForgotPasswordComponent implements OnInit {
-  forgotPasswordForm: FormGroup;
+  forgotPasswordForm!: FormGroup;
   submitted: boolean = false;
   errorMessage: string | undefined;
   successMessage: string | undefined;
