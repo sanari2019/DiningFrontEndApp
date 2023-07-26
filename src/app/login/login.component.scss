@@ -3,9 +3,19 @@ mat-card {
   margin: 2em auto;
   text-align: center;
 }
+
 .signin-content {
   padding: 60px 1rem;
 }
+
 .full-width-input {
   width: 100%;
+}
+
+.red-alert {
+
+  color: #004a9f;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
 }

@@ -8,6 +8,7 @@ import { CustomerType } from '../payment/customertype.model';
 import { customerType } from '../shared/customertype.model';
 import { ServiceUrl } from '../shared/serviceurl.model';
 import { EmailService } from '../shared/email.service'; // Import the email service
+import { Route } from '../shared/route.model';
 
 
 @Injectable({
@@ -16,15 +17,15 @@ import { EmailService } from '../shared/email.service'; // Import the email serv
 
 export class RegistrationService {
 
-  private userURL = "https://localhost:7146/user";
+  private userURL = `${this.envUrl.urlAddress}/user`;
   // private userURL1 = "http://localhost:5057/";
   private reg = Registration;
   //private handleError="";
   private custttype = CustomerType;
   // serviceUrl:ServiceUrl|undefined;
-  private ctypeURL = ServiceUrl.url + "customertype"
+  private ctypeURL = `${this.envUrl.urlAddress}/customertype`;
 
-  constructor(private http: HttpClient,private envUrl: EnvironmentUrlService,private emailService: EmailService ) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService, private emailService: EmailService) { }
 
   getUsers(): Observable<Registration[]> {
     return this.http.get<Registration[]>(this.userURL)
@@ -63,7 +64,7 @@ export class RegistrationService {
   createUser(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     registration.id = 0;
-    return this.http.post<Registration>(this.envUrl.urlAddress+'/user', registration, { headers })
+    return this.http.post<Registration>(this.envUrl.urlAddress + '/user', registration, { headers })
       .pipe(
         tap(data => {
           console.log('createUser: ' + JSON.stringify(data));
@@ -73,11 +74,21 @@ export class RegistrationService {
       );
   }
 
+  getRoles(registration: Registration): Observable<Route[]> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    registration.id = 0;
+    return this.http.post<Route[]>(this.envUrl.urlAddress + '/CustomerRoute/getroutes', registration, { headers })
+      .pipe(
+        tap(data => console.log('createUser: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+
 
   deleteUser(reg: Registration): Observable<{}> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.userURL}/deleteuser`;
-    return this.http.post<Registration>(url,reg)
+    return this.http.post<Registration>(url, reg)
       .pipe(
         tap(data => console.log('deleteUser: ' + reg.firstName)),
         catchError(this.handleError)

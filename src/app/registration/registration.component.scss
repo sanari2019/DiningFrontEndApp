@@ -7,7 +7,120 @@
 // .ng-valid.ng-dirty:not(form) {
 //     border: solid 2px lightgreen;
 //   }
-  
+
 //   .ng-invalid.ng-dirty:not(form), .ng-invalid:not(form).form-submitted {
 //     border: solid 2px lightcoral;
 //   }
+
+body {
+    background: #fafafa;
+}
+
+$input-border-color: #0000001f;
+$input-label-color: rgba(0, 0, 0, 0.5);
+$input-label-active-color: rgb(13, 71, 161);
+$input-bottom-bar-color: rgb(13, 71, 161);
+$primary-button-color: #3F51B5;
+
+.input-field-box {
+    position: relative;
+    margin: 15px 0px;
+
+    select,
+    input,
+    textarea {
+        font-size: 18px;
+        padding: 5px 2px;
+        display: block;
+        background: transparent;
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid $input-border-color;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    label {
+        color: $input-label-color;
+        font-size: 15px;
+        font-weight: normal;
+        position: absolute;
+        pointer-events: none;
+        top: 10px;
+        transition: 0.2s ease all;
+    }
+
+    select:focus~label,
+    input:focus~label,
+    textarea:focus~label {
+        top: -15px;
+        font-size: 12px;
+        color: $input-label-active-color;
+    }
+
+    select:valid~label,
+    input:valid~label,
+    textarea:valid~label.input-has-value {
+        top: -15px;
+        font-size: 12px;
+    }
+
+    .bar {
+        position: relative;
+        display: block;
+        width: 100%;
+
+        &:before,
+        &:after {
+            content: '';
+            height: 2px;
+            width: 0;
+            bottom: 0.5px;
+            position: absolute;
+            background: $input-bottom-bar-color;
+            transition: 0.2s ease all;
+        }
+
+        &:before {
+            left: 50%;
+        }
+
+        &:after {
+            right: 50%;
+        }
+
+        &:focus {
+
+            &:before,
+            &:after {
+                width: 50%;
+            }
+        }
+    }
+}
+
+.mat-btn {
+    background: $primary-button-color;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    padding: 7px 15px;
+    color: #fff;
+    font-size: 14px;
+    text-transform: uppercase;
+
+    &:hover {
+        opacity: 1;
+        transition: 0.4s ease;
+        color: #fff;
+    }
+}
+
+.mat-card {
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+    padding: 24px;
+    border-radius: 2px;
+    background: #fff;
+}

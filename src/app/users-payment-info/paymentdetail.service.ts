@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PaymentByCust } from './PaymentByCust.model';
 import { PaymentDetail } from './paymentdetail.model';
-import { HttpClient, HttpClientModule, HttpHeaders,HttpParams } from "@angular/common/http";
+import { HttpClient, HttpClientModule, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
@@ -14,14 +14,14 @@ import { Registration } from '../registration/registration.model';
 
 export class PaymentDetailService {
 
-  private PaymentDetailURL = "https://localhost:7146/paymentDetails";
-  private PaymentmainURL = "https://localhost:7146/paymentmain";
+  private PaymentDetailURL = `${this.envUrl.urlAddress}/paymentDetails`;
+  private PaymentmainURL = `${this.envUrl.urlAddress}/paymentmain`;
   private paymentdetail = PaymentDetail;
 
-  constructor(private http: HttpClient,  private envUrl: EnvironmentUrlService) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getPaidPayments(): Observable<PaymentDetail[]> {
-    const url =`${this.envUrl.urlAddress}/PaymentMain/getpaidpymts`;
+    const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymts`;
     return this.http.get<PaymentDetail[]>(url)
   }
   getPaymentDetails(): Observable<PaymentDetail[]> {
@@ -33,16 +33,16 @@ export class PaymentDetailService {
     // return this.http.get<Registration>(url)
     return this.http.post<Payment[]>(url, JSON.stringify(paymentByCust), { headers });
   }
-  
+
   // getPaidPaymentsByCust(paymentByCust: PaymentByCust): Observable<Payment[]> {
   //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   //   const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymtsbyCust`;
   //   return this.http.post<Payment[]>(url,paymentByCust);
   // }
-  
-  
-  
-  
+
+
+
+
 
   getPaymentDetailsByUserId(userId: number): Observable<PaymentDetail[]> {
     const url = `${this.envUrl.urlAddress}/PaymentDetails/${userId}`;
@@ -51,7 +51,7 @@ export class PaymentDetailService {
   removePymtdetails(pymtMain: Payment): Observable<{}> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.envUrl.urlAddress}/PaymentMain/deletepymtmain`;
-    return this.http.post<Payment>(url,pymtMain)
+    return this.http.post<Payment>(url, pymtMain)
       .pipe(
         tap(data => console.log('deletePayment: ' + pymtMain.id)),
         catchError(this.handleError)
@@ -63,7 +63,7 @@ export class PaymentDetailService {
     console.log(JSON.stringify(data))
   }
 
- 
+
   updatePaymentDetails(paymentdetail: PaymentDetail): Observable<PaymentDetail> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.PaymentmainURL}/${paymentdetail.id}`;

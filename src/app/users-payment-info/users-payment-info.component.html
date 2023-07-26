@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-      {{ pageTitle }}
+     {{ pageTitle }}
     </div>
   
     <div class="card-body">
@@ -23,7 +23,7 @@
               <th>Quantity</th>
               <th style="display: none">custtypeid</th>
               <th style="display: none">voucherid</th>
-              <th style="display: none">paymentmodeid</th>
+              <th >paymentmodeid</th>
               <th></th>
             </tr>
           </thead>
@@ -35,6 +35,7 @@
               <td> {{userFullName}} </td>              
               <td>{{ formatWithCommas(pymtmm.amount) }}</td>
               <td>{{ pymtmm.unit }}</td>
+              <td>{{ pymtmm.voucherId}}</td>
               
               
             
@@ -43,12 +44,20 @@
                   Add
                 </button>
               </td>
+              <td>
+                  <!-- Display the material icon based on voucher type and payment type -->
+                <!-- Display the material icon based on voucher type and payment type -->
+              <div *ngIf="pymtmm.voucherId === 10">
+                <mat-icon (click)="openPaymentDetailsDialog(pymtmm)">shopping_cart</mat-icon>
+              </div>
+
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
   <hr style="color: blue;">
-  <div class="table-responsive" style="height: 33vh; overflow-y: scroll;margin: 8px 8px;">
+  <div class="table-responsive" style=" overflow-y: scroll;margin: 8px 8px;">
     <table class="table mb-0">
       <thead>
         <tr>

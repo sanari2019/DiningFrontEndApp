@@ -13,14 +13,14 @@ import { PaymentByCust } from '../users-payment-info/PaymentByCust.model';
 
 export class PaymentDetailService {
 
-  private PaymentDetailURL = "https://localhost:7146/paymentDetails";
-  private PaymentmainURL = "https://localhost:7146/paymentmain";
+  private PaymentDetailURL = `${this.envUrl.urlAddress}/paymentDetails`;
+  private PaymentmainURL = `${this.envUrl.urlAddress}/paymentmain`;
   private paymentdetail = PaymentDetail;
 
-  constructor(private http: HttpClient,  private envUrl: EnvironmentUrlService) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getPaidPayments(): Observable<PaymentByCust[]> {
-    const url =`${this.envUrl.urlAddress}/PaymentMain/getpaidpymts`;
+    const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymts`;
     return this.http.get<PaymentByCust[]>(url)
   }
   // getPaymentDetails(): Observable<PaymentDetail[]> {
@@ -29,10 +29,10 @@ export class PaymentDetailService {
   getPaidPaymentsByCust(paymentByCust: PaymentByCust): Observable<Payment[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymtsbyCust`;
-    return this.http.post<Payment[]>(url,paymentByCust);
+    return this.http.post<Payment[]>(url, paymentByCust);
   }
-  
-  
+
+
 
   getPaymentDetailsByUserId(userId: number): Observable<PaymentDetail[]> {
     const url = `${this.envUrl.urlAddress}/PaymentDetails/${userId}`;
@@ -41,7 +41,7 @@ export class PaymentDetailService {
   removePymtdetails(pymtMain: Payment): Observable<{}> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.envUrl.urlAddress}/PaymentMain/deletepymtmain`;
-    return this.http.post<Payment>(url,pymtMain)
+    return this.http.post<Payment>(url, pymtMain)
       .pipe(
         tap(data => console.log('deletePayment: ' + pymtMain.id)),
         catchError(this.handleError)
@@ -53,7 +53,7 @@ export class PaymentDetailService {
     console.log(JSON.stringify(data))
   }
 
- 
+
   // updatePaymentDetails(paymentdetail: PaymentDetail): Observable<PaymentDetail> {
   //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   //   const url = `${this.PaymentmainURL}/${paymentdetail.id}`;

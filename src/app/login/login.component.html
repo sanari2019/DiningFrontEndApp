@@ -6,24 +6,24 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <p>Please login to continue</p>
         <mat-form-field class="full-width-input">
-          <input matInput placeholder="User/Email" formControlName="userName" required>
+          <input matInput placeholder="User/Email" id="userName" formControlName="userName" (input)="form.controls.userName.setValue(form.controls.userName.value.toLowerCase())" required>
           <mat-error *ngIf="isFieldInvalid('userName')">
             Please enter your user name/Email
           </mat-error>
         </mat-form-field>
         <mat-form-field class="full-width-input">
           <input matInput type="password" placeholder="Password" formControlName="password" required>
-          <mat-error *ngIf="isFieldInvalid('userName')">
+          <mat-error *ngIf="isFieldInvalid('password')">
             Please enter your password
           </mat-error>
         </mat-form-field>
         <button mat-raised-button color="primary">Login</button>
-        <button mat-raised-button routerLink="../registration">Register</button>
+        <button mat-raised-button  (click)="openDialog()">Register</button>
       </form>
       <a mat-button routerLink="../forgot-password">Forgot Password?</a>
 
     </mat-card-content>
-    <div class="card-header">
+    <div class="card-header" class="red-alert">
       {{loginMessage}}
     </div>
   </mat-card>

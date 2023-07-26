@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RegistrationDialogComponent } from '../registration-dialog/registration-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-login',
@@ -9,19 +14,22 @@ import { AuthService } from './../auth/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  form!: UntypedFormGroup;                    // {1}
+  form!: FormGroup;                    // {1}
   private formSubmitAttempt!: boolean; // {2}
-  loginMessage='';
+  loginMessage = '';
   notLoggedIn$!: Observable<boolean>;
+  private loginSubscription: Subscription | undefined;
 
   constructor(
-    private fb: UntypedFormBuilder,         // {3}
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private fb: FormBuilder,         // {3}
     private authService: AuthService // {4}
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.form = this.fb.group({     // {5}
-      userName: ['', Validators.required],
+      userName: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
   }
@@ -30,26 +38,42 @@ export class LoginComponent implements OnInit {
     return (
       (!this.form.get(field)?.valid && this.form.get(field)?.touched) ||
       (this.form.get(field)?.untouched && this.formSubmitAttempt)
-     );
+    );
+  }
+
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(RegistrationDialogComponent, {
+      width: '85%',
+      // data: { orderedMeals: this.orderedMeals },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('The dialog was closed');
+      // this.ngOnInit();
+    });
   }
 
   onSubmit() {
     if (this.form.valid) {
-      // if(this.authService.login(this.form.value)){
-      //   this.formSubmitAttempt = true;
-      // }
-      // else if(this.authService.login(this.form.value)){
-      //     this.loginMessage="Username/Password invalid";
-      // }
-      this.authService.login(this.form.value);
-      if (this.authService.notLoggedIn){
-        this.formSubmitAttempt=true;
-      }
-      else{
-        this.loginMessage="Username/Password invalid";
-      }
-
+      this.loginSubscription = this.authService.login(this.form.value).subscribe((resultMessage: string) => {
+        if (resultMessage === "") {
+          // Successful login, clear loginMessage and show success flash message.
+          this.loginMessage = "";
+          this.snackBar.open('Login Successful!', 'Close', { duration: 3000 });
+        } else {
+          // Show error flash message.
+          this.loginMessage = resultMessage;
+          this.snackBar.open(resultMessage, 'Close', { duration: 3000 });
+        }
+      });
     }
+  }
 
-  };
+  ngOnDestroy() {
+    // Unsubscribe from the login subscription when the component is destroyed to avoid memory leaks.
+    if (this.loginSubscription) {
+      this.loginSubscription.unsubscribe();
+    }
+  }
 }

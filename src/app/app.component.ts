@@ -21,93 +21,85 @@ import { CommonModule } from '@angular/common';
 export class AppComponent implements OnInit {
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
+  title = 'angular-responsive-sidebar';
   isLoggedIn$!: Observable<boolean>;
- 
+
   loggedinUser = ' ';
   registration: Registration | undefined;
 
 
   constructor(private observer: BreakpointObserver, private router: Router, public authService: AuthService) { }
 
-  navigateToWelcomePage(): void {
-    this.router.navigate(['/welcome']); // Update the route to match the path of your WelcomeComponent
-  }
-  
-  
-
   onPaymentClick(): void {
     const custTypeId = this.authService.registration?.custTypeId;
 
     if (custTypeId === 1) {
       this.router.navigate(['/staffpayment']);
-    } else if(custTypeId === 2){
+    } else if (custTypeId === 2) {
       this.router.navigate(['/outsourcedpayment']);
     }
     else {
-      this.router.navigate(['/payment']);
+      this.router.navigate(['/guestpayment']);
     }
   }
 
 
-    ngOnInit() {
+  ngOnInit() {
     this.isLoggedIn$ = this.authService.isLoggedIn;
     this.isLoggedIn$.subscribe((rslt: any) => {
-    if(this.isLoggedIn$!==undefined)
-    {
-    this.registration= this.authService.registration;//JSON.parse(localStorage.getItem('user')|| '[]');
-    if(this.registration!=undefined && this.registration.firstName!=undefined)
-    {
-     this.loggedinUser='Welcome: '+this.registration?.firstName+' '+this.registration?.lastName;
+      if (this.isLoggedIn$ !== undefined) {
+        this.registration = this.authService.registration;//JSON.parse(localStorage.getItem('user')|| '[]');
+        if (this.registration != undefined && this.registration.firstName != undefined) {
+          this.loggedinUser = 'Welcome: ' + this.registration?.firstName + ' ' + this.registration?.lastName;
+        }
+        else {
+          this.loggedinUser = '';
+        }
+      }
     }
-    else{
-      this.loggedinUser='';
-    }
-  }
-}
 
- );
-   
- 
-  
-  
- }
+    );
+
+
+
+
+  }
   onLogout() {
     this.authService.logout();
     localStorage.removeItem('user');
-    localStorage.clear(); // Clear local storage
-   this.loggedinUser='';
-   this.isLoggedIn$=this.authService.isLoggedIn;
+    this.loggedinUser = '';
+    this.isLoggedIn$ = this.authService.isLoggedIn;
 
-   }
+  }
 
-   ngAfterViewInit() {
-   this.observer
-    .observe(['(max-width: 800px)'])
-     .pipe(delay(1), untilDestroyed(this))
-     .subscribe((res) => {
-       if (this.sidenav) {
-        if (res.matches) {
-          this.sidenav.mode = 'over';
-          this.sidenav.close();
-        } else {
-         this.sidenav.mode = 'side';
-         this.sidenav.open();
-       }
-      }
+  ngAfterViewInit() {
+    this.observer
+      .observe(['(max-width: 800px)'])
+      .pipe(delay(1), untilDestroyed(this))
+      .subscribe((res) => {
+        if (this.sidenav) {
+          if (res.matches) {
+            this.sidenav.mode = 'over';
+            this.sidenav.close();
+          } else {
+            this.sidenav.mode = 'side';
+            this.sidenav.open();
+          }
+        }
 
-    });
+      });
 
-   this.router.events
-     .pipe(
-       untilDestroyed(this),
-      filter((e) => e instanceof NavigationEnd)
-    )
-     .subscribe(() => {
-       if (this.sidenav?.mode === 'over') {
-         this.sidenav?.close();
-       }
-     });
-   }
+    this.router.events
+      .pipe(
+        untilDestroyed(this),
+        filter((e) => e instanceof NavigationEnd)
+      )
+      .subscribe(() => {
+        if (this.sidenav?.mode === 'over') {
+          this.sidenav?.close();
+        }
+      });
+  }
 }
 
 

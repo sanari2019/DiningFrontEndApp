@@ -22,7 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RegistrationEditComponent } from './registration-edit/registration-edit.component';
 import { RegistrationDetailComponent } from './registration-detail/registration-detail.component';
 import { RegistrationListComponent } from './registration-list/registration-list.component';
-import {EncrDecrService} from '../app/shared/EncrDecrService.service';
+import { EncrDecrService } from '../app/shared/EncrDecrService.service';
 import { AuthService } from './auth/auth.service';
 import { AppMaterialModule } from './app-material/app-material.module';
 import { AuthGuard } from './auth/auth.guard';
@@ -44,13 +44,21 @@ import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-in
 import { WelcomeComponent } from './welcome/welcome.component';
 //import { ReactiveFormEmailValidationComponent } from "./components/reactive-form-email-validation/reactive-form-email-validation.component";
 import { CarouselModule } from 'ngx-bootstrap/carousel';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UsersPaymentInfoDialogComponent } from './users-payment-info-dialog/users-payment-info-dialog.component';
+import { MenuDialogComponent } from './menu-dialog/menu-dialog.component';
+import { DialogContentComponent } from './dialog-content/dialog-content.component';
+import { RegistrationDialogComponent } from './registration-dialog/registration-dialog.component';
+import { MealNameDialogComponent } from './meal-name-dialog/meal-name-dialog.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatListModule } from  '@angular/material/list';
+
 
 
 
 @NgModule({
-  declarations: [AppComponent,AppMenuComponent, HomeComponent, ForgotPasswordComponent,ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent],
+  declarations: [AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent],
   imports: [
     Angular4PaystackModule.forRoot('pk_test_b8671f2cd36f4a71cd4564c7f0de6498c803ac25'),
     BrowserModule,
@@ -58,7 +66,9 @@ import { UsersPaymentInfoDialogComponent } from './users-payment-info-dialog/use
     BrowserAnimationsModule,
     MatToolbarModule,
     MatSidenavModule,
+    MatSnackBarModule,
     MatButtonModule,
+    MatTableModule,
     MatIconModule,
     MatDividerModule,
     ReactiveFormsModule,
@@ -67,13 +77,13 @@ import { UsersPaymentInfoDialogComponent } from './users-payment-info-dialog/use
     AppMaterialModule,
     MatPaginatorModule,
     MatTabsModule, // Add MatTabsModule to the imports
-    MatButtonModule, 
+    MatButtonModule,
     MatDialogModule,
     CommonModule,
     CarouselModule.forRoot(),
 
   ],
-  providers: [EncrDecrService,AuthService,AuthGuard],
+  providers: [EncrDecrService, AuthService, AuthGuard],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

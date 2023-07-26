@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  urlAddress: 'http://www.accountowner.com'
+  urlAddress: 'http://10.20.20.104:2020'
 };

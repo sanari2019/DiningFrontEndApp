@@ -3,6 +3,7 @@ import { Voucher } from './voucher.model';
 import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +11,12 @@ import { catchError, tap, map } from 'rxjs/operators';
 
 export class VoucherService {
 
-  private voucherURL = "https://localhost:7146/voucher";
+  private voucherURL = `${this.envUrl.urlAddress}/voucher`;
   // private userURL1 = "http://localhost:5057/";
   private vouch = Voucher;
   //private handleError="";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getVouchers(): Observable<Voucher[]> {
     return this.http.get<Voucher[]>(this.voucherURL)
@@ -62,7 +63,7 @@ export class VoucherService {
   deleteVoucher(vouch: Voucher): Observable<{}> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.voucherURL}/deletevoucher`;
-    return this.http.post<Voucher>(url,vouch)
+    return this.http.post<Voucher>(url, vouch)
       .pipe(
         tap(data => console.log('deleteVoucher: ' + vouch.description)),
         catchError(this.handleError)
@@ -104,7 +105,7 @@ export class VoucherService {
       description: "",
       amount: 0,
       custtypeid: 0,
-      custname:""
+      custname: ""
     };
   }
 

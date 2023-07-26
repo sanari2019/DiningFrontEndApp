@@ -9,7 +9,7 @@ import { Registration } from '../registration/registration.model';
   providedIn: 'root'
 })
 export class UserService {
-  private userURL = "https://localhost:7146/user";
+  private userURL = `${this.envUrl.urlAddress}/user`;
 
   constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
@@ -24,7 +24,7 @@ export class UserService {
 
   updatePassword(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const url = `${this.userURL}/${registration.id}`;
+    const url = `${this.envUrl.urlAddress}/${registration.id}`;
     return this.http.put<Registration>(url, registration, { headers })
       .pipe(
         tap(() => console.log('updatePassword: ' + registration.id)),

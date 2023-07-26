@@ -3,6 +3,7 @@ import { CustomerType } from './customertype.model';
 import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +11,12 @@ import { catchError, tap, map } from 'rxjs/operators';
 
 export class CustomerTypeService {
 
-  private URL = "https://localhost:7146/CustomerType";
+  private URL = `${this.envUrl.urlAddress}/CustomerType`;
   // private userURL1 = "http://localhost:5057/";
   private customertype = CustomerType;
   //private handleError="";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getCustomerTypes(): Observable<CustomerType[]> {
     return this.http.get<CustomerType[]>(this.URL)

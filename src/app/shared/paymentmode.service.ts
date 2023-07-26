@@ -3,6 +3,8 @@ import { PaymentMode } from './PaymentMode.Model';
 import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +12,11 @@ import { catchError, tap, map } from 'rxjs/operators';
 
 export class PaymentModeService {
 
-  private URL = "https://localhost:7146/PaymentMode";
+  private URL = `${this.envUrl.urlAddress}/paymentmode`;
   private paymentmode = PaymentMode;
   //private handleError="";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getPaymentModes(): Observable<PaymentMode[]> {
     return this.http.get<PaymentMode[]>(this.URL)

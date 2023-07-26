@@ -1,6 +1,7 @@
 mat-toolbar {
   background: #004a9f;
   color: white;
+
 }
 
 mat-sidenav {
@@ -14,8 +15,23 @@ mat-sidenav {
   text-align: center;
 }
 
+.example-container {
+  width: 400px;
+  height: 200px;
+  margin: 12px;
+  border: 1px solid #555;
+}
+
+mat-drawer-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+
 .content {
-  height: calc(100vh - 130px);
+  height: 94%;
   border-radius: 10px;
   margin: 16px;
   margin-left: 32px;
@@ -26,8 +42,10 @@ mat-sidenav {
 }
 
 mat-sidenav-container {
-  height: calc(100vh - 65px);
+  height: 93%;
 }
+
+
 
 .menu-button {
   width: 100%;
@@ -65,11 +83,38 @@ mat-divider {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-#login{
-    width: 100px;
-    margin-left: auto;
-    // margin-right: 50px;
+#login {
+  // width: 100px;
+  margin-left: auto;
+  // margin-right: 50px;
 }
+
+.mat-toolbar.equal-boxes {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mat-toolbar.equal-boxes>*:not(:first-child):not(:last-child) {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
 // #login > button{
 //   float: left;
 // }
+.footer {
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-content {
+  font-size: 14px;
+  color: #666;
+}
