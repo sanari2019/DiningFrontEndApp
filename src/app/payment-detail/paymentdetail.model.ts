@@ -15,6 +15,7 @@ export class PaymentDetail {
   unit: number;
   selected: boolean;
   totalAmount: number;
+  PaymentType: number;
 
 
   constructor() {
@@ -33,6 +34,7 @@ export class PaymentDetail {
     this.paymentmodeid = 0;
     this.unit = 0;
     this.selected = false;
-    this.totalAmount=0;
+    this.totalAmount = 0;
+    this.PaymentType = 0;
   }
 }

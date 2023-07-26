@@ -3,6 +3,7 @@ import { Menu } from './menu.model';
 import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 
 
 @Injectable({
@@ -11,12 +12,12 @@ import { catchError, tap, map } from 'rxjs/operators';
 
 export class MenuService {
 
-  private menuURL = "https://localhost:7146/Menu";
+  private menuURL = `${this.envUrl.urlAddress}/Menu`;
   // private userURL1 = "http://localhost:5057/";
   private menu = Menu;
   //private handleError="";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getMenus(): Observable<Menu[]> {
     return this.http.get<Menu[]>(this.menuURL)
@@ -60,7 +61,8 @@ export class MenuService {
     return {
       id: 0,
       name: "",
-      amount:0,
+      amount: 0,
+      selected: false
     };
   }
 

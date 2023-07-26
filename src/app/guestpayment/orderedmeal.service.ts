@@ -3,6 +3,9 @@ import { OrderedMeal } from './orderedmeal.model';
 import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
+import { Menu } from './menu.model';
+import { Payment } from '../staffpayment/payment.model';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +13,12 @@ import { catchError, tap, map } from 'rxjs/operators';
 
 export class OrderedMealService {
 
-  private orderedmealURL = "https://localhost:7146/orderedmeal";
+  private orderedmealURL = `${this.envUrl.urlAddress}/orderedmeal`;
   private ordMeal = OrderedMeal;
+
   //private handleError="";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getOrderedMeals(): Observable<OrderedMeal[]> {
     return this.http.get<OrderedMeal[]>(this.orderedmealURL)
@@ -23,6 +27,15 @@ export class OrderedMealService {
     //   catchError(this.handleError)
     // );
   }
+  getOrderedMealsByCust(userId: number): Observable<OrderedMeal[]> {
+    const url = `${this.orderedmealURL}/getordmealsbycust`;
+    return this.http.post<OrderedMeal[]>(url, { id: userId })
+      .pipe(
+        tap(data => console.log('getOrderedMealsByCust: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+
 
   getOrderedMealdata(data: OrderedMeal[]) {
     console.log(JSON.stringify(data))
@@ -39,6 +52,15 @@ export class OrderedMealService {
         catchError(this.handleError)
       )
   }
+  getOrderedMealsByPaymentMainId(payment: Payment): Observable<OrderedMeal[]> {
+    const url = `${this.orderedmealURL}/getordmealsbypymtid`;
+    return this.http.post<OrderedMeal[]>(url, payment)
+      .pipe(
+        tap(data => console.log('getOrderedMealsByPaymentMainId: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+
 
   // getUserbyusername(username: string): Observable<OrderedMeal> {
 
@@ -63,8 +85,8 @@ export class OrderedMealService {
 
   deleteOrder(ordMeal: OrderedMeal): Observable<{}> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const url = `${this.orderedmealURL}/deleteuser`;
-    return this.http.post<OrderedMeal>(url,ordMeal)
+    const url = `${this.orderedmealURL}/deleteorderedmeal`;
+    return this.http.post<OrderedMeal>(url, ordMeal)
       .pipe(
         tap(data => console.log('deleteOrder: ' + ordMeal.id)),
         catchError(this.handleError)
@@ -103,11 +125,15 @@ export class OrderedMealService {
   private initializeOrderedMeal(): OrderedMeal {
     return {
       id: 0,
-      guest:'',
+      guest: '',
       mealid: 0,
       enteredBy: '',
       amount: 0,
-      dateEntered: new Date
+      dateEntered: new Date,
+      // paymentTypeId: 0,
+      menu: new Menu(),
+      Submitted: false,
+      paymentMainId: 0,
     };
   }
 

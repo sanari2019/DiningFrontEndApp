@@ -15,6 +15,18 @@ import { ServedService } from './served.service';
 import { Registration } from '../registration/registration.model';
 import { RegistrationService } from '../registration/registration.service';
 // import { DecimalPipe } from '@angular/common';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { DialogContentComponent } from '../dialog-content/dialog-content.component';
+import { MealNameDialogComponent } from '../meal-name-dialog/meal-name-dialog.component';
+import { OrderedMeal } from '../guestpayment/orderedmeal.model';
+import { Menu } from '../guestpayment/menu.model';
+import { MenuService } from '../guestpayment/menu.service';
+// import { OrderedMeal } from '../guestpayment/orderedmeal.model';
+import { OrderedMealService } from '../guestpayment/orderedmeal.service';
+import { GuestpaymentComponent } from '../guestpayment/guestpayment.component';
+// import { MatDialog } from '@angular/material/dialog';
+
+
 
 
 
@@ -73,7 +85,7 @@ import { RegistrationService } from '../registration/registration.service';
 //   }
 
 //   addItem(pymt: Payment): void {
-    
+
 //     this.serv.ServedBy = 3;
 //     this.serv.dateserved = new Date();
 //     this.serv.paymentMain = pymt;
@@ -115,9 +127,9 @@ import { RegistrationService } from '../registration/registration.service';
   styleUrls: ['./users-payment-info.component.scss']
 })
 export class UsersPaymentInfoComponent {
-  
 
-    
+
+
   pageTitle = 'Vouchers';
   errorMessage = '';
   _listFilter = '';
@@ -131,40 +143,45 @@ export class UsersPaymentInfoComponent {
 
   // filteredPaymentDetails: PaymentDetail[] = [];
   // paymentDetails: PaymentByCust[] = [];
-  pymtMain: Payment[]=[];
+  pymtMain: Payment[] = [];
   // pymt:Payment;
-  serv: Served=new Served();
+  serv: Served = new Served();
   cartItems: Served[] = [];
-  pymtUser: Registration=new Registration();
+  pymtUser: Registration = new Registration();
   // paramsvalue: number = 0;
   userFullName: string = '';
 
-  constructor(private servedService: ServedService,private route: ActivatedRoute,private paymentdetailService: PaymentDetailService,private pymtservice: PaymentService, private router: Router,private registrationservice: RegistrationService) { }
+  constructor(private orderedMealService: OrderedMealService, private dialog: MatDialog, private servedService: ServedService, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private pymtservice: PaymentService, private router: Router, private registrationservice: RegistrationService) {
+
+  }
+  // Fetch the orderedMeals data from the server
 
   // performFilter(filterBy: string): PaymentDetail[] {
   //   filterBy = filterBy.toLocaleLowerCase();
   //   return this.paymentDetails.filter((pymtdetail: PaymentDetail) =>
   //   pymtdetail.custCode.toLocaleLowerCase().indexOf(filterBy) !== -1);
   // }
+  // Check if the voucher type is 'alacart' or payment type is 2
+
 
   ngOnInit(): void {
     // this.loadCartItems();
     // this.paymentdetailService.
     this.route.queryParams.subscribe((params) => {
       var paramvalue = params['pymtMain'];
-      
-      if (paramvalue) {    
+
+      if (paramvalue) {
         this.getUser(paramvalue);
-          this.pymtMain = JSON.parse(paramvalue);
-          
-        }
-        this.userFullName = params['userFullName'] || '';
+        this.pymtMain = JSON.parse(paramvalue);
+
+      }
+      this.userFullName = params['userFullName'] || '';
       // this.registrationservice.getUser(paramvalue)
       //     .subscribe((rslt:Registration)=>{
       //       this.pymtUser=rslt;
       //     }
       //     )
-        
+
       // if (this.pymtUser) {
       //   this.paymentdetailService.getPaidPaymentsByCust(this.pymtUser).subscribe(
       //     (pytMain: Payment[]) => {
@@ -177,7 +194,8 @@ export class UsersPaymentInfoComponent {
     this.getPaymentsByCustomer(this.pymtUser);
     this.loadCartItems();
 
-  
+
+
   }
   getUser(propertyValue: number): void {
     this.registrationservice.getUser(propertyValue).subscribe((user: Registration) => {
@@ -193,16 +211,16 @@ export class UsersPaymentInfoComponent {
       this.pymtUser = customer;
     });
   }
-  
+
   updatepayment(pymtdetail: PaymentDetail): void {
     if (pymtdetail.id === 0) {
       // Don't delete, it was never saved.
       this.onSaveComplete();
     } else {
       if (confirm(`You are about serving Customer: ${pymtdetail.custCode} meal`)) {
-        pymtdetail.served=true;
-        pymtdetail.servedby="solaomotoso";
-        pymtdetail.dateserved=new Date();
+        pymtdetail.served = true;
+        pymtdetail.servedby = "solaomotoso";
+        pymtdetail.dateserved = new Date();
         this.paymentdetailService.updatePaymentDetails(pymtdetail)
           .subscribe({
             next: () => this.onSaveComplete(),
@@ -226,16 +244,16 @@ export class UsersPaymentInfoComponent {
   // }
 
   addItem(pymtmm: Payment): void {
-    
+
     this.serv.dateserved = new Date();
-    this.serv.paymentMainid=pymtmm.id;
-    this.serv.paymentMain=pymtmm;
+    this.serv.paymentMainid = pymtmm.id;
+    this.serv.paymentMain = pymtmm;
     this.pymtservice.Serve(this.serv)
-            .subscribe({
-              next: () => this.onSaveComplete(),
-              error: err => this.errorMessage = err
-            });
-    
+      .subscribe({
+        next: () => this.onSaveComplete(),
+        error: err => this.errorMessage = err
+      });
+
     // this.servedService.addServed(this.serv).subscribe({
     //       error: (err) => {
     //         this.errorMessage = err;
@@ -244,7 +262,7 @@ export class UsersPaymentInfoComponent {
     this.cartItems.push(this.serv);
     this.loadCartItems(); // Refresh cart items after adding
   }
-  
+
   removeItem(item: Served): void {
     this.ngOnInit();
     this.servedService.deleteServed(item).subscribe({
@@ -263,12 +281,12 @@ export class UsersPaymentInfoComponent {
     if (value === null) {
       return '';
     }
-    
+
     const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return formatter.format(value);
   }
-  
-  
+
+
 
 
   // serveItems(): void {
@@ -281,6 +299,26 @@ export class UsersPaymentInfoComponent {
   //   });
   // }
 
+  openPaymentDetailsDialog(pymtmm: Payment): void {
+    // Open the dialog and pass the fetched orderedMeals data to it
+    const dialogRef = this.dialog.open(MealNameDialogComponent, {
+      data: {
+
+        paymentMain: pymtmm,
+        paymentMainId: pymtmm.id,
+        // queryParams: { paymentMain: pymtmm, paymentMainId: pymtmm.id }
+      },
+    });
+
+    // Handle any actions after the dialog is closed (if needed)
+    dialogRef.afterClosed().subscribe(result => {
+      // Handle dialog close event if needed
+      console.log(`Dialog result: ${result}`);
+    });
+  }
+
+
+
 
   loadCartItems(): void {
     this.route.queryParams.subscribe((params) => {
@@ -292,7 +330,7 @@ export class UsersPaymentInfoComponent {
       }
     });
   }
-  
+
   getCartItemsForUser(user: Registration): void {
     this.servedService.getServedByCustomer(user).subscribe({
       next: (items) => {
@@ -304,16 +342,16 @@ export class UsersPaymentInfoComponent {
     });
 
   }
-  
-  
-  
-  
+
+
+
+
 
   serveItems(): void {
     for (const item of this.cartItems) {
       item.isServed = true; // Set isServed to true
       // item.ServedBy = 
-  
+
       // Call the updateServed method in your service to update the served item
       this.servedService.updateServed(item.id, item).subscribe(
         (updatedServed: Served) => {
@@ -329,9 +367,9 @@ export class UsersPaymentInfoComponent {
     this.loadCartItems();
     this.ngOnInit();
   }
-  
 
-  
+
+
   // navigateToDetails(pymtdetails: any) {
   //   localStorage.setItem('pymtdetails', JSON.stringify(pymtdetails));
   //   this.router.navigate(['/users-payment-info']);
@@ -340,7 +378,7 @@ export class UsersPaymentInfoComponent {
   onSaveComplete(): void {
     // this.registrationForm.reset();
     //this.router.navigate(['/voucher']);
-  this.ngOnInit();
+    this.ngOnInit();
   };
 }
 

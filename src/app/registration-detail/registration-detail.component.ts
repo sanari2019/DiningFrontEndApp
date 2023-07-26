@@ -16,8 +16,8 @@ export class RegistrationDetailComponent implements OnInit {
   registration: Registration | undefined;
 
   constructor(private route: ActivatedRoute,
-              private router: Router,
-              private registrationService: RegistrationService) {
+    private router: Router,
+    private registrationService: RegistrationService) {
   }
 
   ngOnInit(): void {
@@ -38,6 +38,8 @@ export class RegistrationDetailComponent implements OnInit {
   onBack(): void {
     this.router.navigate(['/Registration']);
   }
+
+
 
 
 }

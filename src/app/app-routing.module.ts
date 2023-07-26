@@ -24,9 +24,10 @@ import { WelcomeComponent } from './welcome/welcome.component';
 
 
 
+
 const routes: Routes = [
   {
-    path: '', component:PaymentComponent, canActivate:[AuthGuard]
+    path: '', component: PaymentComponent, canActivate: [AuthGuard]
     // pathMatch: 'full',
     // redirectTo: 'payment',
   },
@@ -37,9 +38,9 @@ const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   {
     path: 'registrations',
-    component: RegistrationListComponent, canActivate:[AuthGuard]
+    component: RegistrationListComponent, canActivate: [AuthGuard]
   },
-  { path: 'home', component: HomeComponent }, 
+  { path: 'home', component: HomeComponent },
   { path: 'users-payment-info', component: UsersPaymentInfoComponent },
   {
     path: 'payment',
@@ -99,11 +100,11 @@ const routes: Routes = [
     path: '**',
     component: NotFoundComponent,
   },
-  
+
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

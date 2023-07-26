@@ -1,0 +1,180 @@
+
+<div class="card">
+    <div class="card-body">
+      <div class="container">
+        <div class="row">
+          <div class="offset-md-2 col-md-8">
+            <div class="mat-card">
+                <div mat-dialog-content>
+                <ng-container *ngIf="registrationForm">
+                    <form novalidate (ngSubmit)="save()" [formGroup]="registrationForm" class="mat-form">
+                    <h3 class="text-center" mat-dialog-title  style="background-color: #004a9f; color: white; padding: 8px 16px;  margin: 0;">{{ pageTitle }}</h3>
+                    <!-- Customer Type and info-->
+                    <div class="form-group">
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <select id="custTypeId" formControlName="custTypeId" required>
+                                <option *ngFor="let customerType of customerTypes" value={{customerType.id}}>{{ customerType.name }}</option>
+                            </select>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Customer Type</label>
+                            <div *ngIf= " submitted && registrationForm.get('custTypeId')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('custTypeId')?.errors">
+                                Select a valid Customer Type
+                                </div>
+                                 <!-- New div for "User Exist" message -->
+                                
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <input type="text" formControlName="custId" id="custId" required (input)="onCustIdInput()">
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Employee Number</label>
+                            <div *ngIf= " submitted" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('firstName')?.errors">
+                                Enter a valid Employee Number. Numbers only
+                                </div>
+                                 <!-- New div for "User Exist" message -->
+                                 <div *ngIf="registrationForm.get('custId')?.errors?.pattern" class="alert alert-danger">
+                                    Enter a valid Employee Number. Numbers only
+                                  </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <input id="firstNameId" type="text"  formControlName="firstName" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>First name</label>
+                            <div *ngIf= " submitted && registrationForm.get('firstName')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('firstName')?.errors">
+                                Enter your First name
+                                </div>
+                                 <!-- New div for "User Exist" message -->
+                                
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <input id="lastNameId" type="text" formControlName="lastName" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Last Name</label>
+                            <div *ngIf= " submitted && registrationForm.get('lastName')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('lastName')?.errors">
+                                Enter your last name
+                                </div>
+                                 <!-- New div for "User Exist" message -->
+                                
+                            </div>
+                        </div>
+                        </div>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <input id="userNameId" type="email" formControlName="userName" inputmode="email"  (input)="registrationForm.controls.userName.setValue(registrationForm.controls.userName.value.toLowerCase())" required [class.is-invalid]="registrationForm.get('userName')?.invalid && registrationForm.get('userName')?.touched"/>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Email Address</label>
+                            <div *ngIf= " submitted && registrationForm.get('userName')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('userName')?.errors">
+                                Incorrect Email address
+                                </div>
+                                 <!-- New div for "User Exist" message -->
+                                
+                            </div>
+                            <div *ngIf="userExistsError" class="alert alert-danger">
+                                User exists. Please choose a different email address.
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-field-box">
+                              <input type="text" formControlName="phoneNumber" required>
+                              <span class="highlight"></span>
+                              <span class="bar"></span>
+                              <label>Phone Number</label>
+                              <div *ngIf=" submitted && registrationForm.get('phoneNumber')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('phoneNumber')?.errors">
+                                Invalid phone number format. Only numbers, dashes, parentheses, and spaces are allowed.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <input id="passwordId" type="password" formControlName="password" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Password</label>
+                            <div *ngIf=" submitted && registrationForm.get('password')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('password')?.errors">
+                                    Password is required
+                                </div>
+                                <div *ngIf="registrationForm.get('password')?.errors?.invalidPassword">
+                                    Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character.
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-field-box">      
+                            <input id="retypepasswordId" type="password" formControlName="confirmPassword" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Confirm Password</label>
+                            <div *ngIf=" submitted && registrationForm.get('confirmPassword')?.errors" class="alert alert-danger">
+                                <div *ngIf="registrationForm.get('confirmPassword')?.errors">
+                                Confirm Password is required
+                                </div>
+                                <div *ngIf="registrationForm.get('confirmPassword')?.errors">
+                                Passsword and Confirm Password didn't match.
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12 text-center">
+                        <button type="submit" class="btn mat-btn">Submit</button>
+                        </div>
+                    </div>  
+    
+                    </form>
+                </ng-container>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions>
+        <div class="button-container">
+            <button mat-button (click)="closeDialog()">Close & Login</button>
+        </div>
+        </div>
+    </div>
+  </div>
+  
+  

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Served } from './served.model';
 import { environment } from '../../environments/environment';
 import { Registration } from '../registration/registration.model';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ import { Registration } from '../registration/registration.model';
 export class ServedService {
   private apiUrl = `${environment.urlAddress}/served`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getServed(): Observable<Served[]> {
     return this.http.get<Served[]>(this.apiUrl);
@@ -22,12 +23,12 @@ export class ServedService {
   }
   getServedByCustomer(user: Registration): Observable<Served[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post<Served[]>(`${this.apiUrl}/getServedbyCustomer`, JSON.stringify(user),{ headers });
+    return this.http.post<Served[]>(`${this.apiUrl}/getServedbyCustomer`, JSON.stringify(user), { headers });
   }
-  
 
 
-  
+
+
 
   updateServed(id: number, served: Served): Observable<Served> {
     return this.http.put<Served>(`${this.apiUrl}/${id}`, served);

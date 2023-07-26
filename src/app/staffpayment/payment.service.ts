@@ -19,16 +19,20 @@ export class PaymentService {
   private pymt = Payment;
   //private handleError="";
 
-  constructor(private http: HttpClient,private envUrl: EnvironmentUrlService) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
 
   getPayment(): Observable<Payment[]> {
-    return this.http.get<Payment[]>(this.envUrl.urlAddress+'/paymentmain')
+    return this.http.get<Payment[]>(this.envUrl.urlAddress + '/paymentmain')
     // .pipe(
     //   tap(data => this.getUserdata(data)),
     //   catchError(this.handleError)
     // );
   }
-  
+
+  getPaymentDetailsByUserId(userId: number): Observable<PaymentDetail[]> {
+    const url = `${this.envUrl.urlAddress}/PaymentDetails/${userId}`;
+    return this.http.get<PaymentDetail[]>(url)
+  }
 
   getPymtdata(data: Payment[]) {
     console.log(JSON.stringify(data))
@@ -38,7 +42,7 @@ export class PaymentService {
     if (id === 0) {
       return of(this.initializePayment());
     }
-    const url = `${this.envUrl.urlAddress+'/paymentmain'}/${id}`;
+    const url = `${this.envUrl.urlAddress + '/paymentmain'}/${id}`;
     return this.http.get<Payment>(url)
       .pipe(
         tap(data => console.log('getPayment: ' + JSON.stringify(data))),
@@ -50,7 +54,7 @@ export class PaymentService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     pymt.id = 0;
     //this.pymtURL=this.envUrl.urlAddress+'/PaymentMain';
-    return this.http.post<Payment>(this.envUrl.urlAddress+'/PaymentMain', pymt, { headers })
+    return this.http.post<Payment>(this.envUrl.urlAddress + '/PaymentMain', pymt, { headers })
       .pipe(
         tap(data => console.log('createPayment: ' + JSON.stringify(data))),
         catchError(this.handleError)
@@ -59,7 +63,7 @@ export class PaymentService {
   Serve(serv: Served): Observable<Served> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     serv.id = 0;
-    return this.http.post<Served>(this.envUrl.urlAddress+'/Served', serv, { headers })
+    return this.http.post<Served>(this.envUrl.urlAddress + '/Served', serv, { headers })
       .pipe(
         tap(data => console.log('Served: ' + JSON.stringify(data))),
         catchError(this.handleError)
@@ -77,8 +81,8 @@ export class PaymentService {
 
   deletePayment(pymt: Payment): Observable<{}> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const url = `${this.envUrl.urlAddress+'/paymentmain'}/deleteuser`;
-    return this.http.post<Payment>(url,pymt)
+    const url = `${this.envUrl.urlAddress + '/paymentmain'}/deleteuser`;
+    return this.http.post<Payment>(url, pymt)
       .pipe(
         tap(data => console.log('deletePayment: ' + pymt.custCode)),
         catchError(this.handleError)
@@ -87,7 +91,7 @@ export class PaymentService {
 
   updatePayment(pymt: Payment): Observable<Payment> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const url = `${this.envUrl.urlAddress+'/paymentmain'}/updatepayment`;
+    const url = `${this.envUrl.urlAddress + '/paymentmain'}/updatepayment`;
     return this.http.put<Payment>(url, pymt, { headers })
       .pipe(
         tap(() => console.log('updatePayment: ' + pymt)),
@@ -121,13 +125,15 @@ export class PaymentService {
       enteredBy: "",
       custCode: "",
       voucherId: 0,
-      unit:0,
-      amount:0,
-      paymentmodeid:0,
-      servedby:"",
+      unit: 0,
+      amount: 0,
+      paymentmodeid: 0,
+      servedby: "",
       opaymentid: 0,
       paid: false,
       timepaid: new Date(),
+      PaymentType: 0,
+      custtypeid: 0,
     };
   }
 

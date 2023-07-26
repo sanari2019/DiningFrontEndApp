@@ -1,0 +1,66 @@
+// Component styling
+.mat-dialog-container {
+    background-color: #f5f5f5;
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.mat-dialog-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.search-input {
+    margin-bottom: 16px;
+}
+
+table {
+    width: 100%;
+    margin-bottom: 16px;
+
+    th {
+        background-color: #2196f3;
+        color: white;
+        font-weight: bold;
+    }
+
+    td,
+    th {
+        padding: 8px;
+        text-align: left;
+    }
+
+    tr:nth-child(even) {
+        background-color: #e3f2fd;
+    }
+
+    tfoot tr {
+        font-weight: bold;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+
+    button {
+        margin-left: 8px;
+    }
+}
+
+/* Assuming you have a class for your dialog container */
+.mat-dialog-container {
+    /* Additional styles for the dialog container */
+    /* ... */
+
+    /* Style for the mat-dialog-title */
+    h2.mat-dialog-title {
+        background-color: blue;
+        color: white;
+        padding: 8px 16px;
+        margin: 0;
+    }
+}

@@ -1,62 +1,124 @@
 <div class="card">
   <div class="card-header">
-    {{pageTitle}}
+    {{ pageTitle }}
   </div>
   <div class="card-body">
-    <form novalidate
-    (ngSubmit)="saveOrderedMeal()"
-    [formGroup]="orderedMealForm">
-
+    <form novalidate (ngSubmit)="saveOrderedMeal()" [formGroup]="orderedMealForm">
       <div class="form-group row mb-2">
-        <label class="col-md-2 col-form-label"
-               for="firstNameId">Guest/Staff Name</label>
+        <label class="col-md-2 col-form-label" for="firstNameId">Guest/Staff Name</label>
         <div class="col-md-8">
-          <input class="form-control"
-                 id="guest"
-                 type="text"
-                 placeholder="Guest/Staff Name (required)"
-                 formControlName="guest" />
+          <input class="form-control" id="guest" type="text" placeholder="{{loggedInUser?.custId}}" formControlName="guest" value="{{loggedInUser?.custId}}" />
         </div>
       </div>
-      <div class="form-group row mb-2">
-        <label class="col-md-2 col-form-label"
-               for="voucherId">Select Meal</label>
+      <p>{{loggedInUser?.custId}}</p>
+      <div class="form-group row mb-2" hidden>
+        <label class="col-md-2 col-form-label" for="paymentTypeId">Payment Type</label>
+        <div class="col-md-8">
+          <input class="form-control" id="paymentTypeId" type="text" formControlName="paymentTypeId" [value]="2" readonly />
+        </div>
+      </div>
+      <div class="form-group row mb-2" hidden>
+        <label class="col-md-2 col-form-label" for="paymentTypeId">Customer Type</label>
+        <div class="col-md-8">
+          <input class="form-control" id="custTypeId" type="text" formControlName="custTypeId" [value]="3" readonly />
+        </div>
+      </div>
+   <!--   <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label" for="voucherId">Select Meal</label>
         <div class="col-md-8">
           <select (change)="onChange($event.target)" class="form-control" formControlName="mealid">
             <option value="0">--Select--</option>
-            <option *ngFor="let menu of menus"
-                    value={{menu.id}}>
-                {{menu.name}}
+            <option *ngFor="let menu of menus" [value]="menu.id">
+              {{ menu.name }}
             </option>
-        </select>
+          </select>
+        </div>
+      </div>-->
+      <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label" for="mealId">Choose Meal</label>
+        <div class="col-md-6">
+          <div class="input-group">
+            <input class="form-control" id="mealId" type="text" placeholder="Choose Meal" [readonly]="true" [value]="getSelectedMenuCount()" />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" (click)="openMenuDialog()">
+                <mat-icon>menu</mat-icon>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+      
       <div class="form-group row mb-2">
-        <label class="col-md-2 col-form-label"
-               for="firstNameId">Amount</label>
+        <label class="col-md-2 col-form-label" for="firstNameId">Amount</label>
         <div class="col-md-8">
-          <input class="form-control"
-                 id="amount"
-                 type="text"
-                 formControlName="amount" />
+          <input class="form-control" id="amount" type="text" formControlName="amount" />
         </div>
       </div>
       <div class="form-group row mb-2">
         <div class="offset-md-2 col-md-4">
-          <button class="btn btn-primary mr-3"
-                  type="submit"
-                  style="width:80px">
-                  Save
+          <button class="btn btn-primary mr-3" type="submit" style="width:80px">
+            Save
           </button>
-          <button class="btn btn-outline-secondary mr-3"
-          style="width:80px;"
-          type="button"
-          title="Cancel your edits"
-          [routerLink]="['/payment']">
-    Cancel
-  </button>
+          <button
+            class="btn btn-outline-secondary mr-3"
+            style="width:80px;"
+            type="button"
+            title="Cancel your edits"
+            [routerLink]="['/payment']"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </form>
   </div>
 </div>
+
+
+<!-- Existing code for the form -->
+
+<!-- Existing code -->
+
+ 
+<div class="card">
+  <div class="card-body">
+    <!-- Existing content of the staff component -->
+    <div class="card-header">
+      Ordered Meals
+    </div>
+    <div class="card-body">
+      <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+      <table class="table">
+        <thead>
+          <tr>
+            <!--<th>Date Entered</th>-->
+            <!--<th>Guest</th>-->
+            <th>Meal</th>
+            <!--<th>Entered By</th>-->
+            <th>Amount</th>
+            <!--<th>Payment Type</th>-->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let orderedMeal of orderedMeals">
+            <!--<td>{{ orderedMeal.dateEntered | date }}</td>-->
+            <!--<td>{{ orderedMeal.guest }}</td>-->
+            <td>{{ orderedMeal.menu.name }}</td>
+            <!--<td>{{ orderedMeal.enteredBy }}</td>-->
+            <td>{{ formatWithCommas(orderedMeal.amount) }}</td>
+            <!--<td>{{ orderedMeal.paymentTypeId }}</td> -->
+            <td>
+              <button class="btn btn-danger btn-sm" (click)="rmvItem(orderedMeal)">Remove</button> <!-- Remove button -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div class="text-right mt-3">
+      <button class="btn btn-primary mr-3" (click)="openDialog()">
+      Initialize Payment
+    </button>
+    </div>
+  </div>
+

@@ -1,0 +1,48 @@
+
+
+
+<h2 mat-dialog-title  style="background-color: #004a9f; color: white; padding: 8px 16px;  margin: 0;">Meals</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <!--<th>Date Entered</th>-->
+      <th>Meal</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let orderedMeal of this.orderedMeals">
+      <!--<td>{{ orderedMeal.dateEntered | date }}</td>-->
+      <td colspan="2">{{ orderedMeal.menu?.name }}</td>
+      <td colspan="2">{{ formatWithCommas(orderedMeal.amount) }}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2">Total Amount:</td>
+      <td>{{ formatWithCommas(calculateTotalAmount()) }}</td>
+    </tr>
+    <tr *ngIf="loggedInUser?.custTypeId !== 3">
+      <td colspan="2">Discount Amount (40%):</td>
+      <td>{{ formatWithCommas(calculateDiscountAmount()) }}</td>
+    </tr>
+    <tr *ngIf="loggedInUser?.custTypeId !== 3">
+        <td colspan="2">Pay:</td>
+        <strong><td>{{ formatWithCommas(calculateRemainingAmount()) }}</td></strong>
+    </tr>
+  </tfoot>
+</table>
+<div class="button-container">
+<button
+  angular4-paystack
+  [paystackOptions]="options"
+  (paymentInit)="paymentInit()"
+  (onClose)="paymentCancel()"
+  (callback)="paymentDone($event)"
+  class="btn btn-primary mr-3"
+>
+  Make Payment
+</button>
+  
+  <button mat-button (click)="closeDialog()">Close</button>
+</div>

@@ -19,15 +19,17 @@
                placeholder="Employee No (required)"
                formControlName="custCode" [value]="loggedInUser?.custId" readonly/>
                <span class="invalid-feedback">
-                <span *ngif="paymentForm.get('custCode').errors?.required">
+                <span *ngIf="paymentForm.get('custCode')?.errors?.required">
                   {{ loggedInUser.custId }}
                 </span>
-                <span *ngif="paymentForm.get('custCode').errors?.minlength">
+                <span *ngIf="paymentForm.get('custCode')?.errors?.minlength">
                   Staff Employee no must not be less than 3 characters
                 </span>
                </span>
       </div>
     </div>
+ 
+    
       <div class="form-group row mb-2">
         <label class="col-md-2 col-form-label"
                for="voucherId">Select Voucher</label>
@@ -80,12 +82,9 @@
     </form>
   </div>
 </div>
-
-
 <div class="card">
   <div class="card-body">
-    <!-- Existing content of the staff component -->
-
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
     <!-- Add the following line to display the cart component -->
     <div class="table-responsive">
       <table class="table mb-0"
@@ -109,6 +108,7 @@
             <th style="display: none">custtypeid</th>
             <th style="display: none">voucherid</th>
             <th style="display: none">paymentmodeid</th>
+            <!--<th>Payment Type</th>-->
             <th>Not needed?</th> <!-- Added column for Not needed? -->
             <!-- <th>Password</th> -->
           </tr>
@@ -129,6 +129,7 @@
             <td>{{ pymtdetails.unit }}</td>
             <td>{{ formatWithCommas(pymtdetails.amount) }}</td>
             <td>{{ formatWithCommas(pymtdetails.unit * pymtdetails.amount) }}</td> <!-- Calculate and display the Total Amount -->
+            <!--<td>{{ pymtdetails.paymentTypeId }}</td> -->
             <td>
               <button class="btn btn-danger btn-sm" (click)="removeItem(pymtdetails)">Remove</button> <!-- Remove button -->
             </td>
@@ -164,7 +165,7 @@
   </div>
 </div>
 </mat-tab >
-<mat-tab label="Alacart"> 
+<mat-tab label="Ala Carte"> 
   <div class="card">
     <div class="card-header">
       {{pageTitle}}
@@ -175,24 +176,31 @@
       [formGroup]="orderedMealForm">
   
         <div class="form-group row mb-2">
-          <label class="col-md-2 col-form-label"
-                 for="firstNameId">Staff Name</label>
+          <label class="col-md-2 col-form-label" for="firstNameId">Staff Name</label>
           <div class="col-md-8">
             <input class="form-control"
                    id="guest"
                    type="text"
                    placeholder="{{loggedInUser?.custId}}"
                    formControlName="guest" readonly/>
-                   <span *ngif="paymentForm.get('custCode').errors?.required">
+                   <span *ngIf="paymentForm.get('custCode')?.errors?.required">
                     {{ loggedInUser.custId }}
                   </span>
           </div>
         </div>
+          <div class="form-group row mb-2" >
+            <label class="col-md-2 col-form-label" for="paymentTypeId">Payment Type</label>
+            <div class="col-md-8">
+              <input class="form-control" id="paymentTypeId" type="text" formControlName="paymentTypeId" [value]="orderedMealForm.get('paymentTypeId')?.value" readonly />
+            </div>
+          </div>
+          
+      
         <div class="form-group row mb-2">
           <label class="col-md-2 col-form-label"
                  for="voucherId">Select Meal</label>
           <div class="col-md-8">
-            <select (change)="onChange($event.target)" class="form-control" formControlName="mealid">
+            <select (change)="onChange($event.target)" class="form-control" formControlName="mealid" id="mealid">
               <option value="0">--Select--</option>
               <option *ngFor="let menu of menus"
                       value={{menu.id}}>
@@ -236,80 +244,40 @@
   <div class="card">
     <div class="card-body">
       <!-- Existing content of the staff component -->
-  
-      <!-- Add the following line to display the cart component -->
-      <div class="table-responsive">
-        <table class="table mb-0"
-               *ngIf="paymentDetails && paymentDetails.length">
+      <div class="card-header">
+        Ordered Meals
+      </div>
+      <div class="card-body">
+        <table class="table">
           <thead>
             <tr>
-              <th style="display: none">id</th>
-              <th>
-                <label class="checkbox">
-                  <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" hidden/>
-                  <span class="checkmark"></span>
-                </label>
-              </th>
-              <!--<th>Customer Type</th>-->
-              <!--<th>Customer Code</th>-->
-              <th>Date Entered</th>
-              <th>VoucherType</th>
-              <th>Quantity</th>
+              <!--<th>Date Entered</th>-->
+              <!--<th>Guest</th>-->
+              <th>Meal</th>
+              <!--<th>Entered By</th>-->
               <th>Amount</th>
-              <th>Total Amount</th> <!-- Added column for Total Amount -->
-              <th style="display: none">custtypeid</th>
-              <th style="display: none">voucherid</th>
-              <th style="display: none">paymentmodeid</th>
-              <th>Not needed?</th> <!-- Added column for Not needed? -->
-              <!-- <th>Password</th> -->
+              <!--<th>Payment Type</th>-->
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let pymtdetails of paymentDetails">
-              <td style="display: none">{{ pymtdetails.id }}</td>
+            <tr *ngFor="let orderedMeal of orderedMeals">
+              <!--<td>{{ orderedMeal.dateEntered | date }}</td>-->
+              <!--<td>{{ orderedMeal.guest }}</td>-->
+              <td>{{ orderedMeal.menu.name }}</td>
+              <!--<td>{{ orderedMeal.enteredBy }}</td>-->
+              <td>{{ formatWithCommas(orderedMeal.amount) }}</td>
+              <!--<td>{{ orderedMeal.paymentTypeId }}</td> -->
               <td>
-                <label class="checkbox">
-                  <input type="checkbox" [(ngModel)]="pymtdetails.selected" (change)="updateLocalStorage(pymtdetails)" />
-                  <span class="checkmark"></span>
-                </label>
-              </td>
-              <!--<td>{{ pymtdetails.customerName }}</td>-->
-              <!--<td>{{ pymtdetails.custCode }}</td>-->
-              <td>{{ pymtdetails.dateEntered | date :'medium' }}</td>
-              <td>{{ pymtdetails.voucherDescription }}</td>
-              <td>{{ pymtdetails.unit }}</td>
-              <td>{{ formatWithCommas(pymtdetails.amount) }}</td>
-              <td>{{ formatWithCommas(pymtdetails.unit * pymtdetails.amount) }}</td> <!-- Calculate and display the Total Amount -->
-              <td>
-                <button class="btn btn-danger btn-sm" (click)="removeItem(pymtdetails)">Remove</button> <!-- Remove button -->
-              </td>
-              <td style="display: none">{{ pymtdetails.custtypeid }}</td>
-              <td style="display: none">{{ pymtdetails.voucherid }}</td>
-              <td style="display: none">{{ pymtdetails.paymentmodeid }}</td>
-              <!-- <td>{{ registration.password }}</td> -->
-              <td>
-              </td>
-              <td>
-               <!-- <button class="btn btn-outline-primary btn-sm"
-                (click)="updatepayment(pymtdetails)">
-                  Served
-                </button>-->
+                <button class="btn btn-danger btn-sm" (click)="rmvItem(orderedMeal)">Remove</button> <!-- Remove button -->
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-  
+    
       <div class="text-right mt-3">
-        <button
-        angular4-paystack
-        [paystackOptions]="options"
-        (paymentInit)="paymentInit()"
-        (onClose)="paymentCancel()"
-        (callback)="paymentDone($event)"
-        class="btn btn-primary mr-3"
-      >
-        Make Payment
+        <button class="btn btn-primary mr-3" (click)="openDialog()"  [disabled]="orderedMeals.length === 0">
+        Initialize Payment
       </button>
       </div>
     </div>
