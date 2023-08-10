@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  urlAddress: 'https://localhost:7146'
+  // urlAddress: "https://localhost:7146"
+  urlAddress: "https://cafeteriaapi.evercare.ng:2020"
 };
 
 /*

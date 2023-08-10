@@ -1,0 +1,217 @@
+<div class="container-fluid">
+	<div class="row">
+		
+		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 my-3" style="width:100%;">
+			<div class="card-list">
+				<div class="row">
+					<div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+						<div class="card blue">
+							<div class="title">total balance</div>
+							<i class="zmdi zmdi-upload"></i>
+							<div class="value">{{ totalAmount | currency: 'NGN' }}</div>
+							<div class="stat">Your total balance</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4" *ngFor="let voucherId of totalAmountByVoucherId | keyvalue">
+						<div [ngClass]="getCardClass(voucherId.key)">
+							<div class="title">{{ getVoucherDescription(voucherId.key) | async }}</div>
+							<i class="zmdi zmdi-upload"></i>
+							<div class="value">{{ voucherId.value | currency: 'NGN' }}</div>
+							<div class="stat"><b>{{ voucherStats[+voucherId.key].totalUnits }}</b>  units - {{ getVoucherDescription(voucherId.key) | async }}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="projects mb-4">
+				<div class="projects-inner">
+				<!--	<header class="projects-header">
+						<div class="title">Recent Transactions</div>
+					</header>
+					<table class="projects-table"> 
+						<thead>
+							<tr>
+								<th>Transaction type</th>
+								<th>Date</th>
+								<th>Leader + Team</th>
+								<th>Amount</th>
+								<th>Status</th>
+								<th class="text-right">Actions</th>
+							</tr>
+						</thead>
+						<tr>
+							<td>
+								<p>New Dashboard</p>
+								<p>Google</p>
+							</td>
+							<td>
+								<p>17th Oct, 15</p>
+								<p class="text-danger">Overdue</p>
+							</td>
+							<td class="member">
+								<figure><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/584938/people_8.png" /></figure>
+								<div class="member-info">
+									<p>Myrtle Erickson</p>
+									<p>UK Design Team</p>
+								</div>
+							</td>
+							<td>
+								<p>$4,670</p>
+								<p>Paid</p>
+							</td>
+							<td class="status">
+								<span class="status-text status-orange">In progress</span>
+							</td>
+							<td>
+								<form class="form" action="#" method="POST">
+								<select class="action-box">
+									<option>Actions</option>
+									<option>Start project</option>
+									<option>Send for QA</option>
+									<option>Send invoice</option>
+								</select>
+								</form>
+							</td>
+						</tr>
+						<tr class="danger-item">
+							<td>
+								<p>New Dashboard</p>
+								<p>Google</p>
+							</td>
+							<td>
+								<p>17th Oct, 15</p>
+								<p class="text-danger">Overdue</p>
+							</td>
+							<td class="member">
+								<figure><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/584938/people_8.png" /></figure>
+								<div class="member-info">
+									<p>Myrtle Erickson</p>
+									<p>UK Design Team</p>
+								</div>
+							</td>
+							<td>
+								<p>$4,670</p>
+								<p>Paid</p>
+							</td>
+							<td class="status">
+								<span class="status-text status-red">Blocked</span>
+							</td>
+							<td>
+								<form class="form" action="#" method="POST">
+									<select class="action-box">
+										<option>Actions</option>
+										<option>Start project</option>
+										<option>Send for QA</option>
+										<option>Send invoice</option>
+									</select>
+								</form>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>New Dashboard</p>
+								<p>Google</p>
+							</td>
+							<td>
+								<p>17th Oct, 15</p>
+								<p class="text-danger">Overdue</p>
+							</td>
+							<td class="member">
+								<figure><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/584938/people_8.png" /></figure>
+								<div class="member-info">
+									<p>Myrtle Erickson</p>
+									<p>UK Design Team</p>
+								</div>
+							</td>
+							<td>
+								<p>$4,670</p>
+								<p>Paid</p>
+							</td>
+							<td class="status">
+								<span class="status-text status-orange">In progress</span>
+							</td>
+							<td>
+								<form class="form" action="#" method="POST">
+									<select class="action-box">
+						  <option>Actions</option>
+						  <option>Start project</option>
+						  <option>Send for QA</option>
+						  <option>Send invoice</option>
+						</select>
+								</form>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>New Dashboard</p>
+								<p>Google</p>
+							</td>
+							<td>
+								<p>17th Oct, 15</p>
+								<p class="text-danger">Overdue</p>
+							</td>
+							<td class="member">
+								<figure><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/584938/people_8.png" /></figure>
+								<div class="member-info">
+									<p>Myrtle Erickson</p>
+									<p>UK Design Team</p>
+								</div>
+							</td>
+							<td>
+								<p>$4,670</p>
+								<p>Paid</p>
+							</td>
+							<td class="status">
+								<span class="status-text status-blue">Early stages</span>
+							</td>
+							<td>
+								<form class="form" action="#" method="POST">
+									<select class="action-box">
+						  <option>Actions</option>
+						  <option>Start project</option>
+						  <option>Send for QA</option>
+						  <option>Send invoice</option>
+						</select>
+								</form>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>New Dashboard</p>
+								<p>Google</p>
+							</td>
+							<td>
+								<p>17th Oct, 15</p>
+								<p class="text-danger">Overdue</p>
+							</td>
+							<td class="member">
+								<figure><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/584938/people_8.png" /></figure>
+								<div class="member-info">
+									<p>Myrtle Erickson</p>
+									<p>UK Design Team</p>
+								</div>
+							</td>
+							<td>
+								<p>$4,670</p>
+								<p>Paid</p>
+							</td>
+							<td class="status">
+								<span class="status-text status-orange">In progress</span>
+							</td>
+							<td>
+								<form class="form" action="#" method="POST">
+									<select class="action-box">
+						  <option>Actions</option>
+						  <option>Start project</option>
+						  <option>Send for QA</option>
+						  <option>Send invoice</option>
+						</select>
+								</form>
+							</td>
+						</tr>
+					</table> -->
+				</div>
+			</div>
+		</main>
+	</div>
+</div>
+

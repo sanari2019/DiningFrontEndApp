@@ -92,14 +92,27 @@ export class PaymentService {
   updatePayment(pymt: Payment): Observable<Payment> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.envUrl.urlAddress + '/paymentmain'}/updatepayment`;
-    return this.http.put<Payment>(url, pymt, { headers })
+    return this.http.post<Payment>(url, pymt, { headers })
       .pipe(
-        tap(() => console.log('updatePayment: ' + pymt)),
+        tap(data => console.log('updatePayment' + pymt.custCode)),
         // Return the product on an update
-        map(() => pymt),
+        // map(() => pymt),
         catchError(this.handleError)
       );
   }
+
+
+  // updateUser(registration: Registration): Observable<Registration> {
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //   const url = `${this.userURL}/${registration.id}`;
+  //   return this.http.put<Registration>(url, registration, { headers })
+  //     .pipe(
+  //       tap(() => console.log('updateUser: ' + registration.id)),
+  //       // Return the product on an update
+  //       map(() => registration),
+  //       catchError(this.handleError)
+  //     );
+  // }
 
   private handleError(err: { error: { message: any; }; status: any; body: { error: any; }; }): Observable<never> {
     // in a real world app, we may send the server to some remote logging infrastructure
@@ -134,6 +147,7 @@ export class PaymentService {
       timepaid: new Date(),
       PaymentType: 0,
       custtypeid: 0,
+      VoucherDescription: '',
     };
   }
 

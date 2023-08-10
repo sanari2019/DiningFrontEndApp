@@ -7,7 +7,7 @@ import { DialogContentComponent } from '../dialog-content/dialog-content.compone
 @Component({
   selector: 'app-users-payment-info-dialog',
   template: `
-    <h2 mat-dialog-title style="background-color: #004a9f; color: white; padding: 8px 16px;  margin: 0;">Users Payment Info</h2>
+    <h2 mat-dialog-title style="background-color: #004a9f; color: white; padding: 8px 16px;  margin: 0;">Customer Payment Details</h2>
     <div mat-dialog-content>
       <app-users-payment-info></app-users-payment-info>
     </div>

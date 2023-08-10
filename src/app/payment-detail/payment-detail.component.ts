@@ -38,7 +38,43 @@ export class PaymentDetailComponent implements OnInit {
   loggedInUser: Registration | undefined;
 
 
+
   constructor(private registrationService: RegistrationService, public dialog: MatDialog, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private router: Router) { }
+
+  // Pagination properties
+  pageSize = 10;
+  currentPage = 0;
+  pageSizeOptions: number[] = [5, 10, 20, 50];
+
+
+  // Calculate the total number of pages based on the pageSize and the paymentDetails length
+  get totalPages(): number {
+    return Math.ceil(this.filteredPaymentDetails.length / this.pageSize);
+  }
+
+  // Calculate the starting and ending index of the current page
+  get startIndex(): number {
+    return this.currentPage * this.pageSize;
+  }
+
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.filteredPaymentDetails.length);
+  }
+
+
+  // Function to handle page change event
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+  }
+
+
+  // Function to get the current page data
+  getCurrentPageData(): any[] {
+    return this.filteredPaymentDetails.slice(this.startIndex, this.endIndex);
+  }
+
+
 
 
   // navigateToDetails(paymentbycust: PaymentByCust): void {
@@ -66,6 +102,7 @@ export class PaymentDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // Handle dialog close event if needed
       console.log(`Dialog result: ${result}`);
+      this.onSaveComplete()
     });
   }
 

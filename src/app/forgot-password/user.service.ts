@@ -25,7 +25,7 @@ export class UserService {
   updatePassword(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.envUrl.urlAddress}/${registration.id}`;
-    return this.http.put<Registration>(url, registration, { headers })
+    return this.http.post<Registration>(url, registration, { headers })
       .pipe(
         tap(() => console.log('updatePassword: ' + registration.id)),
         catchError(this.handleError)

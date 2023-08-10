@@ -19,6 +19,9 @@ import { MenuDialogComponent } from '../menu-dialog/menu-dialog.component';
 import { DialogContentComponent } from '../dialog-content/dialog-content.component';
 import { PaymentDetailService } from '../payment-detail/paymentdetail.service';
 import { PaymentDetail } from '../payment-detail/paymentdetail.model';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+
 @Component({
   selector: 'app-guestpayment',
   templateUrl: './guestpayment.component.html',
@@ -48,11 +51,61 @@ export class GuestpaymentComponent implements OnInit {
   orderedMeals: OrderedMeal[] = []; // Add the orderedMeals property
   paymentDetails: PaymentDetail[] = [];
   ordmeal: OrderedMeal = new OrderedMeal();
+  isHandset: boolean = false; // Add a property to track handset breakpoint
 
 
-  constructor(private dialog: MatDialog, private ordmealfb: FormBuilder, private router: Router, private menuservice: MenuService, private ordmealservice: OrderedMealService, private paymentservice: PaymentService, private paymentdetailService: PaymentDetailService, private encdecservice: EncrDecrService) {
+  private observeHandsetBreakpoint(): void {
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .pipe(untilDestroyed(this))
+      .subscribe((state) => {
+        this.isHandset = state.matches;
+      });
+  }
+
+
+
+  constructor(private breakpointObserver: BreakpointObserver, private dialog: MatDialog, private ordmealfb: FormBuilder, private router: Router, private menuservice: MenuService, private ordmealservice: OrderedMealService, private paymentservice: PaymentService, private paymentdetailService: PaymentDetailService, private encdecservice: EncrDecrService) {
 
   }
+  // Pagination properties
+  pageSize = 3;
+  currentPage = 0;
+  pageSizeOptions: number[] = [5, 10, 20, 50];
+
+
+  // Calculate the total number of pages based on the pageSize and the paymentDetails length
+  get totalPages(): number {
+    return Math.ceil(this.orderedMeals.length / this.pageSize);
+  }
+
+
+  // Calculate the starting and ending index of the current page
+  get startIndex(): number {
+    return this.currentPage * this.pageSize;
+  }
+
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.orderedMeals.length);
+  }
+
+
+  // Function to handle page change event
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+  }
+
+
+  // Function to get the current page data
+  getCurrentPageData(): any[] {
+    return this.orderedMeals.slice(this.startIndex, this.endIndex);
+  }
+
+
+
+
+
+
   openMenuDialog(): void {
     const dialogRef = this.dialog.open(MenuDialogComponent, {
       width: '500px',
@@ -72,6 +125,8 @@ export class GuestpaymentComponent implements OnInit {
       //   // Set the value of "Choose Meal" input to display the count of selected menu items
       //   this.orderedMealForm.get('mealid')?.setValue(`${selectedMenus.length} items`);
       // }
+      this.ngOnInit();
+      localStorage.removeItem('selectedMenus');
     });
   }
   private updateChooseMealInput() {
@@ -79,7 +134,7 @@ export class GuestpaymentComponent implements OnInit {
   }
   // Method to get the count of selected menu items
   getSelectedMenuCount(): number {
-    return this.selectedMenus.length;
+    return this.orderedMeals.length;
   }
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogContentComponent, {
@@ -89,7 +144,7 @@ export class GuestpaymentComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(() => {
       console.log('The dialog was closed');
-      this.ngOnInit();
+      this.getOrderedMealsByCust();
     });
   }
 
@@ -105,12 +160,14 @@ export class GuestpaymentComponent implements OnInit {
 
 
   ngOnInit(): void {
+
+    this.observeHandsetBreakpoint();
     // const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     // const customerId = loggedInUser?.firstName;
     // Retrieve the custId value from local storage
     this.loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     this.orderedMealForm = this.ordmealfb.group({
-      guest: [this.loggedInUser?.custId, [Validators.required, Validators.minLength(3)]],
+      guest: [''],
       // Amount: ['', Validators.required,Validators.minLength(3)]
       mealid: ['', Validators.required],
       amount: [{ value: '', disabled: true }, Validators.required],
@@ -179,14 +236,16 @@ export class GuestpaymentComponent implements OnInit {
     // const amount = this.orderedMealForm.get('amount')?.value;
     const paymentTypeId = this.orderedMealForm.get('paymentTypeId')?.value;
     const custtype = loggedInUser?.custTypeId;
-    const guestValue = this.loggedInUser.custId;
+    const guestValue = loggedInUser?.custId;
 
 
 
     if (this.orderedMealForm.valid && this.selectedMenus.length > 0) {
       if (this.orderedMealForm.dirty) {
+        const p = { ...this.ordMeal, ...this.orderedMealForm.value };
         // Add all selected menu items from the closed menu-dialog to the orderedMeals array
         this.selectedMenus.forEach((menu) => {
+
           const orderedMeal: OrderedMeal = {
             id: 0,
             guest: guestValue,

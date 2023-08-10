@@ -4,13 +4,16 @@
   </div>
   <div class="card-body">
     <form novalidate (ngSubmit)="saveOrderedMeal()" [formGroup]="orderedMealForm">
-      <div class="form-group row mb-2">
-        <label class="col-md-2 col-form-label" for="firstNameId">Guest/Staff Name</label>
+      <div class="form-group row mb-2" hidden>
+        <label class="col-md-2 col-form-label" for="firstNameId">Guest Type:</label>
         <div class="col-md-8">
-          <input class="form-control" id="guest" type="text" placeholder="{{loggedInUser?.custId}}" formControlName="guest" value="{{loggedInUser?.custId}}" />
+          <select class="form-control" id="guest" type="text" placeholder="Patient/Staff Guest" formControlName="guest" value="{{loggedInUser?.custId}}" >
+            <option>Guest</option>
+            <option>Patient</option>
+          </select>
         </div>
       </div>
-      <p>{{loggedInUser?.custId}}</p>
+
       <div class="form-group row mb-2" hidden>
         <label class="col-md-2 col-form-label" for="paymentTypeId">Payment Type</label>
         <div class="col-md-8">
@@ -48,13 +51,13 @@
         </div>
       </div>
       
-      <div class="form-group row mb-2">
+      <div class="form-group row mb-2" hidden>
         <label class="col-md-2 col-form-label" for="firstNameId">Amount</label>
         <div class="col-md-8">
           <input class="form-control" id="amount" type="text" formControlName="amount" />
         </div>
       </div>
-      <div class="form-group row mb-2">
+      <div class="form-group row mb-2" hidden>
         <div class="offset-md-2 col-md-4">
           <button class="btn btn-primary mr-3" type="submit" style="width:80px">
             Save
@@ -81,14 +84,14 @@
 
  
 <div class="card">
-  <div class="card-body">
+  <div class="card-body" *ngIf="orderedMeals.length>0">
     <!-- Existing content of the staff component -->
     <div class="card-header">
-      Ordered Meals
+      Order Meals
     </div>
     <div class="card-body">
       <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-      <table class="table">
+      <table  class="mb-0 mytable" style="width:100%;">
         <thead>
           <tr>
             <!--<th>Date Entered</th>-->
@@ -97,10 +100,11 @@
             <!--<th>Entered By</th>-->
             <th>Amount</th>
             <!--<th>Payment Type</th>-->
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let orderedMeal of orderedMeals">
+          <tr *ngFor="let orderedMeal of getCurrentPageData()">
             <!--<td>{{ orderedMeal.dateEntered | date }}</td>-->
             <!--<td>{{ orderedMeal.guest }}</td>-->
             <td>{{ orderedMeal.menu.name }}</td>
@@ -108,11 +112,18 @@
             <td>{{ formatWithCommas(orderedMeal.amount) }}</td>
             <!--<td>{{ orderedMeal.paymentTypeId }}</td> -->
             <td>
-              <button class="btn btn-danger btn-sm" (click)="rmvItem(orderedMeal)">Remove</button> <!-- Remove button -->
+              <button class="btn btn-danger btn-sm"  (click)="rmvItem(orderedMeal)" *ngIf="!isHandset">Remove</button> <!-- Remove button -->
+              <button mat-icon-button  (click)="rmvItem(orderedMeal)" *ngIf="isHandset">
+                <mat-icon>clear</mat-icon>
+              </button> <!-- Remove button -->
             </td>
           </tr>
         </tbody>
       </table>
+      <div>
+        <!-- Add mat-paginator -->
+       <mat-paginator  [length]="orderedMeals.length" [pageSize]="pageSize" (page)="onPageChange($event)"></mat-paginator>
+       </div>
     </div>
   
     <div class="text-right mt-3">

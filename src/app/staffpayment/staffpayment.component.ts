@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChildren, HostListener } from '@angular/core';
 import { PaystackOptions } from 'angular4-paystack';
 import { FormBuilder, FormControl, FormControlName, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,6 +25,13 @@ import { EmailService } from '../shared/email.service';
 import { EmailModel } from '../shared/email.model';
 // import { DecimalPipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 
 import { Menu } from '../guestpayment/menu.model';
@@ -34,6 +41,10 @@ import { OrderedMealService } from '../guestpayment/orderedmeal.service';
 import { GuestpaymentComponent } from '../guestpayment/guestpayment.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogContentComponent } from '../dialog-content/dialog-content.component';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { LoaderComponent } from '../loader/loader.component';
+import { LoaderService } from '../loader/loader.service';
 
 
 interface CartItem {
@@ -50,7 +61,10 @@ interface CartItem {
   styleUrls: ['./staffpayment.component.scss']
 })
 export class StaffpaymentComponent implements OnInit {
-
+  selectedOption: string = 'default';
+  selectedOption2: string = 'default';
+  showSpinner = false;
+  isLoading$: Observable<boolean>;
   amountValue: number = 0;
   // @ViewChildren(FormControlName, { read: ElementRef })
   // formInputElements: ElementRef[] = [];
@@ -95,6 +109,60 @@ export class StaffpaymentComponent implements OnInit {
   orderedMeals: OrderedMeal[] = [];
   ordmeal: OrderedMeal = new OrderedMeal();
   payments: Payment[] = [];
+  private paymentDoneSubject$: Subject<void> = new Subject<void>();
+  private destroy$: Subject<void> = new Subject<void>();
+  isHandset: boolean = false; // Add a property to track handset breakpoint
+
+
+
+  private observeHandsetBreakpoint(): void {
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .pipe(untilDestroyed(this))
+      .subscribe((state) => {
+        this.isHandset = state.matches;
+      });
+  }
+
+  // Pagination properties
+  pageSize = 3;
+  currentPage = 0;
+  pageSizeOptions: number[] = [5, 10, 20, 50];
+
+  // Calculate the total number of pages based on the pageSize and the paymentDetails length
+  get totalPages(): number {
+    return Math.ceil(this.paymentDetails.length / this.pageSize);
+  }
+  get totalPages2(): number {
+    return Math.ceil(this.orderedMeals.length / this.pageSize);
+  }
+
+  // Calculate the starting and ending index of the current page
+  get startIndex(): number {
+    return this.currentPage * this.pageSize;
+  }
+
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.paymentDetails.length);
+  }
+  get endIndex2(): number {
+    return Math.min(this.startIndex + this.pageSize, this.orderedMeals.length);
+  }
+
+  // Function to handle page change event
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+  }
+
+  // Function to get the current page data
+  getCurrentPageData(): any[] {
+    return this.paymentDetails.slice(this.startIndex, this.endIndex);
+  }
+  getCurrentPageData2(): any[] {
+    return this.orderedMeals.slice(this.startIndex, this.endIndex2);
+  }
+
+
 
 
   options: PaystackOptions = {
@@ -105,7 +173,7 @@ export class StaffpaymentComponent implements OnInit {
 
 
 
-  constructor(private snackBar: MatSnackBar, private dialog: MatDialog, private menuservice: MenuService, private ordmealservice: OrderedMealService, private httpClient: HttpClient, private fbstaff: FormBuilder, private router: Router, private paymentmodeservice: PaymentModeService, private voucherservice: VoucherService, private paymentservice: PaymentService, private encdecservice: EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService, private emailService: EmailService) {
+  constructor(private loaderService: LoaderService, private breakpointObserver: BreakpointObserver, private snackBar: MatSnackBar, private dialog: MatDialog, private menuservice: MenuService, private ordmealservice: OrderedMealService, private httpClient: HttpClient, private fbstaff: FormBuilder, private router: Router, private paymentmodeservice: PaymentModeService, private voucherservice: VoucherService, private paymentservice: PaymentService, private encdecservice: EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService, private emailService: EmailService) {
     // this.validationMessages = {
     //   employeeNo: {
     //     required: 'Employee No is required.',
@@ -114,13 +182,17 @@ export class StaffpaymentComponent implements OnInit {
     // };
 
     this.genericValidator = new GenericValidator(this.validationMessages);
+    this.isLoading$ = this.loaderService.isLoading$;
 
   }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogContentComponent, {
-      width: '500px',
+      width: this.isLoading$ ? '500px' : '100%',
+      height: this.isLoading$ ? 'auto' : '100%',
+      panelClass: this.isLoading$ ? 'dialog-fullscreen' : '',
       data: { orderedMeals: this.orderedMeals },
+      disableClose: this.isLoading$ ? true : false,
     });
 
     dialogRef.afterClosed().subscribe(() => {
@@ -154,11 +226,6 @@ export class StaffpaymentComponent implements OnInit {
       return false;
     }
 
-    if (!this.options.key) {
-      this.errorMessage = 'Key cannot be empty.';
-      return false;
-    }
-
     if (!this.options.ref) {
       this.errorMessage = 'Ref cannot be empty.';
       return false;
@@ -171,7 +238,7 @@ export class StaffpaymentComponent implements OnInit {
     const selectedPaymentItems: Payment[] = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
 
     // Check if selectedPaymentItems is empty
-    if (selectedPaymentItems.length === 0) {
+    if (this.paymentDetails.length === 0) {
       // Display an error message since no items are selected for payment
       this.errorMessage = 'Please select at least one item for payment.';
       return;
@@ -200,7 +267,36 @@ export class StaffpaymentComponent implements OnInit {
     }
 
     // Retrieve selectedPaymentItems from local storage
-    const selectedPaymentItems: Payment[] = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
+    const selectedPaymentItems: Payment[] = this.paymentDetails.map(pymtdetails => ({
+      id: pymtdetails.id,
+      dateEntered: new Date(pymtdetails.dateEntered),
+      enteredBy: pymtdetails.enteredBy,
+      custCode: pymtdetails.custCode,
+      voucherId: pymtdetails.voucherid,
+      unit: pymtdetails.unit,
+      amount: pymtdetails.amount,
+      paymentmodeid: pymtdetails.paymentmodeid,
+      servedby: pymtdetails.servedby,
+      opaymentid: 0,
+      paid: false,
+      timepaid: new Date(),
+      PaymentType: 1,
+      custtypeid: pymtdetails.custtypeid,
+      VoucherDescription: '',
+
+      // Map other properties as needed
+      // For example:
+      // amount: pymtdetails.amount,
+      // custCode: pymtdetails.custCode,
+      // paymentmodeid: pymtdetails.paymentmodeid,
+      // unit: pymtdetails.unit,
+      // voucherId: pymtdetails.voucherId,
+      // servedby: pymtdetails.servedby,
+      // dateEntered: pymtdetails.dateEntered,
+      // enteredBy: pymtdetails.enteredBy,
+      // PaymentType: pymtdetails.PaymentType,
+      // custtypeid: pymtdetails.custtypeid
+    }));
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
 
     const payment: OnlinePayment = {
@@ -211,38 +307,45 @@ export class StaffpaymentComponent implements OnInit {
       AmountPaid: this.options.amount / 100
     };
 
+
     this.onlinePaymentService.postOnlinePayment(payment).subscribe(
       (result: any) => {
-        // Handle success, e.g., show a success message or navigate to a success page
+
         console.log("Successful");
 
-        this.ngOnInit();
+
+        this.paymentDoneSubject$.next();
+
 
 
         // Call the updatePayment method for each selected payment item
-        for (const paymentItem of selectedPaymentItems) {
-          paymentItem.opaymentid = result.id; // Use the ID returned from the onlinePaymentService
+        const updateRequests = selectedPaymentItems.map(paymentItem => {
+          paymentItem.opaymentid = result.id;
           paymentItem.timepaid = new Date();
           paymentItem.paid = true;
+          return this.paymentservice.updatePayment(paymentItem);
+        });
 
-
-
-          // Call the updatePayment method in your service to update the payment item
-          this.paymentservice.updatePayment(paymentItem).subscribe(
-            (updatedPaymentItem: Payment) => {
-              // Handle successful update if needed
-              console.log("Update")
+        forkJoin(updateRequests)
+          .pipe(finalize(() => this.paymentDoneSubject$.next()))
+          .subscribe(
+            (updatedPaymentItems: Payment[]) => {
+              // Handle successful updates if needed
+              // Display a snackbar with the "Payment Successful" message
+              this.snackBar.open('Payment Successful', 'Dismiss', {
+                duration: 3000, // 3 seconds duration for the snackbar
+              });
+              console.log('Update successful');
             },
             (error: any) => {
               // Handle error if necessary
-              console.log("failed")
+              console.log('Update failed');
             }
           );
-        }
 
         // Optionally, update the selectedPaymentitems array in local storage if needed
         // localStorage.setItem('selectedPaymentitems', JSON.stringify(selectedPaymentItems));
-        this.ngOnInit();
+
       },
 
 
@@ -272,6 +375,8 @@ export class StaffpaymentComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.observeHandsetBreakpoint();
+
     this.setRandomPaymentRef()
     localStorage.removeItem('selectedPaymentItems');
     // Fetch user payment details from the API (assuming it populates the `paymentDetails` array)
@@ -311,11 +416,11 @@ export class StaffpaymentComponent implements OnInit {
     // Initialize other data (vouchers, units, payment modes, etc.)
     this.vouchers = []; // Initialize with the available vouchers
     // this.Units = []; // Initialize with the available units
-    this.calculateTotalAmount();; // Initialize with the default amount
+    this.calculateTotalAmount(); // Initialize with the default amount
     this.paymentmodes = []; // Initialize with the available payment modes
 
-    // var loggeinuser = localStorage.getItem('user');
-    // this.registration = loggeinuser !== null ? JSON.parse(loggeinuser) : new Registration();
+    var loggeinuser = localStorage.getItem('user');
+    this.registration = loggeinuser !== null ? JSON.parse(loggeinuser) : new Registration();
 
 
     // Example 2: Checking if the value is defined
@@ -342,7 +447,18 @@ export class StaffpaymentComponent implements OnInit {
     this.paymentdetailService.getPaymentDetailsByUserId(this.Id).subscribe(
       (pymtdetails: PaymentDetail[]) => {
         this.paymentDetails = pymtdetails;
+        this.calculateTotalAmount();
         // this.filteredPaymentDetails = this.paymentDetails;
+      });
+
+    // Subscribe to the paymentDoneSubject$ Subject to trigger the refresh
+    this.paymentDoneSubject$.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.paymentdetailService.getPaymentDetailsByUserId(this.Id).subscribe(
+          (pymtdetails: PaymentDetail[]) => {
+            this.paymentDetails = pymtdetails;
+          }
+        );
       });
 
     //  // Check local storage for saved payment items
@@ -393,7 +509,7 @@ export class StaffpaymentComponent implements OnInit {
     const enteredBy = this.registration?.id.toString();
     const amount = this.orderedMealForm.get('amount')?.value;
     const paymentTypeId = this.orderedMealForm.get('paymentTypeId')?.value;
-    const custtype = this.orderedMealForm.get('custTypeId')?.value;
+    // const custtype = this.orderedMealForm.get('custTypeId')?.value;
 
 
     if (this.orderedMealForm.valid) {
@@ -404,7 +520,7 @@ export class StaffpaymentComponent implements OnInit {
           p.enteredBy = enteredBy;
           p.amount = amount;
           p.PaymentType = paymentTypeId;
-          p.custtypeid = custtype;
+          p.custtypeid = this.staffid;
 
           if (confirm(`You are about to generate a ticket for Staff: ${p.enteredBy}?`)) {
             this.ordmealservice.createOrder(p)
@@ -529,60 +645,40 @@ export class StaffpaymentComponent implements OnInit {
     // Implement your payment gateway logic here
   }
 
+  // calculateTotalAmount(): void {
+  //   const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
+  //   const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount, 0);
+  //   this.options.amount = totalAmount * 100; // Multiply by 100 to convert to kobo (Paystack's currency unit)
+  // }
   calculateTotalAmount(): void {
-    const selectedItems = this.paymentDetails.filter(pymtdetails => pymtdetails.selected);
-    const totalAmount = selectedItems.reduce((sum, pymtdetails) => sum + pymtdetails.unit * pymtdetails.amount, 0);
+    const totalAmount = this.paymentDetails.reduce((sum, pymtdetails) => sum + (pymtdetails.unit * pymtdetails.amount), 0);
     this.options.amount = totalAmount * 100; // Multiply by 100 to convert to kobo (Paystack's currency unit)
   }
 
 
-  selectAll: boolean = false;
-  // isButtonDisabled = true;
 
-  toggleSelectAll() {
-    if (this.selectAll) {
-      // Add all items to local storage
-      this.paymentDetails.forEach(item => {
-        if (!item.selected) {
-          item.selected = true;
-          this.addToLocalStorage(item);
-        }
-      });
+
+
+
+  updateLocalStorage(updatedPaymentDetails: PaymentDetail) {
+    if (updatedPaymentDetails) {
+      this.addTocart(updatedPaymentDetails);
     } else {
-      // Remove all items from local storage
-      this.paymentDetails.forEach(item => {
-        if (item.selected) {
-          item.selected = false;
-          this.removeFromLocalStorage(item);
-        }
-      });
-    }
-    // // Check if at least one item is selected
-    // const atLeastOneSelected = this.paymentDetails.some(item => item.selected);
-    // this.isButtonDisabled = !atLeastOneSelected;
-    this.calculateTotalAmount(); // Calculate and update the total amount
-  }
-
-
-  updateLocalStorage(item: PaymentDetail) {
-    if (item.selected) {
-      this.addToLocalStorage(item);
-    } else {
-      this.removeFromLocalStorage(item);
+      this.removePaymentDetail(updatedPaymentDetails);
     }
     this.calculateTotalAmount(); // Calculate and update the total amount
   }
 
-  addToLocalStorage(item: PaymentDetail) {
-    const selectedItems = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
-    selectedItems.push(item);
-    localStorage.setItem('selectedPaymentItems', JSON.stringify(selectedItems));
+  addTocart(item: PaymentDetail) {
+    this.paymentDetails.push(item);
+    this.calculateTotalAmount();
   }
 
-  removeFromLocalStorage(item: PaymentDetail) {
-    let selectedItems = JSON.parse(localStorage.getItem('selectedPaymentItems') || '[]');
-    selectedItems = selectedItems.filter((selectedItem: PaymentDetail) => selectedItem.id !== item.id);
-    localStorage.setItem('selectedPaymentItems', JSON.stringify(selectedItems));
+
+  // Call this function whenever a payment detail is removed from the array
+  removePaymentDetail(paymentDetailToRemove: PaymentDetail): void {
+    this.paymentDetails = this.paymentDetails.filter(item => item.id !== paymentDetailToRemove.id);
+    this.calculateTotalAmount(); // Call the function after removing a detail
   }
 
 
@@ -600,7 +696,7 @@ export class StaffpaymentComponent implements OnInit {
     if (this.paymentForm.valid) {
       const voucherId = this.paymentForm.get('voucherId')?.value;
       const unit = this.paymentForm.get('unit')?.value;
-      const paymentTypeId = this.paymentForm.get('paymentTypeId')?.value;
+      const paymentTypeId = 1;
 
       const voucherDescription = this.vouchers.find(voucher => voucher.id === voucherId)?.description;
       const cartItem = { content: `${voucherDescription} - Units: ${unit}`, selected: false }; // Create the cart item object
@@ -614,7 +710,7 @@ export class StaffpaymentComponent implements OnInit {
           p.enteredBy = this.registration?.id.toString();
           p.custtypeid = 1;
           p.servedby = "";
-          p.PaymentType = paymentTypeId
+          p.PaymentType = 1;
           if (confirm(`You are about to generate a ticket for Staff: ${p.custCode}?`)) {
             this.paymentservice.createPayment(p)
               .subscribe({
@@ -650,6 +746,8 @@ export class StaffpaymentComponent implements OnInit {
   }
 
   onSaveComplete(): void {
+    this.paymentForm.reset()
+    this.orderedMealForm.reset()
     this.ngOnInit();
   }
 
@@ -663,5 +761,11 @@ export class StaffpaymentComponent implements OnInit {
     );
 
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
 }
 

@@ -23,15 +23,15 @@ export class ServedService {
   }
   getServedByCustomer(user: Registration): Observable<Served[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post<Served[]>(`${this.apiUrl}/getServedbyCustomer`, JSON.stringify(user), { headers });
+    return this.http.post<Served[]>(`${this.apiUrl}/getServedbyCustomer`, user, { headers });
   }
 
 
 
 
 
-  updateServed(id: number, served: Served): Observable<Served> {
-    return this.http.put<Served>(`${this.apiUrl}/${id}`, served);
+  updateServed(served: Served): Observable<Served> {
+    return this.http.post<Served>(`${this.apiUrl}/updateServed`, served);
   }
 
   addServed(served: Served): Observable<Served> {

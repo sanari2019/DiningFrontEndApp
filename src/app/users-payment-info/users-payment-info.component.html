@@ -1,7 +1,5 @@
 <div class="card">
-    <div class="card-header">
-     {{ pageTitle }}
-    </div>
+    
   
     <div class="card-body">
       
@@ -23,7 +21,7 @@
               <th>Quantity</th>
               <th style="display: none">custtypeid</th>
               <th style="display: none">voucherid</th>
-              <th >paymentmodeid</th>
+             <!-- <th >paymentmodeid</th>-->
               <th></th>
             </tr>
           </thead>
@@ -35,7 +33,7 @@
               <td> {{userFullName}} </td>              
               <td>{{ formatWithCommas(pymtmm.amount) }}</td>
               <td>{{ pymtmm.unit }}</td>
-              <td>{{ pymtmm.voucherId}}</td>
+             <!-- <td>{{ pymtmm.voucherId}}</td> -->
               
               
             
@@ -57,6 +55,10 @@
         </table>
       </div>
   <hr style="color: blue;">
+  <div *ngIf="isServedSuccessfully" class="alert alert-success">
+    Served Successfully
+  </div>
+  
   <div class="table-responsive" style=" overflow-y: scroll;margin: 8px 8px;">
     <table class="table mb-0">
       <thead>
@@ -94,7 +96,7 @@
   
 
       <button  class="btn btn-primary mr-3" (click)="serveItems()">
-        Served
+        Serve
     </button>
     </div>
   </div>

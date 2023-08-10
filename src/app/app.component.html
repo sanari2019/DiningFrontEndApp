@@ -1,17 +1,16 @@
 <mat-toolbar class="mat-elevation-z8 equal-boxes">
   <div>
-    <button mat-icon-button mat-raised-button *ngIf="sidenav?.mode === 'over'" (click)="sidenav.toggle()">
-      <mat-icon *ngIf="!sidenav.opened"> menu </mat-icon>
-      <mat-icon *ngIf="sidenav.opened"> close </mat-icon>
+    <button mat-icon-button mat-raised-button aria-label="Toggle sidenav"  *ngIf="drawer?.mode === 'over' && 'isHandset$ | async'" (click)="drawer.toggle()">
+      <mat-icon aria-label="Side nav toggle icon"> menu </mat-icon>
     </button>
     
   </div>
     <div id="brand" *ngIf="isLoggedIn$ | async">
-      <p>Dining</p>
+      <p>Cafeteria</p>
     </div>
     <div id="brand" *ngIf="!(isLoggedIn$ | async)" style="background: #004a9f; color: white; padding: 0 45% 0 45%;width: 100%;" >
       <p style="display: flex; align-items: center; padding: 8px 0;"><!--<img src="assets/images/Evercare-Logo.jpg" alt="Logo" class="logo-image" />-->
-      Dining<p>
+      Evercare's Cafeteria<p>
     </div>
     <!-- <button mat-button id="btnloginuser" *ngIf="isLoggedIn$">{{'Welcome '+authService.registration?.firstName}}</button> -->
     <div id="login">
@@ -23,49 +22,27 @@
   
 <mat-sidenav-container>
   <!-- <mat-sidenav #sidenav="matSidenav" *ngIf="isLoggedIn$ | async" mode='side' class="mat-elevation-z8 "> -->
-  <mat-sidenav #sidenav *ngIf="isLoggedIn$ | async" mode='over' opened class="mat-elevation-z8"> 
+  <mat-sidenav *ngIf="isLoggedIn$ | async" #drawer [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+  [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)" class="mat-elevation-z8"> 
     <button mat-button class="menu-button" routerLink="home">
       <!--<mat-icon>Menu</mat-icon>-->
-      <span>Welcome, {{ authService.registration?.firstName }}</span>
+      <span>Welcome, {{ this.registration?.firstName }}</span>
     </button>
+    <!--<button mat-button class="menu-button" routerLink="/registrations">-->
+      <!--<mat-icon>Administration</mat-icon>-->
+    <!--  <span>Registration</span>
+    </button>-->
     <mat-divider></mat-divider>
     <!-- <button mat-button  class="menu-button" routerLink="/home"> -->
       <!--<mat-icon>Administration</mat-icon>-->
       <!-- <span>Home</span> -->
     <!-- </button> -->
-    <button mat-button class="menu-button" routerLink="/registrations" hidden>
-      <!--<mat-icon>Administration</mat-icon>-->
-      <span>Registration</span>
-    </button>
-    <button mat-button class="menu-button" (click)="onPaymentClick()">
-      <!--<mat-icon>Administration</mat-icon>-->
-      <span>Payment</span>
-    </button>
-    <button mat-button class="menu-button" routerLink="/voucher">
-      <!--<mat-icon>Administration</mat-icon>-->
-      <span>Voucher</span>
-    </button>
-    <button mat-button class="menu-button" routerLink="/voucherdetails">
-      <!--<mat-icon>Administration</mat-icon>-->
-      <span>Voucher Details</span>
-    </button>
-    <!-- <button mat-button class="menu-button" routerLink="/voucheredit"> -->
-      <!--<mat-icon>Administration</mat-icon>-->
-      <!-- <span>New Voucher</span> -->
-    <!-- </button> -->
-    <!-- <button mat-button class="menu-button" routerLink="/registration">
-      <mat-icon>Administration</mat-icon>-->
-      <!-- <span>Registration</span>
-    </button> -->
 
-    <button mat-button class="menu-button" routerLink="/profile">
-      <mat-icon>person</mat-icon>
-      <span>Profile</span>
-    </button>
-    <button mat-button class="menu-button" routerLink="/about">
-      <mat-icon>info</mat-icon>
-      <span>About</span>
-    </button>
+    <div *ngFor="let rte of routes">
+      <button mat-button class="menu-button" (click)="navigateurl(rte)">
+        <span>{{ rte.menuName }}</span>
+      </button>
+    </div>
 
     <mat-divider></mat-divider>
 
@@ -73,18 +50,30 @@
       <mat-icon>help</mat-icon>
       <span>Help</span>
     </button>-->
+
+    <!-- ... Your main content ... -->
+
+<app-footer></app-footer>
+
+   
   </mat-sidenav>
+
+  <app-loader></app-loader>
+  
   <mat-sidenav-content >
-    <div class="content mat-elevation-z8">
-    
-      <router-outlet></router-outlet>
-      
+    <div *ngIf="isLoading$ | async">
+      <mat-progress-spinner class="spinner"
+        mode="indeterminate"
+        diameter="50"
+        color="primary"
+      ></mat-progress-spinner>
     </div>
-
+    <div class="content mat-elevation-z8" [class.hide]="isLoading$ | async">
+      <router-outlet></router-outlet>
+    </div>
     
-
     
   </mat-sidenav-content>
 </mat-sidenav-container>
 
- 
+

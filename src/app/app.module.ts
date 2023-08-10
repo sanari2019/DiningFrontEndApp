@@ -18,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RegistrationEditComponent } from './registration-edit/registration-edit.component';
 import { RegistrationDetailComponent } from './registration-detail/registration-detail.component';
 import { RegistrationListComponent } from './registration-list/registration-list.component';
@@ -52,19 +52,29 @@ import { RegistrationDialogComponent } from './registration-dialog/registration-
 import { MealNameDialogComponent } from './meal-name-dialog/meal-name-dialog.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatListModule } from  '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { FooterComponent } from './footer/footer.component';
+import { LoaderComponent } from './loader/loader.component';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderInterceptor } from './loader/loader.interceptor';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 
 
 
 
 @NgModule({
-  declarations: [AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent],
+  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent],
   imports: [
-    Angular4PaystackModule.forRoot('pk_test_b8671f2cd36f4a71cd4564c7f0de6498c803ac25'),
+    Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
+    MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatPaginatorModule,
     MatSidenavModule,
     MatSnackBarModule,
     MatButtonModule,
@@ -74,16 +84,18 @@ import { MatListModule } from  '@angular/material/list';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
+    MatProgressSpinnerModule,
     AppMaterialModule,
-    MatPaginatorModule,
     MatTabsModule, // Add MatTabsModule to the imports
     MatButtonModule,
     MatDialogModule,
     CommonModule,
+    FlexLayoutModule,
     CarouselModule.forRoot(),
 
   ],
-  providers: [EncrDecrService, AuthService, AuthGuard],
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, AuthGuard],
   bootstrap: [AppComponent],
+  // entryComponents: [LoaderComponent],
 })
 export class AppModule { }
