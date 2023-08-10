@@ -58,6 +58,9 @@ export class LoginComponent implements OnInit {
     if (this.form.valid) {
       this.loginSubscription = this.authService.login(this.form.value).subscribe((resultMessage: string) => {
         if (resultMessage === "") {
+          if (this.authService.notLoggedIn) {
+            this.formSubmitAttempt = true;
+          }
           // Successful login, clear loginMessage and show success flash message.
           this.loginMessage = "";
           this.snackBar.open('Login Successful!', 'Close', { duration: 3000 });

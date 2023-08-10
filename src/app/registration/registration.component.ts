@@ -176,7 +176,7 @@ export class RegistrationComponent implements OnInit {
 
   onSaveComplete(): void {
     this.registrationForm.reset();
-    this.router.navigate(['/registrations']);
+    // this.router.navigate(['/registrations']);
   }
 }
 

@@ -7,6 +7,7 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 import { Payment } from '../staffpayment/payment.model';
 import { Registration } from '../registration/registration.model';
+import { RecentTransaction } from '../pages/home/recent-transaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,16 @@ export class PaymentDetailService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     // return this.http.get<Registration>(url)
     return this.http.post<Payment[]>(url, JSON.stringify(paymentByCust), { headers });
+  }
+
+  getPaidPaymentsWithVoucherDescription(userId: string): Observable<Payment[]> {
+    const url = `${this.envUrl.urlAddress}/paymentmain/getpaidpymtsbyCustwithVD`;
+    return this.http.post<Payment[]>(url, { id: userId });
+  }
+
+  getRecentTransactionsByCust(enteredby: number): Observable<RecentTransaction[]> {
+    const url = `${this.envUrl.urlAddress}/paymentmain/getRecentTransactionsByCust?enteredby=${enteredby}`;
+    return this.http.get<RecentTransaction[]>(url);
   }
 
   // getPaidPaymentsByCust(paymentByCust: PaymentByCust): Observable<Payment[]> {

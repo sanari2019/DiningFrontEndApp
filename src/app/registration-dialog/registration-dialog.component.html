@@ -14,7 +14,8 @@
                         <div class="row">
                         <div class="col-sm-6">
                             <div class="input-field-box">      
-                            <select id="custTypeId" formControlName="custTypeId" required>
+                            <select id="custTypeId" formControlName="custTypeId" required  [(ngModel)]="selectedOption">
+                                <option value="default" disabled>-Choose an option-</option>
                                 <option *ngFor="let customerType of customerTypes" value={{customerType.id}}>{{ customerType.name }}</option>
                             </select>
                             <span class="highlight"></span>
@@ -34,9 +35,9 @@
                             <input type="text" formControlName="custId" id="custId" required (input)="onCustIdInput()">
                             <span class="highlight"></span>
                             <span class="bar"></span>
-                            <label>Employee Number</label>
-                            <div *ngIf= " submitted" class="alert alert-danger">
-                                <div *ngIf="registrationForm.get('firstName')?.errors">
+                            <label>Employee Number e.g 001</label>
+                            <div *ngIf= " submitted && registrationForm.get('custId')?.errors" class="alert alert-danger">
+                                <div *ngIf= "registrationForm.get('custId')?.errors">
                                 Enter a valid Employee Number. Numbers only
                                 </div>
                                  <!-- New div for "User Exist" message -->
@@ -130,7 +131,7 @@
                             <label>Password</label>
                             <div *ngIf=" submitted && registrationForm.get('password')?.errors" class="alert alert-danger">
                                 <div *ngIf="registrationForm.get('password')?.errors">
-                                    Password is required
+                                    Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character.
                                 </div>
                                 <div *ngIf="registrationForm.get('password')?.errors?.invalidPassword">
                                     Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character.

@@ -16,6 +16,7 @@ export class PaymentDetail {
   selected: boolean;
   totalAmount: number;
   PaymentType: number;
+  EnteredbyName: string;
 
 
   constructor() {
@@ -36,5 +37,6 @@ export class PaymentDetail {
     this.selected = false;
     this.totalAmount = 0;
     this.PaymentType = 0;
+    this.EnteredbyName = '';
   }
 }

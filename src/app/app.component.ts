@@ -1,5 +1,9 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import {
+  BreakpointObserver,
+  Breakpoints,
+  BreakpointState,
+} from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { delay, filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
@@ -10,7 +14,10 @@ import { logging } from 'protractor';
 import { Registration } from './registration/registration.model';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-
+import { Route } from './shared/route.model';
+import { RegistrationService } from './registration/registration.service';
+import { map } from 'rxjs/operators';
+import { LoaderService } from './loader/loader.service';
 
 @UntilDestroy()
 @Component({
@@ -19,75 +26,131 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  @ViewChild(MatSidenav)
-  sidenav!: MatSidenav;
+  isLoading$: Observable<boolean>;
+  @ViewChild('drawer') drawer: any;
   title = 'angular-responsive-sidebar';
   isLoggedIn$!: Observable<boolean>;
 
   loggedinUser = ' ';
   registration: Registration | undefined;
+  routes!: Route[];
+
+  currentRoute: Route | undefined;
+  private loggedIn = new BehaviorSubject<boolean>(false);
+
+  public isHandset$: Observable<boolean> = this.observer
+    .observe(Breakpoints.Handset)
+    .pipe(map((result: BreakpointState) => result.matches));
 
 
-  constructor(private observer: BreakpointObserver, private router: Router, public authService: AuthService) { }
 
-  onPaymentClick(): void {
-    const custTypeId = this.authService.registration?.custTypeId;
-
-    if (custTypeId === 1) {
-      this.router.navigate(['/staffpayment']);
-    } else if (custTypeId === 2) {
-      this.router.navigate(['/outsourcedpayment']);
-    }
-    else {
-      this.router.navigate(['/guestpayment']);
-    }
+  constructor(private loaderService: LoaderService, private observer: BreakpointObserver, private router: Router, public authService: AuthService, private regservice: RegistrationService) {
+    this.isLoading$ = this.loaderService.isLoading$;
   }
+
+  // onPaymentClick(): void {
+  //   const custTypeId = this.authService.registration?.custTypeId;
+
+  //   if (custTypeId === 1) {
+  //     this.router.navigate(['/staffpayment']);
+  //   } else if (custTypeId === 2) {
+  //     this.router.navigate(['/outsourcedpayment']);
+  //   }
+  //   else {
+  //     this.router.navigate(['/guestpayment']);
+  //   }
+  // }
+  navigateurl(rte: Route): void {
+
+    this.router.navigate(['/' + rte.path]);
+    localStorage.setItem('page', JSON.stringify(rte));
+
+
+  }
+  get isLoggedIn() {
+    return this.loggedIn.asObservable();
+  }
+
+
 
 
   ngOnInit() {
     this.isLoggedIn$ = this.authService.isLoggedIn;
+    if (this.isLoggedIn$ == undefined) {
+      this.router.navigate(['/login']);
+    }
     this.isLoggedIn$.subscribe((rslt: any) => {
       if (this.isLoggedIn$ !== undefined) {
         this.registration = this.authService.registration;//JSON.parse(localStorage.getItem('user')|| '[]');
+        if (this.registration) {
+          this.regservice.getRoles(this.registration).subscribe(
+            (roless: Route[]) => {
+              this.routes = roless;
+              // this.filteredPaymentDetails = this.paymentDetails;
+            });
+        }
         if (this.registration != undefined && this.registration.firstName != undefined) {
           this.loggedinUser = 'Welcome: ' + this.registration?.firstName + ' ' + this.registration?.lastName;
         }
         else {
           this.loggedinUser = '';
         }
+        this.currentRoute = JSON.parse(localStorage.getItem('page') || '[]');
+        if (this.currentRoute?.path !== undefined) {
+          this.registration = JSON.parse(localStorage.getItem('user') || '[]');
+          this.loggedIn.next(true);
+        }
+        else {
+          // Check if the 'user' key is present in localStorage, if not, redirect to login
+          if (!localStorage.getItem('user')) {
+            this.router.navigate(['/login']);
+          }
+        }
+        if (this.currentRoute?.path !== undefined && this.registration?.firstName != undefined) {
+          this.router.navigate(['/' + this.currentRoute?.path]);
+          this.isLoggedIn$ = this.isLoggedIn;
+          this.isLoggedIn$.subscribe((rslt: any) => {
+            if (this.isLoggedIn$ !== undefined) {
+              this.registration = JSON.parse(localStorage.getItem('user') || '[]');
+              if (this.registration) {
+                this.regservice.getRoles(this.registration).subscribe(
+                  (roless: Route[]) => {
+                    this.routes = roless;
+                    // this.filteredPaymentDetails = this.paymentDetails;
+                  });
+              }
+              else {
+                if (!localStorage.getItem('user')) {
+                  this.router.navigate(['/login']);
+                }
+              }
+            } else {
+              if (!localStorage.getItem('user')) {
+                this.router.navigate(['/login']);
+              }
+            }
+          });
+        } else {
+          if (!localStorage.getItem('user')) {
+            this.router.navigate(['/login']);
+          }
+        }
       }
-    }
 
-    );
-
-
-
-
+    });
   }
   onLogout() {
     this.authService.logout();
     localStorage.removeItem('user');
+    localStorage.removeItem('page');
+    localStorage.removeItem('selectedPaymentItems');
+    localStorage.clear();
     this.loggedinUser = '';
     this.isLoggedIn$ = this.authService.isLoggedIn;
 
   }
 
   ngAfterViewInit() {
-    this.observer
-      .observe(['(max-width: 800px)'])
-      .pipe(delay(1), untilDestroyed(this))
-      .subscribe((res) => {
-        if (this.sidenav) {
-          if (res.matches) {
-            this.sidenav.mode = 'over';
-            this.sidenav.close();
-          } else {
-            this.sidenav.mode = 'side';
-            this.sidenav.open();
-          }
-        }
-
-      });
 
     this.router.events
       .pipe(
@@ -95,8 +158,8 @@ export class AppComponent implements OnInit {
         filter((e) => e instanceof NavigationEnd)
       )
       .subscribe(() => {
-        if (this.sidenav?.mode === 'over') {
-          this.sidenav?.close();
+        if (this.drawer?.mode === 'over') {
+          this.drawer?.close();
         }
       });
   }

@@ -150,6 +150,8 @@ export class UsersPaymentInfoComponent {
   pymtUser: Registration = new Registration();
   // paramsvalue: number = 0;
   userFullName: string = '';
+  loggedInUser: any;
+  isServedSuccessfully: boolean = false;
 
   constructor(private orderedMealService: OrderedMealService, private dialog: MatDialog, private servedService: ServedService, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private pymtservice: PaymentService, private router: Router, private registrationservice: RegistrationService) {
 
@@ -172,37 +174,22 @@ export class UsersPaymentInfoComponent {
 
       if (paramvalue) {
         this.getUser(paramvalue);
-        this.pymtMain = JSON.parse(paramvalue);
-
+        // this.loadCartItems();
       }
       this.userFullName = params['userFullName'] || '';
-      // this.registrationservice.getUser(paramvalue)
-      //     .subscribe((rslt:Registration)=>{
-      //       this.pymtUser=rslt;
-      //     }
-      //     )
-
-      // if (this.pymtUser) {
-      //   this.paymentdetailService.getPaidPaymentsByCust(this.pymtUser).subscribe(
-      //     (pytMain: Payment[]) => {
-      //       this.pymtMain = pytMain;
-      //     });
-      //   // this.pymtMain = JSON.parse(pymtMainString);
-      //   // // Additional logic using pymtMain
-      // }
     });
-    this.getPaymentsByCustomer(this.pymtUser);
-    this.loadCartItems();
-
 
 
   }
-  getUser(propertyValue: number): void {
+  getUser(propertyValue: number): Registration {
     this.registrationservice.getUser(propertyValue).subscribe((user: Registration) => {
       this.pymtUser = user;
       this.userFullName = `${this.pymtUser.firstName} ${this.pymtUser.lastName}`;
       this.getPaymentsByCustomer(this.pymtUser);
+      this.loadCartItems();
+
     });
+    return this.pymtUser;
   }
   getPaymentsByCustomer(customer: Registration): void {
     this.paymentdetailService.getPaidPaymentsByCust(customer).subscribe((payments: Payment[]) => {
@@ -259,12 +246,12 @@ export class UsersPaymentInfoComponent {
     //         this.errorMessage = err;
     //       }
     //     });
-    this.cartItems.push(this.serv);
-    this.loadCartItems(); // Refresh cart items after adding
+    // this.cartItems.push(this.serv);
+    // this.loadCartItems(); // Refresh cart items after adding
   }
 
   removeItem(item: Served): void {
-    this.ngOnInit();
+    // this.ngOnInit();
     this.servedService.deleteServed(item).subscribe({
       next: () => {
         this.loadCartItems(); // Refresh cart items after removal
@@ -273,7 +260,7 @@ export class UsersPaymentInfoComponent {
         this.errorMessage = err;
       }
     });
-    this.loadCartItems();
+    // this.loadCartItems();
     this.ngOnInit();
   }
 
@@ -321,41 +308,49 @@ export class UsersPaymentInfoComponent {
 
 
   loadCartItems(): void {
-    this.route.queryParams.subscribe((params) => {
-      var paramvalue = params['pymtMain'];
-      if (paramvalue) {
-        this.registrationservice.getUser(paramvalue).subscribe((user: Registration) => {
-          this.getCartItemsForUser(user);
-        });
+    this.servedService.getServedByCustomer(this.pymtUser).subscribe({
+      next: (serves: Served[]) => {
+        this.cartItems = serves;
       }
     });
   }
+  // getUser(username: string): Registration {
+  //   this.registrationservice.getUserbyusername(username)
+  //     .subscribe({
+  //       next: (registration: Registration) => this.registration,
+  //       error: err => this.errorMessage = err
+  //     });
+  //   return this.registration
+  // }
 
-  getCartItemsForUser(user: Registration): void {
-    this.servedService.getServedByCustomer(user).subscribe({
-      next: (items) => {
-        this.cartItems = items;
-      },
-      error: (err) => {
-        this.errorMessage = err;
-      }
-    });
 
-  }
+  // getCartItemsForUser(user: Registration): void {
+  //   this.servedService.getServedByCustomer(user).subscribe({
+  //     next: (items) => {
+  //       this.cartItems = items;
+  //     },
+  //     error: (err) => {
+  //       this.errorMessage = err;
+  //     }
+  //   });
+
+  // }
 
 
 
 
 
   serveItems(): void {
+    const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     for (const item of this.cartItems) {
       item.isServed = true; // Set isServed to true
-      // item.ServedBy = 
+      item.ServedBy = loggedInUser?.id;
 
       // Call the updateServed method in your service to update the served item
-      this.servedService.updateServed(item.id, item).subscribe(
+      this.servedService.updateServed(item).subscribe(
         (updatedServed: Served) => {
           // Handle successful update if needed
+          this.isServedSuccessfully = true;
           console.log("Served item updated successfully");
         },
         (error: any) => {
@@ -364,6 +359,7 @@ export class UsersPaymentInfoComponent {
         }
       );
     }
+
     this.loadCartItems();
     this.ngOnInit();
   }

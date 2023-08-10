@@ -27,7 +27,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 
 const routes: Routes = [
   {
-    path: '', component: PaymentComponent, canActivate: [AuthGuard]
+    path: '', component: HomeComponent, canActivate: [AuthGuard]
     // pathMatch: 'full',
     // redirectTo: 'payment',
   },
@@ -38,7 +38,7 @@ const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   {
     path: 'registrations',
-    component: RegistrationListComponent, canActivate: [AuthGuard]
+    component: RegistrationListComponent,
   },
   { path: 'home', component: HomeComponent },
   { path: 'users-payment-info', component: UsersPaymentInfoComponent },
@@ -104,7 +104,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule { }

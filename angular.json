@@ -20,6 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "outputHashing": "all",
             "outputPath": "dist/angular-responsive-sidebar",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -80,10 +81,9 @@
             "browserTarget": "angular-responsive-sidebar:build"
           },
           "configurations": {
-            "production": {  
+            "production": {
               "browserTarget": "angular-responsive-sidebar:build:production"
             }
-            
           }
         },
         "extract-i18n": {

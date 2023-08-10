@@ -96,7 +96,7 @@ export class OrderedMealService {
   updateOrder(ordMeal: OrderedMeal): Observable<OrderedMeal> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.orderedmealURL}/${ordMeal.id}`;
-    return this.http.put<OrderedMeal>(url, ordMeal, { headers })
+    return this.http.post<OrderedMeal>(url, ordMeal, { headers })
       .pipe(
         tap(() => console.log('updateUser: ' + ordMeal.id)),
         // Return the product on an update

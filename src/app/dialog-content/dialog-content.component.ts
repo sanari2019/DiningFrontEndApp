@@ -16,6 +16,10 @@ import { Router } from '@angular/router';
 import { AnyCnameRecord } from 'dns';
 import { PaymentDetail } from '../users-payment-info/paymentdetail.model';
 import { PaymentDetailService } from '../users-payment-info/paymentdetail.service';
+import { LoaderService } from '../loader/loader.service';
+import { BehaviorSubject, Observable, observable } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
 
@@ -25,6 +29,7 @@ import { PaymentDetailService } from '../users-payment-info/paymentdetail.servic
 
 })
 export class DialogContentComponent implements OnInit {
+  isLoading$: Observable<boolean>;
   reference = '';
   options: PaystackOptions =
     {
@@ -39,7 +44,9 @@ export class DialogContentComponent implements OnInit {
 
 
   constructor(
+    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<DialogContentComponent>,
+    private loaderService: LoaderService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private paymentdetailservice: PaymentDetailService,
     private orderedMealService: OrderedMealService,
@@ -50,6 +57,7 @@ export class DialogContentComponent implements OnInit {
   ) {
     this.orderedMeals = data.orderedMeals;
     this.paymentDetail = data;
+    this.isLoading$ = this.loaderService.isLoading$;
   }
 
   formatWithCommas(value: number | null): string {
@@ -66,90 +74,72 @@ export class DialogContentComponent implements OnInit {
     console.log('Payment initialized');
   }
 
-  paymentDone(ref: any) {
-    const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+  async paymentDone(ref: any) {
+    // ... Existing code ...
 
-    // Step 1: Post the current payment object
-    const payment: OnlinePayment = {
-      id: 0, // Update with the appropriate ID
-      TransRefNo: this.options.ref.toString(),
-      TransDate: new Date(),
-      Paidby: loggedInUser.id,
-      AmountPaid: this.calculateRemainingAmount() / 100
-    };
+    try {
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
 
+      const payment: OnlinePayment = {
+        id: 0, // Update with the appropriate ID
+        TransRefNo: this.options.ref.toString(),
+        TransDate: new Date(),
+        Paidby: loggedInUser.id,
+        AmountPaid: this.calculateRemainingAmount()
+      };
+      // Step 1: Post the current payment object
+      const result = await this.onlinePaymentService.postOnlinePayment(payment).toPromise();
 
-    // Step 1: Post the current payment object
-    this.onlinePaymentService.postOnlinePayment(payment).subscribe(
-      (result: any) => {
-        // Handle success, e.g., show a success message or navigate to a success page
-        console.log("Step 1: Post current payment successful");
+      // Step 2: Create a new payment object from all the ordered meals
+      const paymentFromOrderedMeals: Payment = {
+        id: 0, // Update with the appropriate ID
+        enteredBy: this.orderedMeals[0].enteredBy,
+        voucherId: 10,
+        amount: this.calculateRemainingAmount(),
+        PaymentType: 2,
+        dateEntered: new Date(),
+        custCode: this.loggedInUser.custId,
+        unit: 1,
+        paymentmodeid: 3,
+        servedby: '',
+        opaymentid: result.id, // Use the ID returned from the onlinePaymentService
+        paid: false,
+        timepaid: new Date(),
+        custtypeid: this.loggedInUser.custTypeId,
+        VoucherDescription: '',
+        // ... Your existing code for creating paymentFromOrderedMeals ...
+      };
+      const createdPayment = await this.paymentService.createPayment(paymentFromOrderedMeals).toPromise();
 
-        // Step 2: Create a new payment object from all the ordered meals
-        const paymentFromOrderedMeals: Payment = {
-          id: 0, // Update with the appropriate ID
-          enteredBy: this.orderedMeals[0].enteredBy,
-          voucherId: 10,
-          amount: this.calculateRemainingAmount(),
-          PaymentType: 2,
-          dateEntered: new Date(),
-          custCode: this.loggedInUser.custId,
-          unit: 1,
-          paymentmodeid: 3,
-          servedby: '',
-          opaymentid: result.id, // Use the ID returned from the onlinePaymentService
-          paid: false,
-          timepaid: new Date(),
-          custtypeid: this.loggedInUser.custTypeId,
-        };
+      // Step 3: Update each ordered meal's Submitted property to true
+      for (const orderedMeal of this.orderedMeals) {
+        orderedMeal.Submitted = true;
+        orderedMeal.paymentMainId = createdPayment.id;
 
-        this.paymentService.createPayment(paymentFromOrderedMeals).subscribe(
-          (createdPayment: Payment) => {
-            console.log("Step 2: Create payment from ordered meals successful");
-
-            // Step 3: Update each ordered meal's Submitted property to true
-            for (const orderedMeal of this.orderedMeals) {
-              orderedMeal.Submitted = true;
-              orderedMeal.paymentMainId = createdPayment.id;
-              // Update the individual orderedMeal objects in the array
-              this.orderedMealService.updateOrder(orderedMeal).subscribe(
-                () => {
-                  console.log('OrderedMeal updated:', orderedMeal);
-                },
-                (error: any) => {
-                  console.error('Failed to update OrderedMeal:', error);
-                }
-              );
-            }
-
-            // Step 4: Update the payment object returned by createPayment
-            createdPayment.paid = true;
-            createdPayment.timepaid = new Date();
-
-            this.paymentService.updatePayment(createdPayment).subscribe(
-              (updatedPayment: Payment) => {
-                console.log("Step 4: Update payment object successful");
-              },
-              (error: any) => {
-                console.error('Failed to update payment object:', error);
-              }
-            );
-
-            // Perform any other actions needed after payment and order updates
-            this.ngOnInit();
-            this.dialogRef.close(); // Close the dialog
-          },
-          (error: any) => {
-            console.error('Failed to create payment from ordered meals:', error);
-          }
-        );
-      },
-      error => {
-        console.log("Step 1: Post current payment failed");
+        // Update the individual orderedMeal objects in the array
+        await this.orderedMealService.updateOrder(orderedMeal).toPromise();
       }
-    );
-  }
 
+      // Step 4: Update the payment object returned by createPayment
+      createdPayment.paid = true;
+      createdPayment.timepaid = new Date();
+      await this.paymentService.updatePayment(createdPayment).toPromise();
+
+      // Manually update the local orderedMeals array instead of calling ngOnInit()
+      this.orderedMeals.forEach(orderedMeal => orderedMeal.Submitted = true);
+      this.calculateTotalAmount();
+      this.calculateRemainingAmount();
+
+      this.dialogRef.close(); // Close the dialog
+      // Display a snackbar with the "Payment Successful" message
+      this.snackBar.open('Payment Successful', 'Dismiss', {
+        duration: 3000, // 3 seconds duration for the snackbar
+      });
+
+    } catch (error) {
+      console.error('Payment processing error:', error);
+    }
+  }
 
 
   paymentCancel() {

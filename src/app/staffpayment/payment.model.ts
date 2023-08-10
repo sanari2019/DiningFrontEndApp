@@ -13,7 +13,7 @@ export class Payment {
   timepaid: Date;
   PaymentType: number;
   custtypeid: number;
-
+  VoucherDescription: string;
   constructor() {
     this.id = 0;
     this.dateEntered = new Date();
@@ -29,5 +29,6 @@ export class Payment {
     this.timepaid = new Date();
     this.PaymentType = 0;
     this.custtypeid = 0;
+    this.VoucherDescription = '';
   }
 }

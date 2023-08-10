@@ -9,10 +9,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { ConfirmPasswordValidator } from '../shared/confirm-password.validator';
 import { customerType } from '../shared/customertype.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 // Define the regular expression pattern for the password validation
-const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
 
 @Component({
@@ -22,6 +23,7 @@ const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-
 })
 
 export class RegistrationDialogComponent implements OnInit {
+  selectedOption: string = 'default';
 
   registrationForm!: UntypedFormGroup;
   customerTypes: customerType[] = []; // Array to store customer types
@@ -33,7 +35,7 @@ export class RegistrationDialogComponent implements OnInit {
   private validationMessages: { [key: string]: { [key: string]: string } };
 
 
-  constructor(private fb: UntypedFormBuilder, public dialogRef: MatDialogRef<RegistrationDialogComponent>, private router: Router, private registrationservice: RegistrationService, @Inject(MAT_DIALOG_DATA) public data: any, private encdecservice: EncrDecrService) {
+  constructor(private snackBar: MatSnackBar, private fb: UntypedFormBuilder, public dialogRef: MatDialogRef<RegistrationDialogComponent>, private router: Router, private registrationservice: RegistrationService, @Inject(MAT_DIALOG_DATA) public data: any, private encdecservice: EncrDecrService) {
     this.validationMessages = {
       firstName: {
         required: 'first name is required.',
@@ -147,6 +149,10 @@ export class RegistrationDialogComponent implements OnInit {
                       });
                     this.dialogRef.close();
                   }
+                  // Display a snackbar with the "Payment Successful" message
+                  this.snackBar.open('Registration Successful', 'Dismiss', {
+                    duration: 3000, // 3 seconds duration for the snackbar
+                  });
                 }
               } else {
                 console.log("User Exist")
@@ -183,7 +189,7 @@ export class RegistrationDialogComponent implements OnInit {
 
   onSaveComplete(): void {
     // this.registrationForm.reset();
-    this.router.navigate(['/registrations']);
+    // this.router.navigate(['/registrations']);
   }
   closeDialog(): void {
     this.dialogRef.close();

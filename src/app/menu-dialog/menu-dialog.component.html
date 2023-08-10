@@ -1,5 +1,8 @@
 <h2 mat-dialog-title  style="background-color: #004a9f; color: white; padding: 8px 16px;  margin: 0;">Menu List</h2>
 <mat-dialog-content>
+  <div *ngIf="NoMenuSelected" class="alert alert-error">
+    No Menu Selected.
+  </div>
   <mat-form-field>
     <input matInput type="text" placeholder="Search" [(ngModel)]="searchText" (input)="filterMenuList()" />
   </mat-form-field>
@@ -18,7 +21,7 @@
           <input type='checkbox' [(ngModel)]="menu.selected" (change)="updateSelectedMenus(menu)">
         </td>
         <td>{{ menu.name }}</td>
-        <td>{{ menu.amount | currency }}</td>
+        <td>{{ menu.amount  | currency: 'NGN'  }}</td>
         <!--<td>{{ (menu.amount * 0.6) | currency }}</td>-->
       </tr>
     </tbody>
@@ -33,4 +36,5 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="closeDialog()">Close</button>
+  <button mat-raised-button (click)="addToCart()">Add to Cart</button>
 </mat-dialog-actions>

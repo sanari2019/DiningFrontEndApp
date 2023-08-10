@@ -16,7 +16,6 @@ import { Route } from '../shared/route.model';
 })
 
 export class RegistrationService {
-
   private userURL = `${this.envUrl.urlAddress}/user`;
   // private userURL1 = "http://localhost:5057/";
   private reg = Registration;
@@ -76,7 +75,7 @@ export class RegistrationService {
 
   getRoles(registration: Registration): Observable<Route[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    registration.id = 0;
+    // registration.id = 0;
     return this.http.post<Route[]>(this.envUrl.urlAddress + '/CustomerRoute/getroutes', registration, { headers })
       .pipe(
         tap(data => console.log('createUser: ' + JSON.stringify(data))),
@@ -98,7 +97,7 @@ export class RegistrationService {
   updateUser(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const url = `${this.userURL}/${registration.id}`;
-    return this.http.put<Registration>(url, registration, { headers })
+    return this.http.post<Registration>(url, registration, { headers })
       .pipe(
         tap(() => console.log('updateUser: ' + registration.id)),
         // Return the product on an update
