@@ -38,6 +38,7 @@ import { Menu } from '../guestpayment/menu.model';
 import { MenuService } from '../guestpayment/menu.service';
 import { OrderedMeal } from '../guestpayment/orderedmeal.model';
 import { OrderedMealService } from '../guestpayment/orderedmeal.service';
+import { MealTariffService } from '../guestpayment/mealtariff.service';
 import { GuestpaymentComponent } from '../guestpayment/guestpayment.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogContentComponent } from '../dialog-content/dialog-content.component';
@@ -45,6 +46,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../loader/loader.service';
+import { MealTariff } from '../guestpayment/mealtariff.model';
 
 
 interface CartItem {
@@ -75,11 +77,13 @@ export class StaffpaymentComponent implements OnInit {
   // voucherForm!:FormGroup;
   menus!: Menu[];
   menu!: Menu;
+  tarriff!: MealTariff;
   // payment!: Payment;
   ordMeal!: OrderedMeal;
   // private sub!: Subscription;
   // private validationMessages!: { [key: string]: { [key: string]: string } };
   // private genericValidator!: GenericValidator;
+  itemsToExclude: number[] = [4, 6, 29, 30, 31, 32, 68, 84, 85, 86, 92];
 
 
   @ViewChildren(FormControlName, { read: ElementRef })
@@ -173,7 +177,7 @@ export class StaffpaymentComponent implements OnInit {
 
 
 
-  constructor(private loaderService: LoaderService, private breakpointObserver: BreakpointObserver, private snackBar: MatSnackBar, private dialog: MatDialog, private menuservice: MenuService, private ordmealservice: OrderedMealService, private httpClient: HttpClient, private fbstaff: FormBuilder, private router: Router, private paymentmodeservice: PaymentModeService, private voucherservice: VoucherService, private paymentservice: PaymentService, private encdecservice: EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService, private emailService: EmailService) {
+  constructor(private loaderService: LoaderService, private mealtariffService: MealTariffService, private breakpointObserver: BreakpointObserver, private snackBar: MatSnackBar, private dialog: MatDialog, private menuservice: MenuService, private ordmealservice: OrderedMealService, private httpClient: HttpClient, private fbstaff: FormBuilder, private router: Router, private paymentmodeservice: PaymentModeService, private voucherservice: VoucherService, private paymentservice: PaymentService, private encdecservice: EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService, private emailService: EmailService) {
     // this.validationMessages = {
     //   employeeNo: {
     //     required: 'Employee No is required.',
@@ -548,6 +552,17 @@ export class StaffpaymentComponent implements OnInit {
   getMenus() {
     this.menuservice.getMenus().subscribe(res => this.menus = res, error => this.errorMessage = <any>error);
   }
+  get filteredMenus() {
+    // Check if 'menus' is defined before filtering
+    if (this.menus) {
+      // Use the filter method to exclude items with IDs in itemsToExclude
+      return this.menus.filter(menu => !this.itemsToExclude.includes(menu.id));
+    } else {
+      // Return an empty array or handle the case when 'menus' is undefined
+      return [];
+    }
+  }
+
 
   rmvItem(ordMeal: OrderedMeal) {
 
@@ -751,16 +766,40 @@ export class StaffpaymentComponent implements OnInit {
     this.ngOnInit();
   }
 
-  onChange(mealid: any) {
-    this.menuservice.getMenu(mealid.value).subscribe(res => {
-      this.menu = res;
-      if (this.menu !== undefined) {
-        this.orderedMealForm.controls.amount.setValue(this.menu.amount);
+  onChange(value: any) {
+
+    this.mealtariffService.getMenutarriffByMaximumID(value.value).subscribe(res => {
+      this.tarriff = res
+      if (this.tarriff !== null) {
+        this.orderedMealForm.controls.amount.setValue(this.tarriff.tariff);
       }
-    }
-    );
+    })
+
+
+    // this.menuservice.getMenu(value.value).subscribe(res => {
+    //   this.menu = res;
+    //   if (this.menu !== undefined) {
+    //     this.orderedMealForm.controls.amount.setValue(this.menu.amount);
+    //   }
+    // }
+    // );
 
   }
+
+
+
+  getMenutarriffByMaximumID(menu: number) {
+    this.mealtariffService.getMenutarriffByMaximumID(menu).subscribe(
+      (mealt: MealTariff) => {
+        this.tarriff = mealt
+      },
+      error => {
+        // Handle any potential errors here
+        console.error('Error fetching meal tariff:', error);
+      }
+    );
+  }
+
 
   ngOnDestroy(): void {
     this.destroy$.next();

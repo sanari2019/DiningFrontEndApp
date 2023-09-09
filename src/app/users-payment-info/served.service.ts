@@ -5,6 +5,7 @@ import { Served } from './served.model';
 import { environment } from '../../environments/environment';
 import { Registration } from '../registration/registration.model';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { ServedEmail } from './servedEmail.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,10 @@ export class ServedService {
   getServedByCustomer(user: Registration): Observable<Served[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<Served[]>(`${this.apiUrl}/getServedbyCustomer`, user, { headers });
+  }
+
+  sendServedEmail(served: ServedEmail): Observable<ServedEmail> {
+    return this.http.post<ServedEmail>(`${this.apiUrl}/getServedemail`, served);
   }
 
 

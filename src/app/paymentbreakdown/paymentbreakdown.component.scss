@@ -1,0 +1,21 @@
+/* users-payment-info.component.scss */
+
+.scrollable-table {
+    height: calc(100vh - 20px);
+    /* Adjust as needed to account for margins/padding */
+    overflow-y: auto;
+}
+
+/* Assuming you have a class for your dialog container */
+.mat-dialog-container {
+    /* Additional styles for the dialog container */
+    /* ... */
+
+    /* Style for the mat-dialog-title */
+    h2.mat-dialog-title {
+        background-color: blue;
+        color: white;
+        padding: 8px 16px;
+        margin: 0;
+    }
+}

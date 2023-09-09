@@ -40,11 +40,6 @@ export class PaymentDetailService {
     return this.http.post<Payment[]>(url, { id: userId });
   }
 
-  getRecentTransactionsByCust(enteredby: number): Observable<RecentTransaction[]> {
-    const url = `${this.envUrl.urlAddress}/paymentmain/getRecentTransactionsByCust?enteredby=${enteredby}`;
-    return this.http.get<RecentTransaction[]>(url);
-  }
-
   // getPaidPaymentsByCust(paymentByCust: PaymentByCust): Observable<Payment[]> {
   //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   //   const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymtsbyCust`;

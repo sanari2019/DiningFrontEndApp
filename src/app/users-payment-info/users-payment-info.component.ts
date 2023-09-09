@@ -24,7 +24,11 @@ import { MenuService } from '../guestpayment/menu.service';
 // import { OrderedMeal } from '../guestpayment/orderedmeal.model';
 import { OrderedMealService } from '../guestpayment/orderedmeal.service';
 import { GuestpaymentComponent } from '../guestpayment/guestpayment.component';
+import { ServedEmail } from './servedEmail.model';
 // import { MatDialog } from '@angular/material/dialog';
+import { LoaderComponent } from '../loader/loader.component';
+import { LoaderService } from '../loader/loader.service';
+import { Observable } from 'rxjs';
 
 
 
@@ -152,8 +156,12 @@ export class UsersPaymentInfoComponent {
   userFullName: string = '';
   loggedInUser: any;
   isServedSuccessfully: boolean = false;
+  servedEmail: ServedEmail = new ServedEmail();
+  showSpinner = false;
+  isLoading$: Observable<boolean>;
 
-  constructor(private orderedMealService: OrderedMealService, private dialog: MatDialog, private servedService: ServedService, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private pymtservice: PaymentService, private router: Router, private registrationservice: RegistrationService) {
+  constructor(private loaderService: LoaderService, private orderedMealService: OrderedMealService, private dialog: MatDialog, private servedService: ServedService, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private pymtservice: PaymentService, private router: Router, private registrationservice: RegistrationService) {
+    this.isLoading$ = this.loaderService.isLoading$;
 
   }
   // Fetch the orderedMeals data from the server
@@ -185,8 +193,13 @@ export class UsersPaymentInfoComponent {
     this.registrationservice.getUser(propertyValue).subscribe((user: Registration) => {
       this.pymtUser = user;
       this.userFullName = `${this.pymtUser.firstName} ${this.pymtUser.lastName}`;
-      this.getPaymentsByCustomer(this.pymtUser);
-      this.loadCartItems();
+      if (this.pymtUser.freeze = true) {
+        this.getPaymentsByCustomer(this.pymtUser);
+        this.loadCartItems();
+      } else {
+        console.log("Frozen")
+      }
+
 
     });
     return this.pymtUser;
@@ -342,9 +355,12 @@ export class UsersPaymentInfoComponent {
 
   serveItems(): void {
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+    let totalAmount = 0;
     for (const item of this.cartItems) {
       item.isServed = true; // Set isServed to true
       item.ServedBy = loggedInUser?.id;
+      // Prepare the ServedEmail model
+      totalAmount += item.paymentMain.amount;
 
       // Call the updateServed method in your service to update the served item
       this.servedService.updateServed(item).subscribe(
@@ -352,6 +368,10 @@ export class UsersPaymentInfoComponent {
           // Handle successful update if needed
           this.isServedSuccessfully = true;
           console.log("Served item updated successfully");
+
+
+          // this.servedEmail.amount = updatedServed.paymentMain.amount;
+
         },
         (error: any) => {
           // Handle error if necessary
@@ -360,8 +380,30 @@ export class UsersPaymentInfoComponent {
       );
     }
 
-    this.loadCartItems();
-    this.ngOnInit();
+    // Prepare the ServedEmail model using the totalAmount
+    const servedEmail: ServedEmail = new ServedEmail();
+    servedEmail.amount = totalAmount;
+    servedEmail.serversName = loggedInUser?.firstName; // You might need to get the server's name from the backend
+    servedEmail.customerName = this.userFullName;
+    servedEmail.customerFirstName = this.pymtUser.firstName;
+    servedEmail.dateServed = new Date(); // You can set the date here as needed
+    servedEmail.customerUserName = this.pymtUser.userName;
+
+    // Call the sendServedEmail method to send the email
+    this.servedService.sendServedEmail(servedEmail).subscribe(
+      (sentEmailResponse: ServedEmail) => {
+        console.log("Served email sent successfully", sentEmailResponse);
+        // Handle successful email sending if needed
+
+        // Refresh the cart items and the component
+        this.loadCartItems();
+        this.ngOnInit();
+      },
+      (error: any) => {
+        console.log("Failed to send served email", error);
+        // Handle email sending error if necessary
+      }
+    );
   }
 
 

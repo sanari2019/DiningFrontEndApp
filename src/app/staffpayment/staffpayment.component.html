@@ -43,9 +43,9 @@
       </div>
        <div class="form-group row mb-2">
         <label class="col-md-2 col-form-label"
-               for="unitId">Select Unit</label>
+               for="unitId">Select Quantity</label>
         <div class="col-md-8">
-          <select class="form-control" placeholder="Unit required" formControlName="unit" [(ngModel)]="selectedOption2">
+          <select class="form-control" placeholder="Quantity required" formControlName="unit" [(ngModel)]="selectedOption2">
             <option value="default" disabled>--Select--</option>
             <option *ngFor="let unit of Units" value="{{unit}}" >{{unit}}</option>
         </select>
@@ -193,7 +193,7 @@
           <div class="col-md-8">
             <select (change)="onChange($event.target)" class="form-control" formControlName="mealid" id="mealid" [(ngModel)]="selectedOption">
               <option value="default">--Select--</option>
-              <option *ngFor="let menu of menus"
+              <option *ngFor="let menu of filteredMenus"
                       value={{menu.id}}>
                   {{menu.name}}
               </option>

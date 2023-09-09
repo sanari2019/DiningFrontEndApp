@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { AdministrationComponent } from './pages/Administration/administration.component';
 import { AboutComponent } from './pages/about/about.component';
 import { HelpComponent } from './pages/help/help.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
@@ -60,13 +61,14 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoaderInterceptor } from './loader/loader.interceptor';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { PaymentbreakdownComponent } from './paymentbreakdown/paymentbreakdown.component';
 
 
 
 
 
 @NgModule({
-  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent],
+  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent],
   imports: [
     Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
     MatProgressBarModule,

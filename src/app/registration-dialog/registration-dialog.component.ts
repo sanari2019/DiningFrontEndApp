@@ -55,6 +55,7 @@ export class RegistrationDialogComponent implements OnInit {
   }
 
   userExistsError: boolean = false;
+  custIdExistsError: boolean = false;
 
   ngOnInit() {
     this.registrationForm = this.fb.group({
@@ -128,6 +129,55 @@ export class RegistrationDialogComponent implements OnInit {
   //     return null;
   //   }
   // }
+  // save(): void {
+  //   this.submitted = true;
+
+  //   if (this.registrationForm.valid) {
+  //     if (this.registrationForm.dirty) {
+  //       const p = { ...this.registration, ...this.registrationForm.value };
+  //       p.password = this.encdecservice.set('123456$#@$^@1ERF', p.password);
+  //       if (p.userName !== "") {
+  //         this.registrationservice.getUserbyusername(p.userName)
+  //           .subscribe((rslt: Registration) => {
+  //             this.loadedRegistration = rslt;
+  //             if (this.loadedRegistration == null) {
+  //               if (p.id === 0) {
+  //                 if (confirm(`You are about creating account for user: ${p.firstName + ' ' + p.lastName}?`)) {
+  //                   this.registrationservice.createUser(p)
+  //                     .subscribe({
+  //                       next: () => this.onSaveComplete(),
+  //                       error: err => this.errorMessage = err
+  //                     });
+  //                   this.dialogRef.close();
+  //                 }
+  //                 // Display a snackbar with the "Payment Successful" message
+  //                 this.snackBar.open('Registration Successful', 'Dismiss', {
+  //                   duration: 3000, // 3 seconds duration for the snackbar
+  //                 });
+  //               }
+  //             } else {
+  //               console.log("User Exist")
+  //               this.userExistsError = true;
+  //             }
+  //           }
+  //           )
+
+  //       }
+  //       else {
+  //         console.log("User Exists")
+  //         this.onSaveComplete();
+  //       }
+
+  //     }
+  //     else {
+  //       this.errorMessage = 'Please correct the validation errors.';
+  //     }
+
+  //   }
+
+  // }
+
+
   save(): void {
     this.submitted = true;
 
@@ -135,46 +185,66 @@ export class RegistrationDialogComponent implements OnInit {
       if (this.registrationForm.dirty) {
         const p = { ...this.registration, ...this.registrationForm.value };
         p.password = this.encdecservice.set('123456$#@$^@1ERF', p.password);
+
         if (p.userName !== "") {
-          this.registrationservice.getUserbyusername(p.userName)
-            .subscribe((rslt: Registration) => {
-              this.loadedRegistration = rslt;
-              if (this.loadedRegistration == null) {
-                if (p.id === 0) {
-                  if (confirm(`You are about creating account for user: ${p.firstName + ' ' + p.lastName}?`)) {
-                    this.registrationservice.createUser(p)
-                      .subscribe({
-                        next: () => this.onSaveComplete(),
-                        error: err => this.errorMessage = err
-                      });
-                    this.dialogRef.close();
-                  }
-                  // Display a snackbar with the "Payment Successful" message
-                  this.snackBar.open('Registration Successful', 'Dismiss', {
-                    duration: 3000, // 3 seconds duration for the snackbar
-                  });
-                }
-              } else {
-                console.log("User Exist")
-                this.userExistsError = true;
-              }
+          this.registrationservice.getUserbyusername(p.userName).subscribe((rslt: Registration) => {
+            this.loadedRegistration = rslt;
+            if (this.loadedRegistration == null) {
+              this.checkCustIdAndProceed(p); // Check custId after checking userName
+              this.dialogRef.close();
+            } else {
+              console.log("User Exist")
+              this.userExistsError = true;
             }
-            )
-
+          });
+        } else {
+          this.checkCustIdAndProceed(p); // Check custId when userName is empty
+          this.dialogRef.close();
         }
-        else {
-          console.log("User Exists")
-          this.onSaveComplete();
-        }
-
-      }
-      else {
+      } else {
         this.errorMessage = 'Please correct the validation errors.';
       }
-
     }
-
   }
+
+  private checkCustIdAndProceed(p: any): void {
+    if (p.custId !== "") {
+      this.registrationservice.getUserByCustId(p.custId).subscribe((rslt: Registration) => {
+        this.loadedRegistration = rslt;
+        if (this.loadedRegistration == null) {
+          if (p.id === 0) {
+            if (confirm(`You are about creating an account for user: ${p.firstName + ' ' + p.lastName}?`)) {
+              this.registrationservice.createUser(p).subscribe({
+                next: () => this.onSaveComplete(),
+                error: err => this.errorMessage = err
+              });
+
+              this.snackBar.open('Registration Successful', 'Dismiss', {
+                duration: 3000,
+              });
+
+            } else {
+              this.snackBar.open('Registration Not Successful', 'Dismiss', {
+                duration: 4000,
+              });
+            }
+
+          } else {
+            this.snackBar.open('User id exists', 'Dismiss', {
+              duration: 4000,
+            });
+          }
+        } else {
+          console.log("CustId Exists")
+          this.custIdExistsError = true;
+        }
+      });
+    } else {
+      console.log("CustId Exists")
+      this.onSaveComplete();
+    }
+  }
+
 
   getUser(username: string): Registration {
     this.registrationservice.getUserbyusername(username)

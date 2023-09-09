@@ -107,19 +107,23 @@ figure {
   }
 
   &.blue {
-    background-color: #2298F1;
+    background-color: #44C8F5;
   }
 
   &.green {
-    background-color: #66B92E;
+    background-color: #98CB4F;
   }
 
   &.orange {
-    background-color: #DA932C;
+    background-color: #F99D1C;
   }
 
   &.red {
-    background-color: #D65B4A;
+    background-color: #ED1D24;
+  }
+
+  &.black {
+    background-color: #001D4E;
   }
 }
 
@@ -336,4 +340,37 @@ figure {
 .zmdi {
   line-height: 1;
   vertical-align: middle;
+}
+
+
+
+// your animation
+@keyframes shakeAnimation {
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-10px);
+  }
+
+  40% {
+    transform: translateX(10px);
+  }
+
+  60% {
+    transform: translateX(-10px);
+  }
+
+  80% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shakeAnimation 2.5s ease-in-out infinite;
 }
