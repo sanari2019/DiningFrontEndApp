@@ -1,14 +1,21 @@
+<div class="card red" *ngIf="freezeStatus">
+	
+	  <p>Freeze Status: {{ freezeStatus ? 'Frozen' : 'Not Frozen' }}</p>
+
+  </div>
+  
+
 <div class="container-fluid">
 	<div class="row">
-		
 		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 my-3" style="width:100%;">
 			<div class="card-list">
 				<div class="row">
-					<div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-						<div class="card blue">
+					<div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4" [class.shake]="shakeState === 'shakeStart'" (click)="openPaymentBreakdownDialog()" matTooltip="Click to see details">
+						<div class="card black">
 							<div class="title">total balance</div>
 							<i class="zmdi zmdi-upload"></i>
 							<div class="value">{{ totalAmount | currency: 'NGN' }}</div>
+							
 							<div class="stat">Your total balance</div>
 						</div>
 					</div>

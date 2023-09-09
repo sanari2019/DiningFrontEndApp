@@ -60,6 +60,16 @@ export class RegistrationService {
       )
   }
 
+  getUserByCustId(custId: string): Observable<Registration> {
+    const url = `${this.envUrl.urlAddress}/user/getuserbycustid/${custId}`;
+    return this.http.get<Registration>(url)
+      .pipe(
+        tap(data => console.log('getUserByCustId: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+
+
   createUser(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     registration.id = 0;
@@ -148,7 +158,8 @@ export class RegistrationService {
       firstName: "",
       lastName: "",
       userName: "",
-      password: ""
+      password: "",
+      freeze: false
     };
   }
 

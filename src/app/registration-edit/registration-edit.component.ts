@@ -23,7 +23,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
   formInputElements: ElementRef[] = [];
 
   pageTitle = 'Registration Edit';
-  errorMessage= '';
+  errorMessage = '';
   registrationForm!: UntypedFormGroup;
   registration!: Registration;
   private sub!: Subscription;
@@ -36,7 +36,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
   constructor(private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private registrationservice: RegistrationService,private encdecservice:EncrDecrService) {
+    private registrationservice: RegistrationService, private encdecservice: EncrDecrService) {
 
     // Defines all of the validation messages for the form.
     //These could instead be retrieved from a file or database.
@@ -56,11 +56,11 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
       },
 
     };
-     // Define an instance of the validator for use with this form,
+    // Define an instance of the validator for use with this form,
     // passing in this form's set of validation messages.
     this.genericValidator = new GenericValidator(this.validationMessages);
 
-     }
+  }
 
   ngOnInit(): void {
 
@@ -119,7 +119,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
     if (this.registration.id === 0) {
       this.pageTitle = 'Add User';
     } else {
-      this.pageTitle = `Edit User: ${this.registration.firstName+' '+this.registration.lastName}`;
+      this.pageTitle = `Edit User: ${this.registration.firstName + ' ' + this.registration.lastName}`;
     }
 
     // Update the data on the form
@@ -138,7 +138,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
       // Don't delete, it was never saved.
       this.onSaveComplete();
     } else {
-      if (confirm(`Really delete the user: ${this.registration.firstName+' '+this.registration.lastName}?`)) {
+      if (confirm(`Really delete the user: ${this.registration.firstName + ' ' + this.registration.lastName}?`)) {
         this.registrationservice.deleteUser(this.registration)
           .subscribe({
             next: () => this.onSaveComplete(),
@@ -152,7 +152,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
     if (this.registrationForm.valid) {
       if (this.registrationForm.dirty) {
         const p = { ...this.registration, ...this.registrationForm.value };
-        p.password=this.encdecservice.set('123456$#@$^@1ERF', p.password);
+        p.password = this.encdecservice.set('123456$#@$^@1ERF', p.password);
         if (p.id === 0) {
           this.registrationservice.createUser(p)
             .subscribe({
@@ -173,6 +173,7 @@ export class RegistrationEditComponent implements OnInit, AfterViewInit, OnDestr
       this.errorMessage = 'Please correct the validation errors.';
     }
   }
+
 
   onSaveComplete(): void {
     // Reset the form to clear the flags

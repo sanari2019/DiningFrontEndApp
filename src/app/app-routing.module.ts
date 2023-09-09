@@ -21,6 +21,7 @@ import { GuestpaymentComponent } from './guestpayment/guestpayment.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { AdministrationComponent } from './pages/Administration/administration.component';
 
 
 
@@ -87,6 +88,10 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
+  },
+  {
+    path: 'administration',
+    component: AdministrationComponent,
   },
   {
     path: 'about',

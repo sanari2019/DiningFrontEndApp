@@ -4,6 +4,9 @@ import { Menu } from '../guestpayment/menu.model';
 import { MenuService } from '../guestpayment/menu.service';
 import { OrderedMealService } from '../guestpayment/orderedmeal.service';
 import { OrderedMeal } from '../guestpayment/orderedmeal.model';
+import { MealTariff } from '../guestpayment/mealtariff.model';
+import { MealTariffService } from '../guestpayment/mealtariff.service';
+import { MenuandTariff } from '../guestpayment/menuandtariff.model';
 
 
 @Component({
@@ -12,9 +15,10 @@ import { OrderedMeal } from '../guestpayment/orderedmeal.model';
   styleUrls: ['./menu-dialog.component.scss']
 })
 export class MenuDialogComponent implements OnInit {
-  menuList: Menu[] = [];
+  menuList: MenuandTariff[] = [];
   menu!: Menu;
-  filteredMenuList: Menu[] = [];
+  tariff!: MealTariff;
+  filteredMenuList: MenuandTariff[] = [];
   searchText = '';
   selectedMenus: Menu[] = []; // Add selectedMenus array property
   @Output() menuSelected: EventEmitter<Menu[]> = new EventEmitter<Menu[]>(); // Emit selectedMenus when the dialog is closed
@@ -25,7 +29,8 @@ export class MenuDialogComponent implements OnInit {
   constructor(
     private menuService: MenuService,
     private dialogRef: MatDialogRef<MenuDialogComponent>,
-    private orderedMealService: OrderedMealService
+    private orderedMealService: OrderedMealService,
+    private mealtariffService: MealTariffService
   ) { }
 
   ngOnInit() {
@@ -34,7 +39,7 @@ export class MenuDialogComponent implements OnInit {
   }
 
   getMenuList() {
-    this.menuService.getMenus().subscribe(
+    this.mealtariffService.getMenuandTariff().subscribe(
       (menus) => {
         this.menuList = menus;
         this.filteredMenuList = menus;
@@ -45,39 +50,55 @@ export class MenuDialogComponent implements OnInit {
     );
   }
 
+  getAmountForMenu(menuId: number): number {
+    let amount = 0;
+    this.mealtariffService.getMenutarriffByMaximumID(menuId).subscribe((mealTariff) => {
+      // Check if the returned mealTariff is not null and has a tariff value
+      if (mealTariff && mealTariff.tariff) {
+        amount = mealTariff.tariff; // Set the amount to the tariff value
+      }
+    },
+      (error) => {
+        console.error('Error fetching meal tariff:', error);
+      }
+    );
+
+    return amount;
+  }
+
   filterMenuList() {
     this.filteredMenuList = this.menuList.filter((menu) =>
-      menu.name.toLowerCase().includes(this.searchText.toLowerCase())
+      menu.menuname.toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
 
   calculateTotalAmount(): number {
     return this.filteredMenuList.reduce(
-      (total, menu) => (total += menu.amount),
+      (total, menu) => (total += menu.tariff),
       0
     );
   }
 
   calculateTotalDiscountedAmount(): number {
     return this.filteredMenuList.reduce(
-      (total, menu) => (total += menu.amount * 0.6),
+      (total, menu) => (total += menu.tariff * 0.6),
       0
     );
   }
 
   // Method to update selectedMenus array when checkbox state changes
-  updateSelectedMenus(menu: Menu) {
-    if (menu.selected) {
-      this.selectedMenus.push(menu);
-    } else {
-      this.selectedMenus = this.selectedMenus.filter((item) => item.id !== menu.id);
-    }
-    // Save the updated selectedMenus array to local storage
-    localStorage.setItem('selectedMenus', JSON.stringify(this.selectedMenus));
-    // Emit the updated selectedMenus array and its count
-    this.menuSelected.emit(this.selectedMenus);
-    this.menuCount.emit(this.selectedMenus.length);
-  }
+  // updateSelectedMenus(menu: Menu) {
+  //   if (menu.selected) {
+  //     this.selectedMenus.push(menu);
+  //   } else {
+  //     this.selectedMenus = this.selectedMenus.filter((item) => item.id !== menu.id);
+  //   }
+  //   // Save the updated selectedMenus array to local storage
+  //   localStorage.setItem('selectedMenus', JSON.stringify(this.selectedMenus));
+  //   // Emit the updated selectedMenus array and its count
+  //   this.menuSelected.emit(this.selectedMenus);
+  //   this.menuCount.emit(this.selectedMenus.length);
+  // }
 
 
   closeDialog() {

@@ -3,6 +3,7 @@ export class PaymentByCust {
   custCode: string;
   totalAmount: number;
   enteredbyName: string;
+  freeze: boolean;
 
   constructor() {
 
@@ -10,5 +11,6 @@ export class PaymentByCust {
     this.custCode = "";
     this.totalAmount = 0;
     this.enteredbyName = '';
+    this.freeze = false;
   }
 }

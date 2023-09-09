@@ -6,6 +6,7 @@ export class Registration {
   lastName: string;
   userName: string;
   password: string;
+  freeze: boolean;
 
   constructor() {
     this.id = 0;
@@ -15,5 +16,6 @@ export class Registration {
     this.lastName = "";
     this.userName = "";
     this.password = "";
+    this.freeze = false;
   }
 }

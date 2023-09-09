@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Registration } from 'src/app/registration/registration.model';
 import { RegistrationService } from 'src/app/registration/registration.service';
 import { PaymentDetailService } from 'src/app/users-payment-info/paymentdetail.service';
 import { PaymentByCust } from 'src/app/users-payment-info/PaymentByCust.model';
@@ -9,6 +10,8 @@ import { Voucher } from 'src/app/voucher/voucher.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { RecentTransaction } from './recent-transaction.model';
+import { MatDialog } from '@angular/material/dialog';
+import { PaymentbreakdownComponent } from 'src/app/paymentbreakdown/paymentbreakdown.component';
 
 @Component({
   selector: 'app-home',
@@ -21,8 +24,22 @@ export class HomeComponent implements OnInit {
   voucherStats: { [key: number]: { count: number; totalUnits: number } } = {};
   voucherDescriptions: { [key: number]: Observable<string> } = {};
   recentTransactions: RecentTransaction[] = [];
+  shakeState = 'shakeStart';
+  pymtUser: Registration = new Registration();
+  freezeStatus: boolean = false;
+  user: Registration = {
+    id: 0,
+    custTypeId: 0,
+    custId: '',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    password: '',
+    freeze: false
+  };
 
-  constructor(private registrationService: RegistrationService,
+  constructor(public dialog: MatDialog,
+    private registrationService: RegistrationService,
     private paymentDetailService: PaymentDetailService,
     private voucherService: VoucherService) { }
 
@@ -33,6 +50,7 @@ export class HomeComponent implements OnInit {
     if (loggedInUserData) {
       const loggedInUser = JSON.parse(loggedInUserData);
 
+      this.getUser(loggedInUser.id);
       // Fetch the payment details for the logged-in user
       this.paymentDetailService.getPaidPaymentsByCust(loggedInUser).subscribe((payments: Payment[]) => {
         // Calculate totalAmount from the payment details
@@ -72,15 +90,7 @@ export class HomeComponent implements OnInit {
         });
       });
 
-      // Fetch recent transactions for the logged-in user
-      this.paymentDetailService.getRecentTransactionsByCust(loggedInUser.id).subscribe(
-        (transactions: RecentTransaction[]) => {
-          this.recentTransactions = transactions;
-        },
-        error => {
-          console.error('Error fetching recent transactions:', error);
-        }
-      );
+
 
 
 
@@ -88,6 +98,38 @@ export class HomeComponent implements OnInit {
 
 
 
+
+
+
+  }
+  getUser(propertyValue: number): void {
+    this.registrationService.getUser(propertyValue).subscribe((user: Registration) => {
+      this.pymtUser = user;
+      this.freezeStatus = user.freeze;
+      // this.userFullName = `${this.pymtUser.firstName} ${this.pymtUser.lastName}`;
+      // this.pymtUser.freeze;
+
+      // this.getPaymentsByCustomer(this.pymtUser);
+
+
+
+
+    });
+    // this.pymtUser.freeze;
+
+  }
+
+  toggleFreezeStatus(): void {
+    this.user.freeze = !this.user.freeze; // Toggle the freeze status
+
+    this.registrationService.updateUser(this.user).subscribe(
+      (updatedUser: Registration) => {
+        console.log('Freeze status updated successfully:', updatedUser);
+      },
+      (error) => {
+        console.error('Error updating freeze status:', error);
+      }
+    );
 
   }
 
@@ -100,7 +142,7 @@ export class HomeComponent implements OnInit {
       case '10':
         return 'card red';
       default:
-        return 'card'; // Default class if no match
+        return 'card blue'; // Default class if no match
     }
   }
 
@@ -116,6 +158,13 @@ export class HomeComponent implements OnInit {
   // }
   getVoucherDescription(voucherId: string): Observable<string> {
     return this.voucherDescriptions[+voucherId.toString()];
+  }
+
+  openPaymentBreakdownDialog(): void {
+    const dialogRef = this.dialog.open(PaymentbreakdownComponent, {
+      width: 'auto',
+    });
+    this.shakeState = 'shakeEnd'; // Stop the shaking animation
   }
 
 

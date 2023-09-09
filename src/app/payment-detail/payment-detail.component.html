@@ -49,12 +49,17 @@
             <!-- <td>{{ registration.password }}</td> -->
             <td>
             </td>
+            <td>      
+              <span class="material-icons" *ngIf="pymtdetails.freeze">
+                report_off
+              </span>
+            </td>
             <td>
               <!-- <button class="btn btn-outline-primary btn-sm"
               (click)="updatepayment(pymtdetails)">
                 Served
               </button> -->
-              <button class="btn btn-outline-primary btn-sm" (click)="navigateToDetails(pymtdetails)">
+              <button class="btn btn-outline-primary btn-sm" (click)="navigateToDetails(pymtdetails)"  [disabled]="pymtdetails.freeze">
                 View Details
               </button>
               

@@ -45,6 +45,28 @@
     </div>
 
     <mat-divider></mat-divider>
+    <!--<button mat-button class="menu-button" routerLink="/administration">-->
+      <!--<mat-icon>person</mat-icon>-->
+     <!-- <span>Administration</span>-->
+    <!--</button>-->
+
+    <div class="mb-4">
+      <div>
+       
+        
+        <p>Freeze Status: {{ user.freeze ? 'Frozen' : 'Not Frozen' }}</p>
+        
+      </div>
+      <div class="item">
+        <label class="switch">
+          <input type="checkbox" id="cheap" [(ngModel)]="freezeStatus" (change)="toggleFreezeStatus()" />
+          <span [ngClass]="{'slider': true, 'round': true, 'frozen': freezeStatus, 'not-frozen': !freezeStatus}"></span>
+        </label>
+      </div>
+      
+      
+     
+    </div>
 
     <!--<button mat-button class="menu-button" routerLink="/help">
       <mat-icon>help</mat-icon>

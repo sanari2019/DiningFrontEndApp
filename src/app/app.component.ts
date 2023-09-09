@@ -30,10 +30,22 @@ export class AppComponent implements OnInit {
   @ViewChild('drawer') drawer: any;
   title = 'angular-responsive-sidebar';
   isLoggedIn$!: Observable<boolean>;
-
+  loggeInUser: Registration | undefined; // Holds the logged-in user
   loggedinUser = ' ';
   registration: Registration | undefined;
   routes!: Route[];
+
+  user: Registration = {
+    id: 0,
+    custTypeId: 0,
+    custId: '',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    password: '',
+    freeze: false
+  }; // Initialize an empty user object
+  freezeStatus: boolean = false;
 
   currentRoute: Route | undefined;
   private loggedIn = new BehaviorSubject<boolean>(false);
@@ -70,11 +82,43 @@ export class AppComponent implements OnInit {
   get isLoggedIn() {
     return this.loggedIn.asObservable();
   }
+  getUser(userId: number): void {
+    this.regservice.getUser(userId).subscribe((user: Registration) => {
+      this.user = user;
+      this.freezeStatus = user.freeze;
+    },
+      (error) => {
+        console.error('Error fetching user:', error);
+      }
+    );
+  }
+
+  toggleFreezeStatus(): void {
+    this.user.freeze = !this.user.freeze; // Toggle the freeze status
+
+    this.regservice.updateUser(this.user).subscribe(
+      (updatedUser: Registration) => {
+        console.log('Freeze status updated successfully:', updatedUser);
+        window.location.reload();
+
+      },
+      (error) => {
+        console.error('Error updating freeze status:', error);
+      }
+    );
+
+
+  }
+
+
+
 
 
 
 
   ngOnInit() {
+
+
     this.isLoggedIn$ = this.authService.isLoggedIn;
     if (this.isLoggedIn$ == undefined) {
       this.router.navigate(['/login']);
@@ -138,6 +182,17 @@ export class AppComponent implements OnInit {
       }
 
     });
+    // this.toggleFreezeStatus()
+
+    // Parse user object from JSON string
+    const userObject = JSON.parse(localStorage.getItem('user') || '{}');
+    if (userObject.id) {
+      const userId = userObject.id;
+
+      // Now you have the userId, you can use it wherever you need
+      // For example, you can call the `getUser` method with the userId
+      this.getUser(userId);
+    }
   }
   onLogout() {
     this.authService.logout();
