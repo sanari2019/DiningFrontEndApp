@@ -99,7 +99,7 @@
             <th>Meal</th>
             <!--<th>Entered By</th>-->
             <th>Amount</th>
-            <!--<th>Payment Type</th>-->
+            <!--<th>Payment Type</th>-->  
             <th></th>
           </tr>
         </thead>
@@ -107,7 +107,7 @@
           <tr *ngFor="let orderedMeal of getCurrentPageData()">
             <!--<td>{{ orderedMeal.dateEntered | date }}</td>-->
             <!--<td>{{ orderedMeal.guest }}</td>-->
-            <td>{{ orderedMeal.menu.name }}</td>
+            <td>{{ orderedMeal.menu?.name }}</td>
             <!--<td>{{ orderedMeal.enteredBy }}</td>-->
             <td>{{ formatWithCommas(orderedMeal.amount) }}</td>
             <!--<td>{{ orderedMeal.paymentTypeId }}</td> -->

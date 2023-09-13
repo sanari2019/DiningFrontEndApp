@@ -21,6 +21,9 @@ import { PaymentDetailService } from '../payment-detail/paymentdetail.service';
 import { PaymentDetail } from '../payment-detail/paymentdetail.model';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { MenuandTariff } from './menuandtariff.model';
+
+
 
 @Component({
   selector: 'app-guestpayment',
@@ -52,6 +55,7 @@ export class GuestpaymentComponent implements OnInit {
   paymentDetails: PaymentDetail[] = [];
   ordmeal: OrderedMeal = new OrderedMeal();
   isHandset: boolean = false; // Add a property to track handset breakpoint
+  itemsToExclude: number[] = [32, 69];
 
 
   private observeHandsetBreakpoint(): void {
@@ -249,11 +253,11 @@ export class GuestpaymentComponent implements OnInit {
           const orderedMeal: OrderedMeal = {
             id: 0,
             guest: guestValue,
-            mealid: menu.id,
             enteredBy: enteredBy,
             amount: menu.amount,
             dateEntered: new Date(),
-            menu: menu,
+            menu: this.menu,
+            mealid: menu.id,
             Submitted: false,
             paymentMainId: 0,
           };

@@ -160,8 +160,11 @@ export class AppComponent implements OnInit {
                 this.regservice.getRoles(this.registration).subscribe(
                   (roless: Route[]) => {
                     this.routes = roless;
+                    this.routes.sort((a, b) => a.menuName.localeCompare(b.menuName));
                     // this.filteredPaymentDetails = this.paymentDetails;
+
                   });
+
               }
               else {
                 if (!localStorage.getItem('user')) {
@@ -203,6 +206,10 @@ export class AppComponent implements OnInit {
     this.loggedinUser = '';
     this.isLoggedIn$ = this.authService.isLoggedIn;
 
+  }
+  setLandingPage(route: Route) {
+    // Set the landing page route using Angular Router
+    this.router.navigate(['/' + route.path]);
   }
 
   ngAfterViewInit() {

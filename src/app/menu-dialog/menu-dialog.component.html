@@ -18,7 +18,7 @@
     <tbody>
       <tr *ngFor="let menu of filteredMenuList">
         <td>
-          <input type='checkbox' [(ngModel)]="menu.selected" >
+          <input type='checkbox' [(ngModel)]="menu.selected" (change)="updateSelectedMenus(menu)">
         </td>
         <td>{{ menu.menuname }}</td>
         <td>{{ menu.tariff | currency: 'NGN' }}</td>
