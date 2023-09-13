@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, VERSION } from '@angular/core';
+import { SafeResourceUrl, DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-administration',

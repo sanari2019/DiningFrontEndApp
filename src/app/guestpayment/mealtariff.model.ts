@@ -12,7 +12,7 @@ export class MealTariff {
 
     constructor() {
         this.id = 0;
-        this.menuid = 0;
+        this.menuid = 1;
         this.menu = new Menu;
         this.tariff = 0;
         this.datechanged = new Date();

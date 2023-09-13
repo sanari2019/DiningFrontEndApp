@@ -16,14 +16,18 @@ import { MenuandTariff } from '../guestpayment/menuandtariff.model';
 })
 export class MenuDialogComponent implements OnInit {
   menuList: MenuandTariff[] = [];
+  menus: Menu[] = [];
   menu!: Menu;
   tariff!: MealTariff;
   filteredMenuList: MenuandTariff[] = [];
   searchText = '';
-  selectedMenus: Menu[] = []; // Add selectedMenus array property
+  selectedMenus: MenuandTariff[] = []; // Add selectedMenus array property
+  selectedMenu: Menu[] = [];
   @Output() menuSelected: EventEmitter<Menu[]> = new EventEmitter<Menu[]>(); // Emit selectedMenus when the dialog is closed
   @Output() menuCount: EventEmitter<number> = new EventEmitter<number>();
   NoMenuSelected = false;
+  menuid = 0;
+  // itemsToExclude: number[] = [4, 6, 29, 30, 31, 32, 68, 69, 84, 85, 86, 92];
 
 
   constructor(
@@ -56,6 +60,19 @@ export class MenuDialogComponent implements OnInit {
       // Check if the returned mealTariff is not null and has a tariff value
       if (mealTariff && mealTariff.tariff) {
         amount = mealTariff.tariff; // Set the amount to the tariff value
+        const selectedMenu: Menu = {
+          id: menuId,
+          name: '', // You can set the name to an appropriate value
+          amount: amount,
+          selected: true
+        };
+
+        // Add the selectedMenu to your selectedMenus array
+        this.selectedMenu.push(selectedMenu);
+
+        // Emit the updated selectedMenus array and its count
+        this.menuSelected.emit(this.selectedMenu);
+        this.menuCount.emit(this.selectedMenu.length);
       }
     },
       (error) => {
@@ -72,6 +89,7 @@ export class MenuDialogComponent implements OnInit {
     );
   }
 
+
   calculateTotalAmount(): number {
     return this.filteredMenuList.reduce(
       (total, menu) => (total += menu.tariff),
@@ -87,18 +105,26 @@ export class MenuDialogComponent implements OnInit {
   }
 
   // Method to update selectedMenus array when checkbox state changes
-  // updateSelectedMenus(menu: Menu) {
-  //   if (menu.selected) {
-  //     this.selectedMenus.push(menu);
-  //   } else {
-  //     this.selectedMenus = this.selectedMenus.filter((item) => item.id !== menu.id);
-  //   }
-  //   // Save the updated selectedMenus array to local storage
-  //   localStorage.setItem('selectedMenus', JSON.stringify(this.selectedMenus));
-  //   // Emit the updated selectedMenus array and its count
-  //   this.menuSelected.emit(this.selectedMenus);
-  //   this.menuCount.emit(this.selectedMenus.length);
-  // }
+  updateSelectedMenus(menu: MenuandTariff) {
+    if (menu.selected) {
+      const selectedMenu: Menu = {
+        id: menu.menu.id,
+        name: menu.menuname,
+        amount: menu.tariff,
+        selected: true
+      };
+
+      this.selectedMenu.push(selectedMenu);
+      this.selectedMenus.push(menu);
+    } else {
+      this.selectedMenus = this.selectedMenus.filter((item) => item.menuid !== menu.menuid);
+    }
+    // Save the updated selectedMenus array to local storage
+    localStorage.setItem('selectedMenus', JSON.stringify(this.selectedMenu));
+    // Emit the updated selectedMenus array and its count
+    this.menuSelected.emit(this.selectedMenu);
+    this.menuCount.emit(this.selectedMenu.length);
+  }
 
 
   closeDialog() {
@@ -108,6 +134,7 @@ export class MenuDialogComponent implements OnInit {
 
   addToCart(): void {
     // Check if any menus are selected
+    //const menus = JSON.parse(localStorage.getItem('selectedMenus') || '{}');
     if (this.selectedMenus.length === 0) {
       this.NoMenuSelected = true;
       console.log('No menus selected.');
@@ -118,16 +145,19 @@ export class MenuDialogComponent implements OnInit {
     const guestValue = loggedInUser?.custId;
     const enteredBy = loggedInUser?.id.toString();
 
+    const selectedMenuItems: Menu[] = [];
+
+
     // Create an OrderedMeal object for each selected menu item and save it to the database
     this.selectedMenus.forEach((menu) => {
       const orderedMeal: OrderedMeal = {
         id: 0,
         guest: guestValue,
-        mealid: menu.id,
         enteredBy: enteredBy,
-        amount: menu.amount,
+        mealid: menu.menu.id,
+        amount: menu.tariff,
         dateEntered: new Date(),
-        menu: menu,
+        menu: this.menu,
         Submitted: false,
         paymentMainId: 0,
       };
@@ -135,18 +165,22 @@ export class MenuDialogComponent implements OnInit {
       this.orderedMealService.createOrder(orderedMeal).subscribe(
         () => {
           // Order creation successful
-          console.log('Order created successfully for menu:', menu.name);
+          console.log('Order created successfully for menu:', menu.menuname);
         },
         (error) => {
           // Handle error if necessary
-          console.error('Failed to create order for menu:', menu.name, error);
+          console.error('Failed to create order for menu:', menu.menuname, error);
         }
       );
+
     });
 
+
+
+
     // Emit the updated selectedMenus array and its count
-    this.menuSelected.emit(this.selectedMenus);
-    this.menuCount.emit(this.selectedMenus.length);
+    this.menuSelected.emit(this.selectedMenu);
+    this.menuCount.emit(this.selectedMenu.length);
 
     // Clear the selectedMenus item from local storage
     localStorage.removeItem('selectedMenus');

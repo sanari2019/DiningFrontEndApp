@@ -83,7 +83,7 @@ export class StaffpaymentComponent implements OnInit {
   // private sub!: Subscription;
   // private validationMessages!: { [key: string]: { [key: string]: string } };
   // private genericValidator!: GenericValidator;
-  itemsToExclude: number[] = [4, 6, 29, 30, 31, 32, 68, 84, 85, 86, 92];
+  itemsToExclude: number[] = [4, 6, 29, 30, 31, 32, 68, 69, 84, 85, 86, 92];
 
 
   @ViewChildren(FormControlName, { read: ElementRef })
@@ -526,7 +526,7 @@ export class StaffpaymentComponent implements OnInit {
           p.PaymentType = paymentTypeId;
           p.custtypeid = this.staffid;
 
-          if (confirm(`You are about to generate a ticket for Staff: ${p.enteredBy}?`)) {
+          if (confirm(`You are about to generate a ticket for Staff: ${this.registration?.custId}`)) {
             this.ordmealservice.createOrder(p)
               .subscribe({
                 next: () => this.onSaveComplete(),
