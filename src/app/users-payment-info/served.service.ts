@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { Registration } from '../registration/registration.model';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 import { ServedEmail } from './servedEmail.model';
+import { HistoryRecords } from '../pages/home/historyrecords.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,9 @@ export class ServedService {
 
   getServedById(id: number): Observable<Served> {
     return this.http.get<Served>(`${this.apiUrl}/${id}`);
+  }
+  getHistoryRecords(ServedBy: number): Observable<HistoryRecords[]> {
+    return this.http.get<HistoryRecords[]>(`${this.apiUrl}/getHistoryRecords/${ServedBy}`);
   }
   getServedByCustomer(user: Registration): Observable<Served[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

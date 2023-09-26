@@ -9,6 +9,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { UsersPaymentInfoDialogComponent } from '../users-payment-info-dialog/users-payment-info-dialog.component';
 import { Registration } from '../registration/registration.model';
 import { RegistrationService } from '../registration/registration.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 
 
 
@@ -29,17 +31,18 @@ export class PaymentDetailComponent implements OnInit {
   }
   set listFilter(value: string) {
     this._listFilter = value;
-    this.filteredPaymentDetails = this.listFilter ? this.performFilter(this.listFilter) : this.pymtByCust;
+    // this.filteredPaymentDetails = this.listFilter ? this.performFilter(this.listFilter) : this.pymtByCust;
   }
 
   filteredPaymentDetails: PaymentByCust[] = [];
   pymtByCust: PaymentByCust[] = [];
   pymtMain: Payment[] = [];
   loggedInUser: Registration | undefined;
+  filterValue: string = '';
 
 
 
-  constructor(private registrationService: RegistrationService, public dialog: MatDialog, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private router: Router) { }
+  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService, private registrationService: RegistrationService, public dialog: MatDialog, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private router: Router) { }
 
   // Pagination properties
   pageSize = 10;
@@ -137,24 +140,50 @@ export class PaymentDetailComponent implements OnInit {
 
 
 
-  performFilter(filterBy: string): PaymentByCust[] {
-    filterBy = filterBy.toLocaleLowerCase();
-    return this.pymtByCust.filter((pytByCust: PaymentByCust) =>
-      pytByCust.custCode.toLocaleLowerCase().indexOf(filterBy) !== -1);
-  }
+  // performFilter(filterBy: string): PaymentByCust[] {
+  //   filterBy = filterBy.toLocaleLowerCase();
+
+  //   return this.pymtByCust.filter((pytByCust: PaymentByCust) =>
+  //     pytByCust.custCode.toLocaleLowerCase().indexOf(filterBy) !== -1);
+
+  // }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      // const enteredBy = params['enteredBy'];
-      this.paymentdetailService.getPaidPayments().subscribe(
-        (pymtbycust: PaymentByCust[]) => {
-          this.pymtByCust = pymtbycust;
-          this.filteredPaymentDetails = this.pymtByCust;
-        },
-        (error) => {
-          console.log('Error retrieving paid payments:', error);
-        }
-      );
+    // this.route.queryParams.subscribe(params => {
+    //   // const enteredBy = params['enteredBy'];
+    //   this.paymentdetailService.getPaidPayments().subscribe(
+    //     (pymtbycust: PaymentByCust[]) => {
+    //       this.pymtByCust = pymtbycust;
+    //       this.filteredPaymentDetails = this.pymtByCust;
+    //     },
+    //     (error) => {
+    //       console.log('Error retrieving paid payments:', error);
+    //     }
+    //   );
+    // });
+    // this.applySieveFilters();
+  }
+
+  applySieveFilters() {
+    // const sortingField = 'name'; // Replace with your sorting criteria
+    // const filterField = 'custcode';// Replace with your filtering criteria
+    // const filterValue = this.getCurrentPageData.value; // Replace with your filter value
+    // const pageSize = 10;
+    // const page = 1;
+
+    // Construct the query parameters
+    const params = new HttpParams()
+      // .set('sort', sortingField)
+      .set('filters', `custcode@=${this.filterValue}`)
+    // .set('pageSize', pageSize.toString())
+    // .set('page', page.toString());
+
+    // Make the HTTP GET request with the constructed URL
+    const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidspymts?custCodeFilter=${this.filterValue}`
+    this.http.get<PaymentByCust[]>(url, { params }).subscribe((pymtbycust: PaymentByCust[]) => {
+      // Handle the response from the backend here
+      this.pymtByCust = pymtbycust;
+      this.filteredPaymentDetails = this.pymtByCust;
     });
   }
 

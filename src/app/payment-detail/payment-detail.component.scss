@@ -1,0 +1,43 @@
+.form-inline input {
+    vertical-align: middle;
+    margin: 0;
+    padding: 10px;
+    height: 50px;
+    background-color: #f2f0ee;
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    border-right: 1px solid #555;
+}
+
+.form-inline button.booking-form--submit {
+    padding: 10px 30px;
+    background-color: #4f2742;
+    border: 1px solid #4f2742;
+    color: white;
+    font-family: "Montserrat", sans-serif;
+    height: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.form-inline button:hover {
+    background-color: #4f2742;
+}
+
+@media (max-width: 1085px) {
+
+    .form-inline input,
+    .form-inline select,
+    .form-inline button {
+        margin: 10px 0;
+        border-right: 0 !important;
+    }
+
+    .form-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

@@ -23,6 +23,10 @@ export class PaymentDetailService {
     const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidpymts`;
     return this.http.get<PaymentByCust[]>(url)
   }
+  getPaidsPayments(CustCodeFilter: string): Observable<PaymentByCust[]> {
+    const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidspymts?custCodeFilter=${CustCodeFilter}`;
+    return this.http.get<PaymentByCust[]>(url)
+  }
   // getPaymentDetails(): Observable<PaymentDetail[]> {
   //   return this.http.get<PaymentDetail[]>(this.PaymentDetailURL)
   // }
