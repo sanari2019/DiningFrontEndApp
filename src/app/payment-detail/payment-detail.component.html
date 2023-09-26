@@ -5,10 +5,14 @@
 
   <div class="card-body">
     <div class="row">
-      <div class="col-md-2">Filter by:</div>
+      
       <div class="col-md-4">
-        <input type="text"
-               [(ngModel)]="listFilter" />
+        <form novalidate #formRef="ngForm" (ngSubmit)="applySieveFilters()" class="booking-form form-inline">
+         
+          <input type="text" name="custcode" [(ngModel)]="filterValue" required placeholder="Customer Code" />
+          <button type="submit" class="btn btn-secondary booking-form--submit" [disabled]="formRef.invalid">Search</button>
+        </form>
+        
       </div>
 
     </div>
@@ -38,7 +42,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let pymtdetails of getCurrentPageData()">
+          <tr *ngFor="let pymtdetails of filteredPaymentDetails">
            
             <td>{{ pymtdetails.custCode }}</td>
            
@@ -66,6 +70,17 @@
             </td>
           </tr>
         </tbody>
+      </table>
+      <table class="table mb-0"
+             *ngIf=" pymtByCust.length === 0">
+        <thead>
+          <tr>
+            <th>Please Search for a Customer</th>
+            
+            <!-- <th>Password</th> -->
+          </tr>
+        </thead>
+       
       </table>
     </div>
     <mat-paginator  [length]="filteredPaymentDetails.length" [pageSize]="pageSize" (page)="onPageChange($event)"></mat-paginator>

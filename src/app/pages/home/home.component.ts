@@ -9,9 +9,13 @@ import { VoucherService } from 'src/app/voucher/voucher.service';
 import { Voucher } from 'src/app/voucher/voucher.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { RecentTransaction } from './recent-transaction.model';
+import { HistoryRecords } from './historyrecords.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PaymentbreakdownComponent } from 'src/app/paymentbreakdown/paymentbreakdown.component';
+import { ServedService } from 'src/app/users-payment-info/served.service';
+import { ServedEmail } from 'src/app/users-payment-info/servedEmail.model';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 @Component({
   selector: 'app-home',
@@ -23,10 +27,11 @@ export class HomeComponent implements OnInit {
   totalAmountByVoucherId: { [key: number]: number } = {};
   voucherStats: { [key: number]: { count: number; totalUnits: number } } = {};
   voucherDescriptions: { [key: number]: Observable<string> } = {};
-  recentTransactions: RecentTransaction[] = [];
+  recentTransactions: HistoryRecords[] = [];
   shakeState = 'shakeStart';
   pymtUser: Registration = new Registration();
   freezeStatus: boolean = false;
+  ServedBy: number = 1;
   user: Registration = {
     id: 0,
     custTypeId: 0,
@@ -37,19 +42,34 @@ export class HomeComponent implements OnInit {
     password: '',
     freeze: false
   };
+  isHandset: boolean = false; // Add a property to track handset breakpoint
+
+
+
+  private observeHandsetBreakpoint(): void {
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .pipe(untilDestroyed(this))
+      .subscribe((state) => {
+        this.isHandset = state.matches;
+      });
+  }
 
   constructor(public dialog: MatDialog,
+    private breakpointObserver: BreakpointObserver,
+    private servedService: ServedService,
     private registrationService: RegistrationService,
     private paymentDetailService: PaymentDetailService,
     private voucherService: VoucherService) { }
 
   ngOnInit(): void {
+
     // Fetch the logged-in user from local storage
     const loggedInUserData = localStorage.getItem('user');
 
     if (loggedInUserData) {
       const loggedInUser = JSON.parse(loggedInUserData);
-
+      this.ServedBy = loggedInUser.id;
+      // this.getHistoryRecords(this.ServedBy);
       this.getUser(loggedInUser.id);
       // Fetch the payment details for the logged-in user
       this.paymentDetailService.getPaidPaymentsByCust(loggedInUser).subscribe((payments: Payment[]) => {
@@ -132,7 +152,21 @@ export class HomeComponent implements OnInit {
     );
 
   }
+  getHistoryRecords(ServedBy: number): void {
+    this.servedService.getHistoryRecords(ServedBy).subscribe((records: HistoryRecords[]) => {
+      console.log('Freeze status updated successfully:', records);
+      this.recentTransactions = records;
+      console.log('Freeze status updated successfully:', this.recentTransactions);
+    });
+  }
+  formatWithCommas(value: number | null): string {
+    if (value === null) {
+      return '';
+    }
 
+    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return formatter.format(value);
+  }
   getCardClass(voucherId: string): string {
     switch (voucherId) {
       case '1':

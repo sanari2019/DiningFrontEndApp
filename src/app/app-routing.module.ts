@@ -28,9 +28,9 @@ import { AdministrationComponent } from './pages/Administration/administration.c
 
 const routes: Routes = [
   {
-    path: '', component: HomeComponent, canActivate: [AuthGuard]
-    // pathMatch: 'full',
-    // redirectTo: 'payment',
+    path: '', component: HomeComponent, canActivate: [AuthGuard],
+    //   // pathMatch: 'full',
+    // redirectTo: 'payment'
   },
   {
     path: 'login',
