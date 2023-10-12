@@ -80,6 +80,17 @@ import { ReportComponent } from './report/report.component';
 
 
 
+export function appInitializer(authService: AuthService, router: Router) {
+  return () => {
+    // Check if the user is authenticated
+    if (authService.isLoggedIn) {
+      // If authenticated, navigate to the home page
+      router.navigate(['']);
+    }
+  };
+}
+
+
 
 
 export function appInitializer(authService: AuthService, router: Router) {
@@ -98,7 +109,7 @@ export function appInitializer(authService: AuthService, router: Router) {
 @NgModule({
   declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent],
   imports: [
-    Angular4PaystackModule.forRoot('pk_test_eb1ec536ffda8c468b1cab7846a0ff1c27e7bb91'),
+    Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
     MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,
