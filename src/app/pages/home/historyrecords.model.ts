@@ -10,5 +10,4 @@ export interface HistoryRecords {
     FirstName: string;
     Amount: number;
 
-
 }
