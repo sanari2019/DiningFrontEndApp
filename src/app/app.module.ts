@@ -93,15 +93,6 @@ export function appInitializer(authService: AuthService, router: Router) {
 
 
 
-export function appInitializer(authService: AuthService, router: Router) {
-  return () => {
-    // Check if the user is authenticated
-    if (authService.isLoggedIn) {
-      // If authenticated, navigate to the home page
-      router.navigate(['']);
-    }
-  };
-}
 
 
 
