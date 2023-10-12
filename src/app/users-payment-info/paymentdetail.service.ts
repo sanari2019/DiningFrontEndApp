@@ -7,7 +7,7 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 import { Payment } from '../staffpayment/payment.model';
 import { Registration } from '../registration/registration.model';
-import { RecentTransaction } from '../pages/home/recent-transaction.model';
+import { HistoryRecords } from '../pages/home/historyrecords.model';
 
 @Injectable({
   providedIn: 'root'

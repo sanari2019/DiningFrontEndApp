@@ -374,3 +374,94 @@ figure {
 .shake {
   animation: shakeAnimation 2.5s ease-in-out infinite;
 }
+
+.disabled-button {
+  background-color: grey;
+  color: white;
+}
+
+/* For screens less than 400px width */
+@media (max-width: 400px) {
+  .hide-small-screen {
+    display: none;
+  }
+
+  .show-small-screen {
+    display: table-cell;
+  }
+
+  .button-container {
+    text-align: center;
+    margin-top: 10px;
+  }
+}
+
+/* For screens greater than 400px width */
+@media (min-width: 401px) {
+  .hide-large-screen {
+    display: none;
+  }
+
+  .show-large-screen {
+    display: table-cell;
+  }
+
+  .button-container {
+    text-align: right;
+  }
+
+
+}
+
+thead {
+  background: #395870;
+  -webkit-background: linear-gradient(#49708f, #293f50);
+  -moz-background: linear-gradient(#49708f, #293f50);
+  // background: linear-gradient(rgb(0, 74, 159), #293f50);
+  background: rgb(0, 74, 159);
+  color: #fff;
+}
+
+.mytable th {
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 15px;
+  position: relative;
+  text-shadow: 0 1px 0 #000;
+  border-bottom: 3px solid #B0BEC5;
+}
+
+.mytable td {
+  border-right: 0px solid #fff;
+  border-left: 0px solid #e8e8e8;
+  border-top: 0px solid #fff;
+  border-bottom: 0px solid #e8e8e8;
+  padding: 7px 7px;
+  position: relative;
+  transition: all 300ms;
+}
+
+mat-progress-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+.overlay {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  z-index: 2;
+  backdrop-filter: blur(1px);
+}
+
+/* CSS */
+.dialog-fullscreen {
+  width: 100% !important;
+  height: 100% !important;
+}
