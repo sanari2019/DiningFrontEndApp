@@ -45,16 +45,16 @@
     </div>
 
     <mat-divider></mat-divider>
-    <!--<button mat-button class="menu-button" routerLink="/administration">
+    <button mat-button class="menu-button" routerLink="/administration">
       <mat-icon>Administration</mat-icon>
       <span>Administration</span>
-    </button>-->
+    </button>
 
     <div class="mb-4">
       <div>
        
         
-        <p>Freeze Status: {{ user.freeze ? 'Frozen' : 'Not Frozen' }}</p>
+        <p>Freeze Status: {{ user?.freeze ? 'Frozen' : 'Not Frozen' }}</p>
         
       </div>
       <div class="item">

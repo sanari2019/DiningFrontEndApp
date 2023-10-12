@@ -62,15 +62,30 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoaderInterceptor } from './loader/loader.interceptor';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PaymentbreakdownComponent } from './paymentbreakdown/paymentbreakdown.component';
+import { APP_INITIALIZER } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
+
+
+export function appInitializer(authService: AuthService, router: Router) {
+  return () => {
+    // Check if the user is authenticated
+    if (authService.isLoggedIn) {
+      // If authenticated, navigate to the home page
+      router.navigate(['']);
+    }
+  };
+}
 
 
 
 
 @NgModule({
-  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent],
+  declarations: [AdministrationComponent, FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent],
   imports: [
-    Angular4PaystackModule.forRoot('pk_test_eb1ec536ffda8c468b1cab7846a0ff1c27e7bb91'),
+    Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
     MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,
@@ -94,9 +109,15 @@ import { PaymentbreakdownComponent } from './paymentbreakdown/paymentbreakdown.c
     CommonModule,
     FlexLayoutModule,
     CarouselModule.forRoot(),
+    MatFormFieldModule,
 
   ],
-  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, AuthGuard],
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, {
+    provide: APP_INITIALIZER,
+    useFactory: appInitializer,
+    multi: true,
+    deps: [AuthService, Router],
+  }, AuthGuard],
   bootstrap: [AppComponent],
   // entryComponents: [LoaderComponent],
 })

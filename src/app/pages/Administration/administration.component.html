@@ -1,7 +1,68 @@
 <mat-tab-group  mat-align-tabs="center">
   <mat-tab label="Overview"> Content 1 </mat-tab>
   <mat-tab label="Users"> Content 2 </mat-tab>
-  <mat-tab label="Voucher"> Content 3 </mat-tab>
+  <mat-tab label="Voucher"> 
+
+            
+  <div class="col-sm-6">
+    
+    <div class="form-group">
+      <label for="fromDate">FROM:</label>
+      <div class="input-group">
+        <input type="text" id="from-date" class="datepicker date-input form-control" name="fromDate">
+        <span class="input-group-btn">
+          <button class="from-datepicker-btn btn btn-default" type="button"> <span class="fa fa-calendar" aria-hidden="true"></span></button>
+        </span>
+      </div>
+    </div>
+  
+</div>
+<div class="col-sm-6">
+  
+    <div class="form-group">
+      <label for="toDate">TO:</label>
+      <div class="input-group">
+        <input type="text" id="to-date" class="datepicker date-input form-control" name="toDate">
+        <span class="input-group-btn">
+          <button class="to-datepicker-btn btn btn-default" type="button"><span class="fa fa-calendar" aria-hidden="true"></span></button>
+        </span>
+      </div>
+    </div>
+  
+</div> 
+
+    
+
+    <div *ngIf="servedData.length > 0">
+    <h2>Alacarte Orders</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date Entered</th>
+          <th>Customer Type Name</th>
+          <th>Menu Name</th>
+          <th>Max Tariff</th>
+          <th>Date Served</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of servedData">
+          <td>{{ item.id }}</td>
+          <td>{{ item.dateEntered | date }}</td>
+          <td>{{ item.custTypeName }}</td>
+          <td>{{ item.menuName }}</td>
+          <td>{{ item.maxTarriff }}</td>
+          <td>{{ item.dateServed | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div *ngIf="servedData.length === 0">
+    <p>No data available.</p>
+  </div>
+  </mat-tab>
   <mat-tab label="Reports"></mat-tab> 
 </mat-tab-group>
   

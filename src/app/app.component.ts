@@ -84,22 +84,55 @@ export class AppComponent implements OnInit {
   }
   getUser(userId: number): void {
     this.regservice.getUser(userId).subscribe((user: Registration) => {
-      this.user = user;
-      this.freezeStatus = user.freeze;
+      if (user && user.freeze) {
+        this.user = user;
+        this.freezeStatus = user.freeze;
+      }
+
     },
       (error) => {
         console.error('Error fetching user:', error);
       }
     );
   }
+  navigateAndRefresh(): void {
+    // Define the target route you want to navigate to
+    const targetRoute = '/payment'; // Replace with your desired route
+
+    // Navigate to the target route
+    this.router.navigateByUrl(targetRoute).then(() => {
+      // After navigation is complete, refresh the current page
+      window.location.reload();
+    });
+  }
 
   toggleFreezeStatus(): void {
-    this.user.freeze = !this.user.freeze; // Toggle the freeze status
+    const userObject = JSON.parse(localStorage.getItem('user') || '{}');
+    this.user = userObject
+    if (this.user.freeze === true) {
+      this.user.freeze = false;
+    } else {
+      this.user.freeze = true;
+    }
 
     this.regservice.updateUser(this.user).subscribe(
       (updatedUser: Registration) => {
         console.log('Freeze status updated successfully:', updatedUser);
-        window.location.reload();
+        const currentRoute = this.router.url;
+        // this.freezeStatus = this.user.freeze;
+        localStorage.setItem('user', JSON.stringify(userObject));
+
+        // Check if the current route is '/payment'
+        if (currentRoute === '/home') {
+          // If on '/payment', navigate to '/home'
+          this.router.navigate(['/payment'], { replaceUrl: true });
+          // this.currentRoute = '/payment';
+
+        } else {
+          // Otherwise, navigate to '/payment'
+          this.router.navigate(['/home'], { replaceUrl: true });
+
+        }
 
       },
       (error) => {
@@ -117,6 +150,7 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit() {
+
 
 
     this.isLoggedIn$ = this.authService.isLoggedIn;
@@ -160,7 +194,7 @@ export class AppComponent implements OnInit {
                 this.regservice.getRoles(this.registration).subscribe(
                   (roless: Route[]) => {
                     this.routes = roless;
-                    this.routes.sort((a, b) => a.menuName.localeCompare(b.menuName));
+                    // this.routes.sort((a, b) => a.menuName.localeCompare(b.menuName));
                     // this.filteredPaymentDetails = this.paymentDetails;
 
                   });
@@ -195,6 +229,7 @@ export class AppComponent implements OnInit {
       // Now you have the userId, you can use it wherever you need
       // For example, you can call the `getUser` method with the userId
       this.getUser(userId);
+
     }
   }
   onLogout() {

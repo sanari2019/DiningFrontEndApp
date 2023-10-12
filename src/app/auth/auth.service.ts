@@ -98,6 +98,7 @@ export class AuthService {
               observer.next("Username does not exist"); // Emit the error message for invalid username or password.
             }
             observer.complete();
+            this.router.navigate(['/home']);
           });
       } else {
         observer.complete();

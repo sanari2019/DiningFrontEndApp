@@ -6,6 +6,7 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { Menu } from './menu.model';
 import { Payment } from '../staffpayment/payment.model';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { ServedAlacarteVoucherModel } from '../shared/servedAlacartVoucherModel.model';
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +72,14 @@ export class OrderedMealService {
   //       catchError(this.handleError)
   //     )
   // }
+  getAlacarteOrders(startDate: Date, endDate: Date): Observable<ServedAlacarteVoucherModel[]> {
+    const params = {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+
+    return this.http.get<ServedAlacarteVoucherModel[]>(`${this.orderedmealURL}/AlacarteOrders`, { params });
+  }
 
   createOrder(ordMeal: OrderedMeal): Observable<OrderedMeal> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
