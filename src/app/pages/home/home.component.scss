@@ -128,7 +128,7 @@ figure {
 }
 
 .projects {
-  background-color: $dark-text;
+
   border: 1px solid $light-bg;
   overflow-x: auto;
   width: 100%;
@@ -464,4 +464,14 @@ mat-progress-spinner {
 .dialog-fullscreen {
   width: 100% !important;
   height: 100% !important;
+}
+
+/* styles.scss */
+th {
+  background-color: #4CAF50;
+  /* Green background color */
+  font-weight: bold;
+  /* Bold text */
+  text-align: center;
+  /* Center align text */
 }

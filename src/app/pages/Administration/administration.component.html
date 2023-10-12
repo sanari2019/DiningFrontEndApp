@@ -1,68 +1,115 @@
-<mat-tab-group  mat-align-tabs="center">
-  <mat-tab label="Overview"> Content 1 </mat-tab>
-  <mat-tab label="Users"> Content 2 </mat-tab>
-  <mat-tab label="Voucher"> 
 
+<mat-tab-group  mat-align-tabs="center" > 
+    <mat-tab label="Overview"> 
+      <div style="display: block;">
+        <canvas baseChart width="400" height="400"
+          [type]="'line'"
+          [data]="lineChartData"
+          [options]="lineChartOptions"
+          [legend]="lineChartLegend">
+        </canvas>
+      </div>
+    </mat-tab>
+    <mat-tab label="Voucher"></mat-tab> 
+    <mat-tab label="Reports"> 
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div  class="hello" style="margin-top:1%;">
+        
+          <div class="form-field" style='width:20%; margin-right:5%;'>
+
+            <mat-form-field style='width:100%;'>
+              <mat-label>Select an report</mat-label>
+              <mat-select [(value)]="selected">
+                <mat-option value="option0">None</mat-option>
+                <mat-option value="option1">Option 1</mat-option>
+                <mat-option value="option2">Option 2</mat-option>
+                <mat-option value="option3">Option 3</mat-option>
+              </mat-select>
+            </mat-form-field>
             
-  <div class="col-sm-6">
-    
-    <div class="form-group">
-      <label for="fromDate">FROM:</label>
-      <div class="input-group">
-        <input type="text" id="from-date" class="datepicker date-input form-control" name="fromDate">
-        <span class="input-group-btn">
-          <button class="from-datepicker-btn btn btn-default" type="button"> <span class="fa fa-calendar" aria-hidden="true"></span></button>
-        </span>
-      </div>
-    </div>
-  
-</div>
-<div class="col-sm-6">
-  
-    <div class="form-group">
-      <label for="toDate">TO:</label>
-      <div class="input-group">
-        <input type="text" id="to-date" class="datepicker date-input form-control" name="toDate">
-        <span class="input-group-btn">
-          <button class="to-datepicker-btn btn btn-default" type="button"><span class="fa fa-calendar" aria-hidden="true"></span></button>
-        </span>
-      </div>
-    </div>
-  
-</div> 
+        
+          </div>
+          <div class="form-field" >
+            
+            <mat-form-field style='width:50%; margin-right: 2%'>
+              <mat-label>Enter a date range</mat-label>
+              <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                <input matStartDate formControlName="start" placeholder="Start date">
+                <input matEndDate formControlName="end" placeholder="End date">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
+        
+        
+            
+              <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+              <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+            </mat-form-field>
+            <button class="mark button primary-button" mat-button  style="width: 5%; margin-right: 0.9%;">Preview</button>
+            <button class="mark button secondary-button" mat-button (click)="exportToCSV()">Export to CSV</button>
+        
+          </div>
+        
 
+        
+        </div>
     
-
-    <div *ngIf="servedData.length > 0">
-    <h2>Alacarte Orders</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Date Entered</th>
-          <th>Customer Type Name</th>
-          <th>Menu Name</th>
-          <th>Max Tariff</th>
-          <th>Date Served</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of servedData">
-          <td>{{ item.id }}</td>
-          <td>{{ item.dateEntered | date }}</td>
-          <td>{{ item.custTypeName }}</td>
-          <td>{{ item.menuName }}</td>
-          <td>{{ item.maxTarriff }}</td>
-          <td>{{ item.dateServed | date }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  
-  <div *ngIf="servedData.length === 0">
-    <p>No data available.</p>
-  </div>
-  </mat-tab>
-  <mat-tab label="Reports"></mat-tab> 
+      </form>
+    
+    
+        <div *ngIf="servedData.length > 0">
+        
+    
+        <div class="mat-elevation-z8"  *ngIf="showTable">
+          <h3 style= " width:100%; text-align:center;">Served Ala-carte Report</h3>
+        
+            <!--<button mat-raised-button (click)="downloadPDF('json', false)"> download pdf </button>-->
+          <table mat-table [dataSource]="servedData" #dataSource matSort (matSortChange)="announceSortChange($event)">
+              
+        
+          
+        
+            <!-- Name Column -->
+            <ng-container matColumnDef="dateServed">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Date Served </th>
+              <td mat-cell *matCellDef="let item"> {{ item.dateServed | date }} </td>
+            </ng-container>
+        
+            <!-- Weight Column -->
+            <ng-container matColumnDef="custTypeName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Customer Type Name </th>
+              <td mat-cell *matCellDef="let item"> {{ item.custTypeName }} </td>
+            </ng-container>
+    
+              <!-- Symbol Column -->
+              <ng-container matColumnDef="menuName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Menu Name </th>
+                <td mat-cell *matCellDef="let item"> {{ item.menuName }} </td>
+              </ng-container>
+        
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="maxTarriff">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Tariff </th>
+              <td mat-cell *matCellDef="let item"> {{ item.maxTarriff }} </td>
+            </ng-container>
+    
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="dateEntered">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Date Ordered </th>
+              <td mat-cell *matCellDef="let item"> {{ item.dateEntered | date }} </td>
+            </ng-container>
+        
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+    
+        </div>
+        
+      </div>
+      
+      <div *ngIf="servedData.length === 0">
+        <p>No data available.</p>
+      </div>
+    </mat-tab>
 </mat-tab-group>
-  
+    

@@ -64,8 +64,21 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PaymentbreakdownComponent } from './paymentbreakdown/paymentbreakdown.component';
 import { APP_INITIALIZER } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { CdkTableModule } from '@angular/cdk/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableExporterModule } from 'mat-table-exporter';
+import { ExportService } from './shared/services/export.service';
+import { NgChartsModule } from 'ng2-charts';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
+import { LayoutModule } from '@angular/cdk/layout';
+import { ReportComponent } from './report/report.component';
+
+
 
 
 
@@ -83,20 +96,22 @@ export function appInitializer(authService: AuthService, router: Router) {
 
 
 @NgModule({
-  declarations: [AdministrationComponent, FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent],
+  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent],
   imports: [
-    Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
+    Angular4PaystackModule.forRoot('pk_test_eb1ec536ffda8c468b1cab7846a0ff1c27e7bb91'),
     MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatTableExporterModule,
     MatPaginatorModule,
     MatSidenavModule,
     MatSnackBarModule,
     MatButtonModule,
     MatTableModule,
     MatIconModule,
+    NgChartsModule,
     MatDividerModule,
     ReactiveFormsModule,
     FormsModule,
@@ -107,12 +122,21 @@ export function appInitializer(authService: AuthService, router: Router) {
     MatButtonModule,
     MatDialogModule,
     CommonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    CdkTableModule,
+    MatSortModule,
     FlexLayoutModule,
     CarouselModule.forRoot(),
-    MatFormFieldModule,
+    MatGridListModule,
+    MatCardModule,
+    MatMenuModule,
+    LayoutModule,
+
 
   ],
-  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, {
+  providers: [ExportService, { provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, {
     provide: APP_INITIALIZER,
     useFactory: appInitializer,
     multi: true,

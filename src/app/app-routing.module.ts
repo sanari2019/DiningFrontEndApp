@@ -22,6 +22,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { AdministrationComponent } from './pages/Administration/administration.component';
+import { ReportComponent } from './report/report.component';
 
 
 
@@ -100,6 +101,10 @@ const routes: Routes = [
   {
     path: 'help',
     component: HelpComponent,
+  },
+  {
+    path: 'report',
+    component: ReportComponent,
   },
   {
     path: '**',
