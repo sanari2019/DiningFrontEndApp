@@ -6,7 +6,7 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { Menu } from './menu.model';
 import { Payment } from '../staffpayment/payment.model';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
-import { ServedAlacarteVoucherModel } from '../shared/servedAlacartVoucherModel.model';
+import { ServedAlacarteVoucherModel } from '../pages/Administration/servedAlacartVoucherModel.model';
 
 @Injectable({
   providedIn: 'root'
