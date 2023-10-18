@@ -45,7 +45,7 @@ export class RegistrationService {
     const url = `${this.userURL}/${id}`;
     return this.http.get<Registration>(url)
       .pipe(
-        tap(data => console.log('getUser: ' + JSON.stringify(data))),
+
         catchError(this.handleError)
       )
   }
@@ -55,7 +55,7 @@ export class RegistrationService {
     const url = `${this.envUrl.urlAddress}/user/getuser/${username}`;
     return this.http.get<Registration>(url)
       .pipe(
-        tap(data => console.log('getUser: ' + JSON.stringify(data))),
+
         catchError(this.handleError)
       )
   }
@@ -64,7 +64,7 @@ export class RegistrationService {
     const url = `${this.envUrl.urlAddress}/user/getuserbycustid/${custId}`;
     return this.http.get<Registration>(url)
       .pipe(
-        tap(data => console.log('getUserByCustId: ' + JSON.stringify(data))),
+
         catchError(this.handleError)
       );
   }
@@ -76,7 +76,7 @@ export class RegistrationService {
     return this.http.post<Registration>(this.envUrl.urlAddress + '/user', registration, { headers })
       .pipe(
         tap(data => {
-          console.log('createUser: ' + JSON.stringify(data));
+
           // this.sendRegistrationEmail(data); // Send registration email after successful registration
         }),
         catchError(this.handleError)
@@ -88,7 +88,7 @@ export class RegistrationService {
     // registration.id = 0;
     return this.http.post<Route[]>(this.envUrl.urlAddress + '/CustomerRoute/getroutes', registration, { headers })
       .pipe(
-        tap(data => console.log('createUser: ' + JSON.stringify(data))),
+
         catchError(this.handleError)
       );
   }
@@ -99,7 +99,7 @@ export class RegistrationService {
     const url = `${this.userURL}/deleteuser`;
     return this.http.post<Registration>(url, reg)
       .pipe(
-        tap(data => console.log('deleteUser: ' + reg.firstName)),
+
         catchError(this.handleError)
       );
   }
@@ -109,7 +109,7 @@ export class RegistrationService {
     const url = `${this.userURL}/${registration.id}`;
     return this.http.post<Registration>(url, registration, { headers })
       .pipe(
-        tap(() => console.log('updateUser: ' + registration.id)),
+
         // Return the product on an update
         map(() => registration),
         catchError(this.handleError)

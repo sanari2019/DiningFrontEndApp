@@ -7,6 +7,9 @@ import { Registration } from '../registration/registration.model';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 import { ServedEmail } from './servedEmail.model';
 import { HistoryRecords } from '../pages/home/historyrecords.model';
+import { ServedReportModel } from '../pages/Administration/servedReport.model';
+import { UnservedReportModel } from '../pages/Administration/unservedReport.model';
+import { ServedSummaryReportModel } from '../pages/Administration/servedSummaryReport.model';
 
 @Injectable({
   providedIn: 'root'
@@ -50,4 +53,31 @@ export class ServedService {
   deleteServed(served: Served): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/deleteserved`, served);
   }
+  getServedReport(startDate: Date, endDate: Date): Observable<ServedReportModel[]> {
+    const params = {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+
+    return this.http.get<ServedReportModel[]>(`${this.apiUrl}/servedreport`, { params });
+  }
+  getUnservedReport(startDate: Date, endDate: Date): Observable<UnservedReportModel[]> {
+    const params = {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+
+    return this.http.get<UnservedReportModel[]>(`${this.apiUrl}/unservedreport`, { params });
+  }
+  getServedSummaryReport(startDate: Date, endDate: Date): Observable<ServedSummaryReportModel[]> {
+    const params = {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+
+    return this.http.get<ServedSummaryReportModel[]>(`${this.apiUrl}/servedsummaryreport`, { params });
+  }
+
+
+
 }

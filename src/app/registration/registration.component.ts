@@ -100,7 +100,7 @@ export class RegistrationComponent implements OnInit {
     this.registrationservice.getCustType().subscribe(
       (customerTypes: customerType[]) => {
         this.customerTypes = customerTypes;
-        // console.log('Customer Types:', this.customerTypes);
+        // //console.log('Customer Types:', this.customerTypes);
       },
       (error: any) => {
         console.error('Error occurred while fetching customer types:', error);
@@ -146,7 +146,7 @@ export class RegistrationComponent implements OnInit {
                   }
                 } else {
                   // The user already exists
-                  console.log("User already exists:", this.loadedRegistration);
+                  //console.log("User already exists:", this.loadedRegistration);
                 }
               },
               (error: any) => {

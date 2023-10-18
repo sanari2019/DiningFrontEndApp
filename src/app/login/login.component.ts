@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  hide = true;
   form!: FormGroup;                    // {1}
   private formSubmitAttempt!: boolean; // {2}
   loginMessage = '';
@@ -49,7 +50,7 @@ export class LoginComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      console.log('The dialog was closed');
+      //console.log('The dialog was closed');
       // this.ngOnInit();
     });
   }

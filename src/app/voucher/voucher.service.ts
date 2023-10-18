@@ -34,7 +34,7 @@ export class VoucherService {
     const url = `${this.voucherURL}/${id}`;
     return this.http.get<Voucher[]>(url)
       .pipe(
-        tap(data => console.log('getVoucher: ' + JSON.stringify(data))),
+
         catchError(this.handleError)
       )
   }
@@ -54,7 +54,7 @@ export class VoucherService {
     voucher.id = 0;
     return this.http.post<Voucher>(this.voucherURL, voucher, { headers })
       .pipe(
-        tap(data => console.log('createVoucher: ' + JSON.stringify(data))),
+
         catchError(this.handleError)
       );
   }
@@ -65,7 +65,7 @@ export class VoucherService {
     const url = `${this.voucherURL}/deletevoucher`;
     return this.http.post<Voucher>(url, vouch)
       .pipe(
-        tap(data => console.log('deleteVoucher: ' + vouch.description)),
+
         catchError(this.handleError)
       );
   }

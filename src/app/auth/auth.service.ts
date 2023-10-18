@@ -85,9 +85,9 @@ export class AuthService {
             if (reg.userName === this.registration?.userName && this.pswrd === this.registration?.password) {
               this.loggedIn.next(true);
               localStorage.setItem('user', JSON.stringify(this.registration));
-              this.router.navigate(['/']);
               this.notLoggedIn.next(true);
               observer.next(""); // Emit an empty string for successful login.
+              this.router.navigate(['/']);
             } else if (reg.userName === this.registration?.userName && this.pswrd !== this.registration?.password) {
               this.notLoggedIn.next(false);
               console.log("Incorrect Password");
@@ -98,13 +98,13 @@ export class AuthService {
               observer.next("Username does not exist"); // Emit the error message for invalid username or password.
             }
             observer.complete();
-            this.router.navigate(['/home']);
           });
       } else {
         observer.complete();
       }
     });
   }
+
 
   logout() {
     this.loggedIn.next(false);

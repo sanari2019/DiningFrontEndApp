@@ -136,7 +136,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.paymentDetailService.getPaidPaymentsByCust(loggedInUser).subscribe((payments: Payment[]) => {
         // Calculate totalAmount from the payment details
         this.totalAmount = payments.reduce((sum, payment) => sum + (payment.unit * payment.amount), 0);
-
+        this.servedService.getHistoryRecords(this.ServedBy).subscribe((data: HistoryRecords[]) => {
+          this.servedData = data;
+          console.log('x:', data);
+        })
         // Calculate totalAmount by voucher ID
         this.totalAmountByVoucherId = {};
         payments.forEach(payment => {
@@ -185,10 +188,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     //   this.servedData = data;
     // });
 
-    this.servedService.getHistoryRecords(1).subscribe((data: HistoryRecords[]) => {
-      this.servedData = data;
-      console.log('x:', data);
-    })
+
   }
 
 

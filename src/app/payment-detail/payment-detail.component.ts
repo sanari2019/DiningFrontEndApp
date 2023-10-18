@@ -104,7 +104,7 @@ export class PaymentDetailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       // Handle dialog close event if needed
-      console.log(`Dialog result: ${result}`);
+      //console.log(`Dialog result: ${result}`);
       this.onSaveComplete()
     });
   }
@@ -123,7 +123,7 @@ export class PaymentDetailComponent implements OnInit {
 
   //   dialogRef.afterClosed().subscribe(result => {
   //     // Handle dialog close event if needed
-  //     console.log(`Dialog result: ${result}`);
+  //     //console.log(`Dialog result: ${result}`);
   //   });
   // }
 
@@ -157,7 +157,7 @@ export class PaymentDetailComponent implements OnInit {
     //       this.filteredPaymentDetails = this.pymtByCust;
     //     },
     //     (error) => {
-    //       console.log('Error retrieving paid payments:', error);
+    //       //console.log('Error retrieving paid payments:', error);
     //     }
     //   );
     // });

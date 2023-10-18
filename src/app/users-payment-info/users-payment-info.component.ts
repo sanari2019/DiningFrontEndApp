@@ -197,7 +197,7 @@ export class UsersPaymentInfoComponent {
         this.getPaymentsByCustomer(this.pymtUser);
         this.loadCartItems();
       } else {
-        console.log("Frozen")
+        ////console.log("Frozen")
       }
 
 
@@ -313,7 +313,7 @@ export class UsersPaymentInfoComponent {
     // Handle any actions after the dialog is closed (if needed)
     dialogRef.afterClosed().subscribe(result => {
       // Handle dialog close event if needed
-      console.log(`Dialog result: ${result}`);
+      ////console.log(`Dialog result: ${result}`);
     });
   }
 
@@ -367,7 +367,7 @@ export class UsersPaymentInfoComponent {
         (updatedServed: Served) => {
           // Handle successful update if needed
           this.isServedSuccessfully = true;
-          console.log("Served item updated successfully");
+          ////console.log("Served item updated successfully");
 
 
           // this.servedEmail.amount = updatedServed.paymentMain.amount;
@@ -375,7 +375,7 @@ export class UsersPaymentInfoComponent {
         },
         (error: any) => {
           // Handle error if necessary
-          console.log("Failed to update served item");
+          ////console.log("Failed to update served item");
         }
       );
     }
@@ -392,7 +392,7 @@ export class UsersPaymentInfoComponent {
     // Call the sendServedEmail method to send the email
     this.servedService.sendServedEmail(servedEmail).subscribe(
       (sentEmailResponse: ServedEmail) => {
-        console.log("Served email sent successfully", sentEmailResponse);
+        ////console.log("Served email sent successfully", sentEmailResponse);
         // Handle successful email sending if needed
 
         // Refresh the cart items and the component
@@ -400,7 +400,7 @@ export class UsersPaymentInfoComponent {
         this.ngOnInit();
       },
       (error: any) => {
-        console.log("Failed to send served email", error);
+        ////console.log("Failed to send served email", error);
         // Handle email sending error if necessary
       }
     );
