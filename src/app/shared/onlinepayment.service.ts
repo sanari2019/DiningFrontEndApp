@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { OnlinePayment } from './onlinepayment.model';
 import { environment } from 'src/environments/environment';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { TotalRevenueModel } from '../pages/Administration/totalRevenue.model';
 
 
 
@@ -29,5 +30,14 @@ export class OnlinePaymentService {
   postOnlinePayment(payment: OnlinePayment): Observable<any> {
     return this.http.post(this.apiUrl, payment);
   }
+  getTotalRevenue(startDate: Date, endDate: Date): Observable<TotalRevenueModel[]> {
+    const params = {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+
+    return this.http.get<TotalRevenueModel[]>(`${this.apiUrl}/TotalRevenue`, { params });
+  }
+
 }
 

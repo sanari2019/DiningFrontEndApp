@@ -11,12 +11,20 @@
             Please enter your user name/Email
           </mat-error>
         </mat-form-field>
+
         <mat-form-field class="full-width-input">
-          <input matInput type="password" placeholder="Password" formControlName="password" required>
+          <mat-label>Enter your password</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" placeholder="Password" formControlName="password" required>
+          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
           <mat-error *ngIf="isFieldInvalid('password')">
             Please enter your password
           </mat-error>
         </mat-form-field>
+
+        
+      
         <button mat-raised-button color="primary">Login</button>
         <button mat-raised-button  (click)="openDialog()">Register</button>
       </form>

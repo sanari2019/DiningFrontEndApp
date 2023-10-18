@@ -117,7 +117,7 @@ export class AppComponent implements OnInit {
 
     this.regservice.updateUser(this.user).subscribe(
       (updatedUser: Registration) => {
-        console.log('Freeze status updated successfully:', updatedUser);
+        //console.log('Freeze status updated successfully:', updatedUser);
         const currentRoute = this.router.url;
         // this.freezeStatus = this.user.freeze;
         localStorage.setItem('user', JSON.stringify(userObject));

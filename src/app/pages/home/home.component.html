@@ -40,49 +40,7 @@
 						<div>
 						
 					
-						<div class="mat-elevation-z8">
-						  <h3 style= " width:100%; text-align:center;">Transaction History</h3>
-						 
-							<!--<button mat-raised-button (click)="downloadPDF('json', false)"> download pdf </button>-->
-						  <table mat-table [dataSource]="servedData" #dataSource matSort (matSortChange)="announceSortChange($event)">
-							  
 						
-						  
-						
-							<!-- Name Column -->
-							<ng-container matColumnDef="dateServed">
-							  <th style="background-color: #4CAF50;"  mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"  [ngClass]="'custom-table-header'"> Date Served </th>
-							  <td mat-cell *matCellDef="let item"> {{ item.dateServed | date }} </td>
-							</ng-container>
-						
-							
-						 <!-- Symbol Column -->
-						 <ng-container matColumnDef="SourceTable">
-							<th style="background-color: #4CAF50;" mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"  [ngClass]="'custom-table-header'"> Service Type </th>
-							<td mat-cell *matCellDef="let item"> {{ item.sourceTable }} </td>
-						  </ng-container> 
-						  <!-- Symbol Column -->
-						  <ng-container matColumnDef="Unit">
-							<th style="background-color: #4CAF50;"  mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"  [ngClass]="'custom-table-header'"> Unit </th>
-							<td mat-cell *matCellDef="let item"> {{ item.unit }} </td>
-						  </ng-container>
-							<!-- Symbol Column -->
-							<ng-container matColumnDef="FirstName">
-							  <th style="background-color: #4CAF50;"  mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"  [ngClass]="'custom-table-header'"> By </th>
-							  <td mat-cell *matCellDef="let item"> {{ item.firstName }} </td>
-							</ng-container>
-					
-							<ng-container matColumnDef="Amount">
-								<th style="background-color: #4CAF50;"  mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"  [ngClass]="'custom-table-header'"> Amount </th>
-								<td mat-cell *matCellDef="let item"> {{ item.amount }} </td>
-							  </ng-container>
-							   
-						
-							<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-							<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-						  </table>
-					
-						</div>
 						
 					  </div>
 					  

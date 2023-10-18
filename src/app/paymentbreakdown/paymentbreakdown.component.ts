@@ -128,7 +128,7 @@ export class PaymentbreakdownComponent {
     // Handle any actions after the dialog is closed (if needed)
     dialogRef.afterClosed().subscribe(result => {
       // Handle dialog close event if needed
-      console.log(`Dialog result: ${result}`);
+      //console.log(`Dialog result: ${result}`);
     });
   }
 

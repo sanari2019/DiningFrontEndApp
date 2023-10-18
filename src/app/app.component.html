@@ -1,6 +1,6 @@
 <mat-toolbar class="mat-elevation-z8 equal-boxes">
   <div>
-    <button mat-icon-button mat-raised-button aria-label="Toggle sidenav"  *ngIf="drawer?.mode === 'over' && 'isHandset$ | async'" (click)="drawer.toggle()">
+    <button aria-label="Toggle sidenav"  *ngIf="drawer?.mode === 'over' && 'isHandset$ | async'" (click)="drawer.toggle()">
       <mat-icon aria-label="Side nav toggle icon"> menu </mat-icon>
     </button>
     
@@ -26,7 +26,7 @@
   [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)" class="mat-elevation-z8"> 
     <button mat-button class="menu-button" routerLink="home">
       <!--<mat-icon>Menu</mat-icon>-->
-      <span>Welcome, {{ this.registration?.firstName }}</span>
+      <span  style="color:#faebd7;">Welcome, {{ this.registration?.firstName }}</span>
     </button>
     <!--<button mat-button class="menu-button" routerLink="/registrations">-->
       <!--<mat-icon>Administration</mat-icon>-->
@@ -40,15 +40,15 @@
 
     <div *ngFor="let rte of routes">
       <button mat-button class="menu-button" (click)="navigateurl(rte)">
-        <span>{{ rte.menuName }}</span>
+        <span style="color:#faebd7;">{{ rte.menuName }}</span>
       </button>
     </div>
 
     <mat-divider></mat-divider>
-    <button mat-button class="menu-button" routerLink="/administration">
+    <!--<button mat-button class="menu-button" routerLink="/administration">-->
      <!-- <mat-icon>Administration</mat-icon>-->
-      <span>Administration</span>
-    </button>
+    <!--  <span>Administration</span>
+    </button>-->
 
     <div class="mb-4">
       <div>
@@ -68,10 +68,10 @@
      
     </div>
 
-    <button mat-button class="menu-button" routerLink="/report">
+    <!--<button mat-button class="menu-button" routerLink="/report">
       <mat-icon>report</mat-icon>
       <span>Report</span>
-    </button>
+    </button>-->
 
     <!-- ... Your main content ... -->
 

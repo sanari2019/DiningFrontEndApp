@@ -110,7 +110,9 @@ const routes: Routes = [
     path: '**',
     component: NotFoundComponent,
   },
-
+  { path: 'welcome', component: WelcomeComponent },
+  { path: '', redirectTo: '/welcome', pathMatch: 'full' },
+  { path: '**', redirectTo: '/welcome' }
 ];
 
 @NgModule({

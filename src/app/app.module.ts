@@ -77,6 +77,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ReportComponent } from './report/report.component';
+import { CardComponent } from './card/card.component';
+import { MatChipsModule } from '@angular/material/chips';
+
 
 
 
@@ -98,7 +101,7 @@ export function appInitializer(authService: AuthService, router: Router) {
 
 
 @NgModule({
-  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent],
+  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent, CardComponent],
   imports: [
     Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
     MatProgressBarModule,
@@ -135,7 +138,7 @@ export function appInitializer(authService: AuthService, router: Router) {
     MatCardModule,
     MatMenuModule,
     LayoutModule,
-
+    MatChipsModule
 
   ],
   providers: [ExportService, { provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, {

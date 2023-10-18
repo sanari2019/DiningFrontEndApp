@@ -200,7 +200,7 @@ export class StaffpaymentComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      console.log('The dialog was closed');
+      //console.log('The dialog was closed');
       this.ngOnInit();
     });
   }
@@ -260,7 +260,7 @@ export class StaffpaymentComponent implements OnInit {
 
 
   paymentInit() {
-    console.log('Payment initialized');
+    //console.log('Payment initialized');
   }
 
   paymentDone(ref: any) {
@@ -315,7 +315,7 @@ export class StaffpaymentComponent implements OnInit {
     this.onlinePaymentService.postOnlinePayment(payment).subscribe(
       (result: any) => {
 
-        console.log("Successful");
+        //console.log("Successful");
 
 
         this.paymentDoneSubject$.next();
@@ -339,11 +339,11 @@ export class StaffpaymentComponent implements OnInit {
               this.snackBar.open('Payment Successful', 'Dismiss', {
                 duration: 3000, // 3 seconds duration for the snackbar
               });
-              console.log('Update successful');
+              //console.log('Update successful');
             },
             (error: any) => {
               // Handle error if necessary
-              console.log('Update failed');
+              //console.log('Update failed');
             }
           );
 
@@ -354,7 +354,7 @@ export class StaffpaymentComponent implements OnInit {
 
 
       error => {
-        console.log("Not successful");
+        //console.log("Not successful");
       }
     );
 
@@ -367,9 +367,9 @@ export class StaffpaymentComponent implements OnInit {
     }
     this.calculateTotalAmount();
     this.options.ref = `${Math.random() * 10000000000000}`;
-    console.log('payment failed');
+    //console.log('payment failed');
     // this.options.ref = ref;
-    console.log('Payment cancelled');
+    //console.log('Payment cancelled');
   }
   setRandomPaymentRef() {
     this.reference = `${Math.random() * 10000000000000}`;
@@ -582,7 +582,7 @@ export class StaffpaymentComponent implements OnInit {
       this.ordmealservice.deleteOrder(this.ordmeal).subscribe(
         () => {
           // Removal from the backend was successful
-          console.log('Item removed from the backend.');
+          //console.log('Item removed from the backend.');
         },
         error => {
           // Handle error if necessary
@@ -706,8 +706,8 @@ export class StaffpaymentComponent implements OnInit {
     );
   }
   savePayment(): void {
-    // console.log(this.registrationForm);
-    // console.log('Saved: ' + JSON.stringify(this.registrationForm.value));
+    // //console.log(this.registrationForm);
+    // //console.log('Saved: ' + JSON.stringify(this.registrationForm.value));
     if (this.paymentForm.valid) {
       const voucherId = this.paymentForm.get('voucherId')?.value;
       const unit = this.paymentForm.get('unit')?.value;
