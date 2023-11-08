@@ -13,11 +13,55 @@
       Evercare's Cafeteria<p>
     </div>
     <!-- <button mat-button id="btnloginuser" *ngIf="isLoggedIn$">{{'Welcome '+authService.registration?.firstName}}</button> -->
+
     <div id="login">
-    <button mat-button routerLink="login" *ngIf="!isLoggedIn$" >Login</button>
-     <!-- <button mat-button routerLink="registration" *ngIf="isLoggedIn$">Register</button> -->
-    <button mat-button (click)="onLogout()" *ngIf="isLoggedIn$ | async">Logout</button>
+    <!--  <button mat-button matBadgeColor="warn" matBadge="7" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()" *ngIf="(isLoggedIn$ | async) && !(isHandset$ | async)">Notification</button>-->
+    <button mat-button routerLink="login" *ngIf="!isLoggedIn$ " >Login</button>
+    
+    <!-- <button mat-button routerLink="registration" *ngIf="isLoggedIn$">Register</button> -->
+     <!--<ng-container *ngIf="isLoggedIn$ | async">
+      <button *ngIf="isHandset$ | async; else showNotiButton" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" style="margin:0;" matBadge="15" matBadgeColor="warn" (click)="toggleBadgeVisibility()">
+        <mat-icon>notifications</mat-icon>
+      </button>
+    </ng-container>
+    
+    <ng-template #showNotiButton>
+      <button mat-button [matMenuTriggerFor]="menu" matBadge="15" matBadgeColor="warn" (click)="toggleBadgeVisibility()">Notifications</button>
+    </ng-template>
+    
+    
+    <mat-menu #menu="matMenu">
+     
+      <button mat-menu-item>
+        <mat-icon>notifications</mat-icon>
+        <span>Notification</span>
+      </button>
+      <button mat-menu-item (click)="onLogout()" *ngIf="(isLoggedIn$ | async)"><mat-icon aria-hidden="false" aria-label="logout icon" fontIcon="logout" [ariaSetSize]="50" color="warn"></mat-icon>Logout</button>
+    </mat-menu>-->
+    
+     <ng-container *ngIf="isLoggedIn$ | async">
+      <button *ngIf="isHandset$ | async; else showAccountButton" mat-icon-button [matMenuTriggerFor]="menu2" aria-label="Example icon-button with a menu" style="margin:0;">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </ng-container>
+    
+    <ng-template #showAccountButton>
+      <button mat-button [matMenuTriggerFor]="menu2">Account</button>
+    </ng-template>
+    
+    
+    <mat-menu #menu2="matMenu">
+     
+      <button mat-menu-item routerLink="/profile" disabled>
+        <mat-icon>account_circle</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item (click)="onLogout()" *ngIf="(isLoggedIn$ | async)"><mat-icon aria-hidden="false" aria-label="logout icon" fontIcon="logout" [ariaSetSize]="50" color="warn"></mat-icon>Logout</button>
+    </mat-menu>
+
+
    </div>
+   
 </mat-toolbar>
   
 <mat-sidenav-container>
@@ -28,10 +72,6 @@
       <!--<mat-icon>Menu</mat-icon>-->
       <span  style="color:#faebd7;">Welcome, {{ this.registration?.firstName }}</span>
     </button>
-    <!--<button mat-button class="menu-button" routerLink="/registrations">-->
-      <!--<mat-icon>Administration</mat-icon>-->
-    <!--  <span>Registration</span>
-    </button>-->
     <mat-divider></mat-divider>
     <!-- <button mat-button  class="menu-button" routerLink="/home"> -->
       <!--<mat-icon>Administration</mat-icon>-->
@@ -45,9 +85,9 @@
     </div>
 
     <mat-divider></mat-divider>
-    <!--<button mat-button class="menu-button" routerLink="/administration">-->
-     <!-- <mat-icon>Administration</mat-icon>-->
-    <!--  <span>Administration</span>
+    <!--<button mat-button class="menu-button" routerLink="/report">-->
+      <!--<mat-icon>Administration</mat-icon>-->
+      <!--<span>Reports</span>
     </button>-->
 
     <div class="mb-4">

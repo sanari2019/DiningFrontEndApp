@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Registration } from './registration.model';
-import { HttpClient, HttpClientModule, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpClientModule, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
@@ -92,6 +92,19 @@ export class RegistrationService {
         catchError(this.handleError)
       );
   }
+
+  getUserByUsernamePattern(usernamePattern: string): Observable<Registration[]> {
+    // Create a query parameter for the username pattern
+    // const params = new HttpParams().set('usernamePattern', usernamePattern);
+    const url = `${this.envUrl.urlAddress}/user/getfiltuser?usernamePattern=${usernamePattern}`;
+
+    // Make an HTTP GET request to your API to fetch users
+    return this.http.get<Registration[]>(url);
+  }
+  // getPaidsPayments(CustCodeFilter: string): Observable<PaymentByCust[]> {
+  //   const url = `${this.envUrl.urlAddress}/PaymentMain/getpaidspymts?custCodeFilter=${CustCodeFilter}`;
+  //   return this.http.get<PaymentByCust[]>(url)
+  // }
 
 
   deleteUser(reg: Registration): Observable<{}> {

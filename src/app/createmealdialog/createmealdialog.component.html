@@ -1,0 +1,37 @@
+<form [formGroup]="mealForm" (ngSubmit)="onSubmit()">
+    <h1>Create Meal</h1>
+    <mat-form-field>
+      <mat-label>Meal Name</mat-label>
+      <input matInput formControlName="mealName">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Meal Type</mat-label>
+      <mat-select formControlName="mealType">
+        <mat-option value="Breakfast">Breakfast</mat-option>
+        <mat-option value="Lunch">Lunch</mat-option>
+        <mat-option value="Dinner">Dinner</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Sides & Protein</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    
+    <!--<span class="file-info">{{ fileInfo }}</span>
+    <div class="form-group">
+      <label for="myFile">File:</label>
+      <input type="file" class="form-control" name="file" disabled>
+    </div>-->
+    <mat-form-field>
+        <mat-label>Image Url</mat-label>
+        <input matInput formControlName="image">
+    </mat-form-field>
+    
+    <mat-checkbox class="example-margin" formControlName="active">Activate this meal.</mat-checkbox>
+    <div mat-dialog-actions>
+      <button mat-button type="submit">Save</button>
+      <button mat-button (click)="onCloseClick()">Close</button>
+    </div>
+    
+  </form>
+  

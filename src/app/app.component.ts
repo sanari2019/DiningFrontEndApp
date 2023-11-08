@@ -18,6 +18,7 @@ import { Route } from './shared/route.model';
 import { RegistrationService } from './registration/registration.service';
 import { map } from 'rxjs/operators';
 import { LoaderService } from './loader/loader.service';
+import { MatAccordion } from '@angular/material/expansion';
 
 @UntilDestroy()
 @Component({
@@ -28,12 +29,18 @@ import { LoaderService } from './loader/loader.service';
 export class AppComponent implements OnInit {
   isLoading$: Observable<boolean>;
   @ViewChild('drawer') drawer: any;
+  @ViewChild(MatAccordion) accordion!: MatAccordion;
   title = 'angular-responsive-sidebar';
   isLoggedIn$!: Observable<boolean>;
   loggeInUser: Registration | undefined; // Holds the logged-in user
   loggedinUser = ' ';
   registration: Registration | undefined;
   routes!: Route[];
+  hidden = false;
+
+  toggleBadgeVisibility() {
+    this.hidden = !this.hidden;
+  }
 
   user: Registration = {
     id: 0,

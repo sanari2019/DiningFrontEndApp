@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { Angular4PaystackModule } from 'angular4-paystack';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -79,7 +79,20 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { ReportComponent } from './report/report.component';
 import { CardComponent } from './card/card.component';
 import { MatChipsModule } from '@angular/material/chips';
-
+// import { CubejsClientModule } from '@cubejs-client/ngx';
+import { BarChartComponent } from './bar-chart/bar-chart.component';
+import { DashboardPageComponent } from './dashboard-page/dashboard-page.component';
+import { CreatemealdialogComponent } from './createmealdialog/createmealdialog.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ContactUsDialogComponent } from './contact-us-dialog/contact-us-dialog.component';
+// import { ZingchartAngularModule } from 'zingchart-angular';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DxButtonModule } from 'devextreme-angular';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { TransferAndReportsComponent } from './transfer-and-reports/transfer-and-reports.component';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { UserValidateComponent } from './user-validate/user-validate.component';
 
 
 
@@ -92,7 +105,10 @@ export function appInitializer(authService: AuthService, router: Router) {
     }
   };
 }
-
+// const cubejsOptions = {
+//   token: '38a9862768034bc2546f91015d443761facf21367c83e96247bd3f51f1759a1c2d37debc7f04ec07a4a6949f7ee1c7a1cfad8385fb3b9097ef605cbfed634095',
+//   options: { apiUrl: 'http://localhost:4000/cubejs-api/v1' }
+// };
 
 
 
@@ -101,7 +117,7 @@ export function appInitializer(authService: AuthService, router: Router) {
 
 
 @NgModule({
-  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent, CardComponent],
+  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent, CardComponent, BarChartComponent, DashboardPageComponent, CreatemealdialogComponent, ContactUsDialogComponent, ConfirmationDialogComponent, TransferAndReportsComponent, UserValidateComponent],
   imports: [
     Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
     MatProgressBarModule,
@@ -110,13 +126,20 @@ export function appInitializer(authService: AuthService, router: Router) {
     BrowserAnimationsModule,
     MatToolbarModule,
     MatTableExporterModule,
+    MatExpansionModule,
+    DxButtonModule,
     MatPaginatorModule,
     MatSidenavModule,
+    MatCheckboxModule,
     MatSnackBarModule,
+    MatBadgeModule,
     MatButtonModule,
+    MatSlideToggleModule,
     MatTableModule,
+    // CubejsClientModule.forRoot(cubejsOptions),
     MatIconModule,
     NgChartsModule,
+    // ZingchartAngularModule,
     MatDividerModule,
     ReactiveFormsModule,
     FormsModule,
@@ -149,5 +172,6 @@ export function appInitializer(authService: AuthService, router: Router) {
   }, AuthGuard],
   bootstrap: [AppComponent],
   // entryComponents: [LoaderComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

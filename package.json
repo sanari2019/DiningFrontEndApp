@@ -37,6 +37,8 @@
     "chart.js": "^3.8.0",
     "crypto-js": "^4.1.1",
     "date-fns": "^2.30.0",
+    "devextreme": "23.1.6",
+    "devextreme-angular": "23.1.6",
     "file-saver": "^2.0.5",
     "jquery": "^3.7.0",
     "mat-table-exporter": "^15.0.0",

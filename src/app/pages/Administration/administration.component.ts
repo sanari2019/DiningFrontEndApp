@@ -18,7 +18,37 @@ import { ServedSummaryReportModel } from './servedSummaryReport.model';
 import { TotalRevenueModel } from './totalRevenue.model';
 import { UnservedReportModel } from './unservedReport.model';
 import { OnlinePaymentService } from 'src/app/shared/onlinepayment.service';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { CreatemealdialogComponent } from 'src/app/createmealdialog/createmealdialog.component';
+import { AvailableMeal } from 'src/app/createmealdialog/availableMeal.model';
+import { AvailableMealService } from 'src/app/createmealdialog/available-meal.service';
+import { MatChipSelectionChange } from '@angular/material/chips';
+import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject } from 'rxjs';
+import { MealActivityService } from 'src/app/createmealdialog/meal-activity.service';
+import { MealActivity } from 'src/app/createmealdialog/meal-activity.model';
 
+
+export interface PeriodicElement {
+  name: string;
+  position: number;
+  weight: number;
+  symbol: string;
+}
+
+const ELEMENT_DATA: PeriodicElement[] = [
+  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
+  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
+  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
+  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
+  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
+  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
+  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
+  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
+];
 
 
 
@@ -30,7 +60,11 @@ import { OnlinePaymentService } from 'src/app/shared/onlinepayment.service';
   templateUrl: './administration.component.html',
   styleUrls: ['./administration.component.scss']
 })
-export class AdministrationComponent implements AfterViewInit {
+export class AdministrationComponent implements OnInit, AfterViewInit {
+
+  dataSource5: AvailableMeal[] = [];
+  mealActivity!: MealActivity;
+  isActive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   title = 'ng2-charts-demo';
 
   public lineChartData: ChartConfiguration<'line'>['data'] = {
@@ -68,11 +102,16 @@ export class AdministrationComponent implements AfterViewInit {
   isSubmitClicked = false;
   dateServed: Date = new Date(); // Replace this with your actual date
   form!: FormGroup;
-
+  displayedColumns2: string[] = ['position', 'name', 'weight', 'symbol', 'slide_toggle'];
+  dataSource2 = ELEMENT_DATA;
   formattedDate: string;
   dataToDisplay: any;
+  selectedChip: string = 'All Meals';
 
-  constructor(private OnlinePayment: OnlinePaymentService, private Served: ServedService, private fb: FormBuilder, private exportService: ExportService, private _liveAnnouncer: LiveAnnouncer, private ordmealService: OrderedMealService) {
+  constructor(private mealActivityService: MealActivityService, private snackBar: MatSnackBar, private availableMealService: AvailableMealService, public dialog: MatDialog, private OnlinePayment: OnlinePaymentService, private Served: ServedService, private fb: FormBuilder, private exportService: ExportService, private _liveAnnouncer: LiveAnnouncer, private ordmealService: OrderedMealService) {
+
+
+
     // Format the date when the component is initialized
     this.formattedDate = this.formatDateForDisplay(this.dateServed);
     this.form = this.fb.group({
@@ -85,6 +124,9 @@ export class AdministrationComponent implements AfterViewInit {
     start: new FormControl(),
     end: new FormControl()
   });
+
+  displayedColumns5: string[] = ['id', 'mealType', 'mealName', 'description', 'active'];
+
 
   displayedColumns: string[] = ['dateServed', 'custTypeName', 'menuName', 'maxTarriff', 'dateEntered'];
   displayedTotalRevenueColumns: string[] = ['transDate', 'username', 'customerType', 'amountPaid'];
@@ -101,11 +143,63 @@ export class AdministrationComponent implements AfterViewInit {
   @ViewChild('this.dataSource') userTable!: ElementRef;
   @ViewChild('paginator') paginator!: MatPaginator;
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(CreatemealdialogComponent, {
+      // data: {name: this.name, animal: this.animal},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.ngOnInit();
+      // this.animal = result;
+    });
+  }
+  ngOnInit() {
+    this.availableMealService.getAllAvailableMeals().subscribe((meals) => {
+      this.dataSource5 = meals;
+    });
+  }
+  showSnackbar(message: string) {
+    this.snackBar.open(message, 'Close', {
+      duration: 2000, // Duration in milliseconds (2 seconds)
+    });
+  }
+
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource = new MatTableDataSource(this.servedData);
     this.dataSource.paginator = this.paginator;
   }
+
+  getActiveMeals() {
+    if (this.selectedChip === 'Active Meals') {
+      // Call your getActiveMeals service method here
+      this.availableMealService.getActiveMeals().subscribe(data => {
+        // Handle the data returned by the service
+        this.dataSource5 = data;
+      });
+    }
+  }
+  getInactiveMeals() {
+    if (this.selectedChip === 'Inactive Meals') {
+      // Call your getActiveMeals service method here
+      this.availableMealService.getInactiveMeals().subscribe(data => {
+        // Handle the data returned by the service
+        this.dataSource5 = data;
+      });
+    }
+  }
+  getAllMeals() {
+    if (this.selectedChip === 'All Meals') {
+      // Call your getActiveMeals service method here
+      this.availableMealService.getAllAvailableMeals().subscribe(data => {
+        // Handle the data returned by the service
+        this.dataSource5 = data;
+      });
+    }
+  }
+
+
   handlePage(event: PageEvent) {
     const startIndex = event.pageIndex * event.pageSize;
     const endIndex = startIndex + event.pageSize;
@@ -285,6 +379,89 @@ export class AdministrationComponent implements AfterViewInit {
     this.exportService.exportTableElmToExcel(tableElementRef, 'servedData');
 
   }
+  toggleMealStatus(element: AvailableMeal) {
+    let message: string;
+    let action: () => void;
+    const userJSON = localStorage.getItem('user');
+    const user = JSON.parse(userJSON || '[]');
+    const mealActivity = new MealActivity;
+
+    // if (user && (user.custTypeId === 1 || user.custTypeId === 5)) {
+    //   // Redirect to /staffpayment if custTypeId is 1 or 5
+    //   this.router.navigate(['/staffpayment']);
+    // } else {
+    //   // Redirect to /guestpayment for other custTypeIds
+    //   this.router.navigate(['/guestpayment']);
+    // }
+
+
+    if (element.active) {
+      message = 'Do you want to deactivate this item?';
+      action = () => {
+        if (user) {
+          mealActivity.availableMealId = element.id;
+          mealActivity.madeActiveDate = new Date('01-01-2001');
+          mealActivity.madeActiveBy = '0'; // You should replace this with the actual user ID.
+          mealActivity.madeInactiveDate = new Date();
+          mealActivity.madeInactiveBy = user.id.toString();
+        }
+
+
+
+
+        // Create a MealActivity record
+        this.mealActivityService.createMealActivity(mealActivity).subscribe(() => {
+          // Deactivate the meal
+          element.active = false;
+
+          console.log(mealActivity);
+          this.availableMealService.updateAvailableMeal(element).subscribe(() => {
+            this.showSnackbar('Successfully deactivated');
+          });
+        });
+      };
+    } else {
+      message = 'Do you want to activate this item?';
+      action = () => {
+        if (user) {
+          mealActivity.availableMealId = element.id;
+          mealActivity.madeActiveDate = new Date();
+          mealActivity.madeActiveBy = user.id.toString(); // You should replace this with the actual user ID.
+          mealActivity.madeInactiveDate = new Date('01-01-2001');
+          mealActivity.madeInactiveBy = '0';
+        }
+
+
+
+        // Create a MealActivity record
+        this.mealActivityService.createMealActivity(mealActivity).subscribe(() => {
+          // Activate the meal
+          element.active = true;
+
+          this.availableMealService.updateAvailableMeal(element).subscribe(() => {
+            this.showSnackbar('Successfully activated');
+          });
+        });
+      };
+    }
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { message },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // User confirmed, perform the action
+        action();
+      } else if (this.selectedChip === 'All Meals') {
+        this.getAllMeals();
+      } else if (this.selectedChip === 'Active Meals') {
+        this.getActiveMeals();
+      } else if (this.selectedChip === 'Inactive Meals') {
+        this.getInactiveMeals();
+      }
+    });
+  }
 
   exportTotalVouchersCountToCSV() {
     // // Extract data from the MatTableDataSource
@@ -316,6 +493,8 @@ export class AdministrationComponent implements AfterViewInit {
 
     // // Export the table to Excel using the ExportService
     // this.exportService.exportTableElmToExcel(tableElementRef, 'servedData');
+
+
 
   }
 

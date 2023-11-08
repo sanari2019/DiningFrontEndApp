@@ -1,0 +1,13 @@
+ <div id="example" *ngIf="users.length > 0">
+    <h2>Validate Receiever Details</h2>
+    <ul class="list">
+      <li class="shopping" *ngFor="let user of users" (click)="selectUser(user)">
+        <a ><span class="title">{{ user.firstName }} {{ user.lastName }}</span>
+        <span class="subtitle">(E-mail: {{ user.userName }}) - (Emp. No.: {{ user.custId }})</span></a>
+      </li>
+    </ul>
+    <div *ngIf="users.length === 0">
+      <p>No users found matching the pattern.</p>
+    </div>
+  </div>
+  

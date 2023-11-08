@@ -1,6 +1,76 @@
 
 <mat-tab-group  mat-align-tabs="center" > 
-    <!--<mat-tab label="General Overview"> 
+   
+    <mat-tab label="Meal Controller">
+
+
+      
+      <section style="margin-top:7px;">
+        
+  
+        <div class="example-button-row">
+          <div class="example-flex-container" style="display:flex; justify-content: space-between;">
+            <mat-chip-listbox aria-label="Meal selection" [(ngModel)]="selectedChip">
+              <mat-chip-option [value]="'All Meals'" (click)="getAllMeals()">All Meals</mat-chip-option>
+              <mat-chip-option [value]="'Active Meals'" (click)="getActiveMeals()">Active Meals</mat-chip-option>
+              <mat-chip-option [value]="'Inactive Meals'" color="accent"  (click)="getInactiveMeals()">Inactive Meals</mat-chip-option>
+            </mat-chip-listbox>
+            
+    
+            <div style="justify-content: flex-end;">
+              <button mat-fab color="warn" aria-label="Example icon button with a home icon" (click)="openDialog()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            
+            
+          </div>
+        </div>
+      </section>
+      <section>
+        <table mat-table [dataSource]="dataSource5" class="mat-elevation-z8">
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+        
+          <!-- Position Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> No. </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+          </ng-container>
+        
+          <!-- Name Column -->
+          <ng-container matColumnDef="mealType">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.mealType}} </td>
+          </ng-container>
+        
+          <!-- Weight Column -->
+          <ng-container matColumnDef="mealName">
+            <th mat-header-cell *matHeaderCellDef> Weight </th>
+            <td mat-cell *matCellDef="let element"> {{element.mealName}} </td>
+          </ng-container>
+        
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Symbol </th>
+            <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+          </ng-container>
+             <!-- Symbol Column -->
+             <ng-container matColumnDef="active">
+              <th mat-header-cell *matHeaderCellDef>  </th>
+              <td mat-cell *matCellDef="let element"><mat-slide-toggle  [checked]="element.active" (change)="toggleMealStatus(element)"> {{ element.active ? 'Deactivate' : 'Activate' }}</mat-slide-toggle> </td>
+            </ng-container>
+        
+          <tr mat-header-row *matHeaderRowDef="displayedColumns5"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns5;"></tr>
+        </table>
+        
+        
+      </section>
+      
+    </mat-tab> 
+   <!-- <mat-tab label="General Overview"> 
        
       <h3>PAGE UNDER CONSTRUCTION, USE Reports</h3>
       <div style="display: block;">
@@ -11,8 +81,8 @@
           [legend]="lineChartLegend">
         </canvas>
       </div>
+      <app-dashboard-page></app-dashboard-page>
     </mat-tab>-->
-    <!--<mat-tab label="Service Overview"></mat-tab> -->
     <mat-tab label="Reports"> 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div  class="hello" style="margin-top:1%;">
@@ -195,11 +265,11 @@
           <h3 style="width:100%; text-align:center;">Served Report</h3>
           <table mat-table [dataSource]="servedSummaryData" #dataSource matSort (matSortChange)="announceSortChange($event)">
             <ng-container matColumnDef="month">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by date">Served Date</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by date">Served Month</th>
               <td mat-cell *matCellDef="let item of totservedData">{{ item.month }}</td>
             </ng-container>
             <ng-container matColumnDef="day">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by date">Served By</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by date">Served Day</th>
               <td mat-cell *matCellDef="let item of totservedData">{{ item.day }}</td>
             </ng-container>
             

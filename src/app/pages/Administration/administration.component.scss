@@ -67,3 +67,90 @@ button[disabled] {
     cursor: not-allowed;
     /* Change cursor to "not-allowed" */
 }
+
+* {
+    box-sizing: border-box;
+}
+
+p {
+    font-family: Lato;
+}
+
+#dashboard {
+    display: flex;
+    flex-direction: column;
+    background: #cfd8dc;
+    height: 100vh;
+}
+
+
+.dashboard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background: #90a4ae; */
+    flex-wrap: wrap;
+    background: #2196f3;
+    color: white;
+    padding: 0.5rem 2rem;
+    min-height: 80px;
+}
+
+
+.dash__controls {
+    display: flex;
+    justify-content: flex-end;
+    border: 1px solid black;
+    padding: 1rem;
+}
+
+.dashboard__header h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.dash-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 1rem;
+}
+
+.dash-row+.dash-row {
+    margin: 0rem 1rem;
+}
+
+.dash-row .mat-card {
+    flex: 1;
+    min-width: 200px;
+    min-height: 250px;
+    margin: 1rem;
+}
+
+.mat-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.2rem;
+}
+
+#card-0-1 {
+    background: #FFC107;
+}
+
+#card-0-2 {
+    background: #EEE;
+}
+
+#card-1-1 {
+    background: #2196f3;
+}
+
+/* Material manual overrides */
+
+.mat-fab.mat-primary,
+.mat-flat-button.mat-primary,
+.mat-mini-fab.mat-primary,
+.mat-raised-button.mat-primary {
+    background: #2196f3;
+}

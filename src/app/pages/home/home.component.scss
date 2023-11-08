@@ -476,3 +476,676 @@ th {
   text-align: center;
   /* Center align text */
 }
+
+
+/* new dev*/
+
+* {
+  box-sizing: border-box;
+}
+
+p {
+  font-family: Lato;
+}
+
+#dashboard {
+  display: flex;
+  flex-direction: column;
+  background: #cfd8dc;
+  height: 100vh;
+}
+
+
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* background: #90a4ae; */
+  flex-wrap: wrap;
+  background: #2196f3;
+  color: white;
+  padding: 0.5rem 2rem;
+  min-height: 80px;
+}
+
+
+.dash__controls {
+  display: flex;
+  justify-content: flex-end;
+  border: 1px solid black;
+  padding: 1rem;
+}
+
+.dashboard__header h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.dash-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem;
+}
+
+.dash-row+.dash-row {
+  margin: 0rem 1rem;
+}
+
+.dash-row mat-card {
+  flex: 1;
+  min-width: 200px;
+  min-height: 250px;
+  margin: 1rem;
+  padding: 10px;
+}
+
+mat-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.2rem;
+}
+
+#card-0-1 {
+  background: #0C4160;
+}
+
+#card-0-2 {
+  background: #EEE;
+}
+
+#card-1-1 {
+  background: #2196f3;
+}
+
+/* Material manual overrides */
+
+.mat-fab.mat-primary,
+.mat-flat-button.mat-primary,
+.mat-mini-fab.mat-primary,
+.mat-raised-button.mat-primary {
+  background: #2196f3;
+}
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap');
+
+$transition-time: 2.3s;
+
+body {
+  font-family: 'Oswald', sans-serif;
+  background-color: #212121;
+
+  section {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .row {
+      align-items: center;
+      height: 100vh;
+    }
+  }
+}
+
+.card2 {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  margin: 10px 0;
+  transition: ease all $transition-time;
+  perspective: 1200px;
+
+  &:hover {
+    .cover {
+      transform: rotateX(0deg) rotateY(-180deg);
+
+      &:before {
+        transform: translateZ(30px);
+      }
+
+      &:after {
+        background-color: black;
+      }
+
+      h1 {
+        transform: translateZ(100px);
+      }
+
+      .price {
+        transform: translateZ(60px);
+      }
+
+      a {
+        transform: translateZ(-60px) rotatey(-180deg);
+      }
+    }
+  }
+
+  .cover {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: ease all $transition-time;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+    &:before {
+      content: '';
+      position: absolute;
+      border: 5px solid rgba(255, 255, 255, .5);
+      box-shadow: 0 0 12px rgba(0, 0, 0, .3);
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      z-index: 2;
+      transition: ease all $transition-time;
+      transform-style: preserve-3d;
+      transform: translateZ(0px);
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      z-index: 2;
+      transition: ease all 1.3s;
+      background: rgba(0, 0, 0, .4);
+    }
+
+    &.item-a {
+      background-image: url('https://media.npr.org/assets/img/2016/08/26/jollof1_custom-417abc55e39dc05e57cee8a64423df006bb973c2-s1100-c50.jpg');
+    }
+
+    &.item-b {
+      background-image: url('https://www.mydiasporakitchen.com/wp-content/uploads/2017/07/Mydiasporakitchen-8.jpg-1024x1024.jpeg');
+    }
+
+    &.item-c {
+      background-image: url('https://foodplanet.com.ng/wp-content/uploads/2020/07/Yam-Porridge.jpg');
+    }
+
+    h1 {
+      font-weight: 400;
+      position: absolute;
+      bottom: 70px;
+      left: 50px;
+      color: white;
+      transform-style: preserve-3d;
+      transition: ease all $transition-time;
+      z-index: 3;
+      font-size: 1.5em;
+      transform: translateZ(0px);
+    }
+
+    .price {
+      font-weight: 00;
+      position: absolute;
+      top: 55px;
+      right: 50px;
+      color: white;
+      transform-style: preserve-3d;
+      transition: ease all $transition-time;
+      z-index: 4;
+      font-size: 2em;
+      transform: translateZ(0px);
+    }
+
+    em {
+      font-weight: 100;
+      position: absolute;
+      bottom: 30px;
+      left: 50px;
+      color: white;
+      transform-style: preserve-3d;
+      transition: ease all $transition-time;
+      z-index: 3;
+      font-size: 1em;
+      transform: translateZ(0px);
+    }
+  }
+
+  .card-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: #0b0f08;
+    transform-style: preserve-3d;
+    transition: ease all $transition-time;
+    transform: translateZ(-1px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    a {
+      transform-style: preserve-3d;
+      transition: ease transform $transition-time, ease background .5s;
+      transform: translateZ(-1px) rotatey(-180deg);
+      background: transparent;
+      border: 1px solid white;
+      font-weight: 200;
+      font-size: 1.3em;
+      color: white;
+      padding: 14px 32px;
+      outline: none;
+      text-decoration: none;
+
+      &:hover {
+        background-color: white;
+        color: #0b0f08;
+      }
+    }
+  }
+}
+
+#header {
+  margin: 20px;
+}
+
+#header>h1 {
+  text-align: center;
+  font-size: 3rem;
+}
+
+#header>p {
+  text-align: center;
+  font-size: 1.5rem;
+  font-style: italic;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Lato&subset=latin-ext);
+
+#head {
+  width: 100%;
+  height: 400px;
+  margin-top: 300px;
+}
+
+#head-span {
+  font-family: 'Lato', sans-serif;
+  display: block;
+  width: 200px;
+  height: 200px;
+  font-size: 100px;
+  margin: 0 auto;
+  font-weight: 600;
+
+  &::before {
+    content: "KINO";
+    color: rgba(220, 220, 220, 0.5);
+    font-size: 180px;
+    //width: 350px;
+    display: block;
+    margin: -160px -110px;
+    font-weight: 900;
+    letter-spacing: 10px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+}
+
+
+.card3 {
+  max-width: 500px;
+  margin: auto;
+  color: black;
+  border-radius: 20 px;
+}
+
+p {
+  margin: 0px;
+}
+
+.container .h8 {
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.btn.btn-primary {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  background-image: linear-gradient(to right, #77A1D3 0%, #79CBCA 51%, #77A1D3 100%);
+  border: none;
+  transition: 0.5s;
+  background-size: 200% auto;
+  margin-top: 35px;
+}
+
+
+.btn.btn.btn-primary:hover {
+  background-position: right center;
+  color: #fff;
+  text-decoration: none;
+}
+
+
+
+.btn.btn-primary:hover .fas.fa-arrow-right {
+  transform: translate(15px);
+  transition: transform 0.2s ease-in;
+}
+
+.form-control {
+  color: white;
+  background-color: #223C60;
+  border: 2px solid transparent;
+  height: 60px;
+  padding-left: 20px;
+  vertical-align: middle;
+}
+
+.form-control:focus {
+  color: white;
+  background-color: #0C4160;
+  border: 2px solid #2d4dda;
+  box-shadow: none;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+::placeholder {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* === HEADING STYLE #2 === */
+.two h1 {
+  text-transform: capitalize;
+}
+
+.two h1:before {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 2px;
+  content: "";
+  background-color: #c50000;
+}
+
+.two h1 span {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  line-height: 3em;
+  padding-left: 0.25em;
+  color: rgba(0, 0, 0, 0.4);
+  padding-bottom: 10px;
+}
+
+.alt-two h1 {
+  text-align: center;
+}
+
+.alt-two h1:before {
+  left: 50%;
+  margin-left: -30px;
+}
+
+.six h1 {
+  text-align: center;
+  color: #222;
+  font-size: 30px;
+  font-weight: 400;
+  text-transform: uppercase;
+  word-spacing: 1px;
+  letter-spacing: 2px;
+  color: rgb(0, 35, 85);
+}
+
+.six h1 span {
+  line-height: 2em;
+  padding-bottom: 15px;
+  text-transform: none;
+  font-size: .7em;
+  font-weight: normal;
+  font-style: italic;
+  font-family: "Playfair Display", "Bookman", serif;
+  color: #999;
+  letter-spacing: -0.005em;
+  word-spacing: 1px;
+  letter-spacing: none;
+}
+
+.six h1:after,
+.six h1:before {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 45px;
+  height: 4px;
+  content: "";
+  right: 45px;
+  margin: auto;
+  background-color: #ccc;
+}
+
+.six h1:before {
+  background-color: #d78b8b;
+  left: 45px;
+  width: 90px;
+}
+
+.para {
+  font-weight: 600;
+}
+
+.feedback-level {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.level {
+  background: white;
+  padding: 13px;
+  border-radius: 7px;
+  border: solid 0.5px #e0e9fe;
+  cursor: pointer;
+}
+
+.level:hover {
+  box-shadow: #fe73a5 0 2px 5px;
+}
+
+.level:hover i {
+  color: #fe73a5;
+}
+
+.level i {
+  font-size: 40px;
+}
+
+.feedback-msg textarea {
+  margin-top: 5px;
+  border: solid 2px #e0e9fe;
+  padding: 13px;
+  border-radius: 7px;
+  outline: none;
+  font-size: 14px;
+  color: #4b537c;
+  font-weight: 500;
+  letter-spacing: 1px;
+  width: 100%;
+  height: 80px;
+  resize: none;
+}
+
+.agreement .checkbox {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.agreement input {
+  accent-color: #ff71a4;
+}
+
+.agreement a {
+  color: #ff71a4;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.agreement label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: end;
+}
+
+.buttons a {
+  background: white;
+  color: #4b537c;
+  width: 80px;
+  padding: 10px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.buttons a:hover {
+  opacity: 0.9;
+}
+
+.buttons a:nth-child(1) {
+  background: #fe71a4;
+  color: #f8faff;
+}
+
+.repetitionBox {
+  margin: auto;
+  position: relative;
+  text-align: center;
+  color: #1e272e;
+  overflow: hidden;
+  width: 100%;
+  height: 5rem;
+
+  >* {
+    font-size: 1em;
+    line-height: 3.5rem;
+    margin: 0;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(transparent, rgb(0, 35, 85));
+    z-index: 99;
+  }
+}
+
+.up>* {
+  animation-name: up;
+  animation-duration: 1750ms;
+}
+
+.down>* {
+  animation-name: up;
+  animation-duration: 2750ms;
+  animation-direction: reverse;
+}
+
+@keyframes up {
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+#valid {
+  /* This bit sets up the horizontal layout */
+  display: flex;
+  flex-direction: row;
+
+  /* This bit draws the box around it */
+  border: 1px solid grey;
+
+  /* I've used padding so you can see the edges of the elements. */
+  padding: 1px;
+}
+
+#validinput {
+  /* Tell the input to use all the available space */
+  flex-grow: 2;
+  /* And hide the input's outline, so the form looks like the outline */
+  border: none;
+}
+
+/* remove the input focus blue box, it will be in the wrong place. */
+#validinput:focus {
+  outline: none;
+}
+
+/* Add the focus effect to the form so it contains the button */
+#validinput:focus-within {
+  outline: 1px solid blue
+}
+
+#validbutton {
+  /* Just a little styling to make it pretty */
+  border: 1px solid blue;
+  background: blue;
+  color: white;
+}
+
+.pop-outin {
+  animation: 2s anim-popoutin ease infinite;
+}
+
+@keyframes anim-popoutin {
+  0% {
+    color: black;
+    transform: scale(0);
+    opacity: 0;
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  25% {
+    color: red;
+    transform: scale(2);
+    opacity: 1;
+    text-shadow: 3px 10px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  50% {
+    color: black;
+    transform: scale(1);
+    opacity: 1;
+    text-shadow: 1px 0 0 rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    /* animate nothing to add pause at the end of animation */
+    transform: scale(1);
+    opacity: 1;
+    text-shadow: 1px 0 0 rgba(0, 0, 0, 0);
+  }
+}

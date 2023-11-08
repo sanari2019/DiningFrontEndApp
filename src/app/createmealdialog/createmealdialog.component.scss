@@ -1,0 +1,59 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.example-container mat-form-field+mat-form-field {
+    margin-left: 8px;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.example-container form {
+    margin-bottom: 20px;
+}
+
+.example-container form>* {
+    margin: 12px 0;
+}
+
+.example-container .mat-radio-button {
+    margin: 0 12px;
+}
+
+.example-form-fields {
+    display: flex;
+    align-items: flex-start;
+}
+
+form {
+    width: 250px;
+    margin: 25px;
+}
+
+.example-section {
+    margin: 12px 0;
+}
+
+.example-margin {
+    margin: 0 12px;
+}
+
+ul {
+    list-style-type: none;
+    margin-top: 4px;
+}
+
+h1 {
+    font-size: 1.5em;
+    text-align: center;
+    color: black;
+    font-weight: 50;
+    text-transform: capitalize;
+    letter-spacing: 2px;
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+}

@@ -11,7 +11,7 @@ export class Payment {
   opaymentid: number;
   paid: boolean;
   timepaid: Date;
-  PaymentType: number;
+  paymentType: number;
   custtypeid: number;
   VoucherDescription: string;
   constructor() {
@@ -27,7 +27,7 @@ export class Payment {
     this.opaymentid = 0;
     this.paid = false;
     this.timepaid = new Date();
-    this.PaymentType = 0;
+    this.paymentType = 0;
     this.custtypeid = 0;
     this.VoucherDescription = '';
   }
