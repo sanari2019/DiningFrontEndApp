@@ -32,7 +32,7 @@ export class OrderedMealService {
     const url = `${this.orderedmealURL}/getordmealsbycust`;
     return this.http.post<OrderedMeal[]>(url, { id: userId })
       .pipe(
-        tap(data => console.log('getOrderedMealsByCust: ' + JSON.stringify(data))),
+        tap(data => console.log('getOrderedMealsByCust: ')),
         catchError(this.handleError)
       );
   }

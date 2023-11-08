@@ -11,6 +11,7 @@ import { Registration } from '../registration/registration.model';
 import { RegistrationService } from '../registration/registration.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
+import { ServedService } from '../users-payment-info/served.service';
 
 
 
@@ -39,10 +40,11 @@ export class PaymentDetailComponent implements OnInit {
   pymtMain: Payment[] = [];
   loggedInUser: Registration | undefined;
   filterValue: string = '';
+  dailyServedCount: number = 0;
 
 
 
-  constructor(private http: HttpClient, private envUrl: EnvironmentUrlService, private registrationService: RegistrationService, public dialog: MatDialog, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private router: Router) { }
+  constructor(private servedService: ServedService, private http: HttpClient, private envUrl: EnvironmentUrlService, private registrationService: RegistrationService, public dialog: MatDialog, private route: ActivatedRoute, private paymentdetailService: PaymentDetailService, private router: Router) { }
 
   // Pagination properties
   pageSize = 10;
@@ -149,6 +151,7 @@ export class PaymentDetailComponent implements OnInit {
   // }
 
   ngOnInit(): void {
+    this.fetchDailyServedCount();
     // this.route.queryParams.subscribe(params => {
     //   // const enteredBy = params['enteredBy'];
     //   this.paymentdetailService.getPaidPayments().subscribe(
@@ -162,6 +165,7 @@ export class PaymentDetailComponent implements OnInit {
     //   );
     // });
     // this.applySieveFilters();
+
   }
 
   applySieveFilters() {
@@ -186,7 +190,12 @@ export class PaymentDetailComponent implements OnInit {
       this.filteredPaymentDetails = this.pymtByCust;
     });
   }
-
+  fetchDailyServedCount() {
+    this.servedService.getDailyServedCount()
+      .subscribe(count => {
+        this.dailyServedCount = count;
+      });
+  }
 
 
 

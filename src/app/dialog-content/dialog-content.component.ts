@@ -96,7 +96,7 @@ export class DialogContentComponent implements OnInit {
         enteredBy: this.orderedMeals[0].enteredBy,
         voucherId: 10,
         amount: this.calculateRemainingAmount(),
-        PaymentType: 2,
+        paymentType: 2,
         dateEntered: new Date(),
         custCode: this.loggedInUser.custId,
         unit: 1,

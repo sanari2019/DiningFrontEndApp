@@ -284,7 +284,7 @@ export class StaffpaymentComponent implements OnInit {
       opaymentid: 0,
       paid: false,
       timepaid: new Date(),
-      PaymentType: 1,
+      paymentType: 1,
       custtypeid: pymtdetails.custtypeid,
       VoucherDescription: '',
 
@@ -523,7 +523,7 @@ export class StaffpaymentComponent implements OnInit {
           p.dateEntered = new Date();
           p.enteredBy = enteredBy;
           p.amount = amount;
-          p.PaymentType = paymentTypeId;
+          p.paymentType = paymentTypeId;
           p.custtypeid = this.staffid;
 
           if (confirm(`You are about to generate a ticket for Staff: ${this.registration?.custId}`)) {
@@ -723,9 +723,9 @@ export class StaffpaymentComponent implements OnInit {
           var loggeinuser = localStorage.getItem('user');
           this.registration = loggeinuser !== null ? JSON.parse(loggeinuser) : new Registration();
           p.enteredBy = this.registration?.id.toString();
-          p.custtypeid = 1;
+          p.custtypeid = this.registration?.custTypeId;
           p.servedby = "";
-          p.PaymentType = 1;
+          p.paymentType = 1;
           if (confirm(`You are about to generate a ticket for Staff: ${p.custCode}?`)) {
             this.paymentservice.createPayment(p)
               .subscribe({

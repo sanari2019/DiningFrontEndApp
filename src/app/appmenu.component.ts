@@ -8,6 +8,7 @@ import { delay, filter } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
 import { Registration } from './registration/registration.model';
 
+
 @Component({
   selector: 'app-menu',
   templateUrl: './appmenu.component.html',
@@ -41,6 +42,8 @@ export class AppMenuComponent implements OnInit {
     );
 
   }
+
+
   onLogout() {
     this.authService.logout();
     localStorage.removeItem('user');

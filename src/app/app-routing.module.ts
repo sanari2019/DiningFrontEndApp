@@ -23,6 +23,7 @@ import { UsersPaymentInfoComponent } from './users-payment-info/users-payment-in
 import { WelcomeComponent } from './welcome/welcome.component';
 import { AdministrationComponent } from './pages/Administration/administration.component';
 import { ReportComponent } from './report/report.component';
+import { TransferAndReportsComponent } from './transfer-and-reports/transfer-and-reports.component';
 
 
 
@@ -97,6 +98,10 @@ const routes: Routes = [
   {
     path: 'about',
     component: AboutComponent,
+  },
+  {
+    path: 'transfer',
+    component: TransferAndReportsComponent,
   },
   {
     path: 'help',

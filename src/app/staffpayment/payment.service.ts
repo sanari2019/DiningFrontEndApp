@@ -49,6 +49,18 @@ export class PaymentService {
         catchError(this.handleError)
       )
   }
+  getPymt(id: number): Observable<Payment> {
+    if (id === 0) {
+      return of(this.initializePayment());
+    }
+    const url = `${this.envUrl.urlAddress}/paymentmain/getpymt/${id}`;
+    return this.http.get<Payment>(url)
+      .pipe(
+        tap(data => console.log('getPayment: ' + JSON.stringify(data))),
+        catchError(this.handleError)
+      )
+  }
+
 
   createPayment(pymt: Payment): Observable<Payment> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -145,7 +157,7 @@ export class PaymentService {
       opaymentid: 0,
       paid: false,
       timepaid: new Date(),
-      PaymentType: 0,
+      paymentType: 0,
       custtypeid: 0,
       VoucherDescription: '',
     };

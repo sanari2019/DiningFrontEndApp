@@ -23,6 +23,10 @@ export class ServedService {
     return this.http.get<Served[]>(this.apiUrl);
   }
 
+  getDailyServedCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/ServedMealsCount`);
+  }
+
   getServedById(id: number): Observable<Served> {
     return this.http.get<Served>(`${this.apiUrl}/${id}`);
   }

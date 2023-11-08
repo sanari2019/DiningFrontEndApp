@@ -1,11 +1,139 @@
+
 <div class="card red" *ngIf="freezeStatus">
 	
 	  <p>Freeze Status: {{ freezeStatus ? 'Frozen' : 'Not Frozen' }}</p>
 
-  </div>
-  
+</div>
 
-<div class="container-fluid">
+
+
+    
+<section>
+	<div id="header">
+		<div class="six">
+			<h1>Now Available<br>
+			  <span>Currently available for staff</span>
+			</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="row" *ngIf="activeMeals && activeMeals.length > 0">
+			<div class="col-md-4 col-sm-6 col-xs-12" *ngFor="let meal of activeMeals">
+			  <div class="card2"  *ngIf="shouldDisplayMeal(meal.mealType)">
+				<div class="cover" style="background-image: url({{meal.image}});">
+				  <h1>{{ meal.mealName }}</h1>
+				  <span class="price">{{ meal.mealType}}</span>
+				  <div class="card-back">
+					<a (click)="redirectToPayment()">Buy Now</a>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		</div>
+		<div class="repetitionBox up" *ngIf="!activeMeals || activeMeals.length < 1">
+			<h2>No meal Available, Kindly Visit the Cafeteria</h2>
+			<h2>No meal Available, Kindly Visit the Cafeteria</h2>
+		  </div>
+	</div>
+</section>
+<mat-divider></mat-divider>
+
+	<header >
+		<div id="header">
+			<div class="six">
+				<h1><strong>My Dashboard</strong><br>
+				  <span>Summary</span>
+				</h1>
+			</div>
+		</div>
+		  <div>
+			<div class="hero_sec d-flex  align-items-center">
+				<div class="container p-3" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
+					<div class="row">
+						<div class="col-lg-3 col-md-6" [class.shake]="shakeState === 'shakeStart'" (click)="openPaymentBreakdownDialog()" matTooltip="Click to see details">
+							<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3"
+								data-tor="inview:bg(primary) , hover:bg(danger)">
+								<div class="hstack gap-3">
+									<div class="p-2">
+										<h3 class="fs-6 text-black-50 lh-1">TOTAL BALANCE</h3>
+										<strong class="fs-5 lh-1" style="color: rgb(0, 35, 85);">{{ totalAmount | currency: 'NGN' }}</strong>
+									</div>
+									<div class="p-2 ms-auto rounded-circle badge" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
+									  <mat-icon> functions</mat-icon>
+										<i class="fa-brands fa-btc color-white fs-5 d-inline-block w-16"></i>
+									</div>
+								</div>
+								<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
+										class="link-info text-decoration-none fw-bold">Your total balance</a>
+									</p>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6"  *ngFor="let voucherId of totalAmountByVoucherId | keyvalue" style="margin-top:5px">
+							<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3"  [ngClass]="getCardClass(voucherId.key)">
+								<div class="hstack gap-3">
+									<div class="p-2">
+										<h3 class="fs-6 text-black-50 lh-1">{{ getVoucherDescription(voucherId.key) | async }}</h3>
+										<strong class="fs-5 lh-1" style="color: rgb(0, 35, 85);">{{ voucherId.value | currency: 'NGN' }}</strong>
+									</div>
+									<div class="p-2 ms-auto rounded-circle bg-danger badge ">
+										<i class="fa-solid fa-earth-asia color-white fs-5"></i>
+									</div>
+								</div>
+								<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
+										class="link-info text-decoration-none fw-bold"><b>{{ voucherStats[+voucherId.key].totalUnits }}</b>  units - {{ getVoucherDescription(voucherId.key) | async }}</a>
+								</p>
+							</div>
+						</div>
+						<!--<div class="col-lg-3 col-md-6">
+							<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3">
+								<div class="hstack gap-3">
+									<div class="p-2">
+										<h3 class="fs-6 text-black-50 lh-1">NEW CLIENTS</h3>
+										<strong class="fs-5 lh-1">+3,462</strong>
+									</div>
+									<div class="p-2 ms-auto rounded-circle bg-info badge ">
+										<i class="fa-solid fa-file-invoice color-white fs-5"></i>
+									</div>
+								</div>
+								<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
+										class="link-danger text-decoration-none fw-bold">-2%</a>
+									last quarter</p>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6">
+							<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3">
+								<div class="hstack gap-3">
+									<div class="p-2">
+										<h3 class="fs-6 text-black-50 lh-1">SALES</h3>
+										<strong class="fs-5 lh-1">$103,430</strong>
+									</div>
+									<div class="p-2 ms-auto rounded-circle bg-warning badge ">
+										<i class="fa-solid fa-cart-shopping color-white fs-5"></i>
+									</div>
+								</div>
+								<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
+										class="link-info text-decoration-none fw-bold">+5%</a>
+									than last month</p>
+							</div>
+						</div>-->
+					</div>
+				</div>
+			  </div>
+		  <!-- <mat-form-field color="accent">
+			<input matInput 
+			  [matDatepicker]="picker" 
+			  placeholder="Choose a date"
+			  color="#FFF"
+			  (click)="picker.open()"
+			  >
+			<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+			<mat-datepicker #picker ></mat-datepicker>
+		  </mat-form-field> -->
+	  </div>
+	</header>
+
+	
+<!--<div class="container-fluid">
 	<div class="row">
 		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 my-3" style="width:100%;">
 			<div class="card-list">
@@ -49,7 +177,103 @@
 			</div>
 		</main>
 	</div>
-</div>
+</div>-->
 
+
+
+  
+	<section class="dash-row" id="dash-row">
+	  <mat-card style="display: flex; flex-direction: column;" id="mat-card">
+		<mat-card-title>
+		  Welcome {{ user.firstName }}
+		</mat-card-title>
+		<mat-card-subtitle>We've created your personalized analytics report</mat-card-subtitle>
+		<mat-card-content style="display: flex; justify-content: center; align-items: center; flex: 1;">	
+		  <img mat-card-image style="height: 170px" src="https://gistcdn.githack.com/mike-schultz/10a1a059f77cc33a350d85a0870397e2/raw/d11f4b4804d9a49faec957a1d51c3d4e5174477c/data_xmfy.svg"/>
+		</mat-card-content>
+		<mat-card-footer  id="footer">
+  
+		  <button mat-button mat-raised-button color="primary"  (click)="openContactDialog()" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">Contact Support</button>
+		</mat-card-footer>
+		</mat-card>
+	  <mat-card id="card-0-2">
+		<mat-card-title >
+		  Transfer Request Form
+		</mat-card-title>
+		<mat-card-subtitle>Make a Transfer <span (click)= ResetForm() style="color: red; cursor: pointer;" class='pop-outin'> Reset Form </span></mat-card-subtitle>
+		<!--<zingchart-angular [config]="allocatedBudget" [height]="'250px'"></zingchart-angular>-->
+		<form  [formGroup]="Transferform">
+			<div class="row gx-3">
+				<div class="col-12">
+					<div class="d-flex flex-column">
+						<p class="text mb-1">Select Voucher</p>
+						<select class="form-control mb-3" formControlName="voucher"style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
+							<option>--</option>
+							<option *ngFor="let payment of payments" [ngValue]="payment.id">
+							{{ payment.unit }} units - {{ payment.amount }} Voucher
+							</option>
+						</select>					  
+					</div>
+				</div>
+				<div class="col-12">
+					<div class="d-flex flex-column">
+						<p class="text mb-1">Friend's Email Address</p>
+						<input class="form-control mb-3" type="text" placeholder="samuel.anari@evercare.ng" formControlName="user"style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="d-flex flex-column">
+						<p class="text mb-1">Quantity</p>
+						<input class="form-control mb-3 pt-2 " type="number" placeholder="2" formControlName="quantity" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="btn btn-primary mb-3" (click)="isValidated ? complete() : openUserValidateDialog()">
+					  <span class="ps-3">{{ isValidated ? ' Send' : 'Validate' }}<span class="arrow"></span></span>
+					  <span class="fas fa-arrow-right"></span>
+					</div>
+				  </div>
+				  
+			</div>
+		</form>
+	
+	  </mat-card>
+	  <mat-card id="card-0-2">
+		<mat-card-title >
+		  Give Feedback
+		</mat-card-title>
+		<mat-card-subtitle>Feedbacks & Suggestions	</mat-card-subtitle>
+		<!--<zingchart-angular [config]="allocatedBudget" [height]="'250px'"></zingchart-angular>-->
+		<form class="container" [formGroup]="Feedbackform">
+			
+		  
+			<div class="feedback-msg">
+			  <p class="para">
+				What is your experience?
+			  </p>
+			  <textarea name="experience" id="experience-textarea"  formControlName="experience"></textarea>
+			</div>
+		  
+			<div class="agreement">
+				<div class="checkbox">
+					<input type="checkbox" name="contactOption" id="contactOption" formControlName="contactOption" [(ngModel)]="contactOption">
+					<label for="contactOption">I may be contacted about this feedback <a href="#">Privacy Policy</a>.</label>
+				</div>
+			  <!--<div class="checkbox">
+				<input type="checkbox" name="" id="">
+				<label for="">I'd like to help improve by joining the <a href="#">Reasearch Group</a>.</label>
+			  </div>-->
+			</div>
+		  
+			<div class="buttons">
+			  <button mat-button mat-raised-button color="primary" (click)="postFeedback()" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">Submit</button>
+			</div>
+		  </form>
+  
+	  </mat-card>
+	</section>
+
+	
+  
 
   
