@@ -92,6 +92,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   isValidated: boolean = false;
   contactOption: boolean = false;
   transferTransaction!: TransferTransaction;
+  pymtid: number = 0;
 
 
 
@@ -349,6 +350,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
             this.paymentService.createPayment(payment).subscribe(
               (createdPayment) => {
                 console.log('Payment created successfully:');
+                this.pymtid = createdPayment.id;
+
                 // You can handle success here
               },
               (error) => {
@@ -369,7 +372,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
               receivedBy: rUser.id,
               toCustCode: rUser.custId,
               rnRead: false,
-              r_pymtmainid: payment.id,
+              r_pymtmainid: this.pymtid,
               dateTransferred: new Date(),
               transferType: 'S',
               success: true,
