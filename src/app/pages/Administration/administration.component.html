@@ -57,10 +57,16 @@
             <td mat-cell *matCellDef="let element"> {{element.description}} </td>
           </ng-container>
              <!-- Symbol Column -->
-             <ng-container matColumnDef="active">
+            <ng-container matColumnDef="active">
               <th mat-header-cell *matHeaderCellDef>  </th>
-              <td mat-cell *matCellDef="let element"><mat-slide-toggle  [checked]="element.active" (change)="toggleMealStatus(element)"> {{ element.active ? 'Deactivate' : 'Activate' }}</mat-slide-toggle> </td>
+              <td mat-cell *matCellDef="let element"><mat-slide-toggle  [checked]="element.active" (change)="toggleMealStatus(element)"> {{ element.active ? 'Deactivate' : 'Activate' }}</mat-slide-toggle><a><mat-icon>delete_forever</mat-icon></a> </td>
             </ng-container>
+              <!-- Symbol Column -->
+            <ng-container>
+              <th mat-header-cell *matHeaderCellDef>  </th>
+              <td mat-cell *matCellDef=""><mat-icon>delete_forever</mat-icon></td>
+            </ng-container>
+        
         
           <tr mat-header-row *matHeaderRowDef="displayedColumns5"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns5;"></tr>
@@ -83,7 +89,7 @@
       </div>
       <app-dashboard-page></app-dashboard-page>
     </mat-tab>-->
-    <mat-tab label="Reports"> 
+    <mat-tab label="Reports" [disabled]="isReportTabDisabled"> 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div  class="hello" style="margin-top:1%;">
         

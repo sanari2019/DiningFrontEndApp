@@ -378,7 +378,15 @@ export class UsersPaymentInfoComponent {
           ////console.log("Failed to update served item");
         }
       );
+
+
     }
+    // this.pymtUser.freeze = true;
+    this.registrationservice.updateUser(this.pymtUser).subscribe((reg: Registration) => {
+      this.pymtUser = reg;
+      this.pymtUser.freeze = true;
+      reg.freeze = true;
+    });
 
     // Prepare the ServedEmail model using the totalAmount
     const servedEmail: ServedEmail = new ServedEmail();
@@ -404,6 +412,8 @@ export class UsersPaymentInfoComponent {
         // Handle email sending error if necessary
       }
     );
+
+    this.registrationservice.updateUser(loggedInUser).subscribe
   }
 
 

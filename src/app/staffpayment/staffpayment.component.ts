@@ -32,7 +32,7 @@ import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-
+// import { RegistrationService } from '../registration/registration.service';
 
 import { Menu } from '../guestpayment/menu.model';
 import { MenuService } from '../guestpayment/menu.service';
@@ -47,6 +47,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../loader/loader.service';
 import { MealTariff } from '../guestpayment/mealtariff.model';
+import { RegistrationService } from '../registration/registration.service';
+import { OnlinePaymentValidation } from '../shared/onlinepymtvalidation.model';
 
 
 interface CartItem {
@@ -116,6 +118,9 @@ export class StaffpaymentComponent implements OnInit {
   private paymentDoneSubject$: Subject<void> = new Subject<void>();
   private destroy$: Subject<void> = new Subject<void>();
   isHandset: boolean = false; // Add a property to track handset breakpoint
+  retry: boolean = false;
+  initiatedPayment!: OnlinePayment;
+  onlinepymtvldn: OnlinePaymentValidation | undefined;
 
 
 
@@ -177,7 +182,7 @@ export class StaffpaymentComponent implements OnInit {
 
 
 
-  constructor(private loaderService: LoaderService, private mealtariffService: MealTariffService, private breakpointObserver: BreakpointObserver, private snackBar: MatSnackBar, private dialog: MatDialog, private menuservice: MenuService, private ordmealservice: OrderedMealService, private httpClient: HttpClient, private fbstaff: FormBuilder, private router: Router, private paymentmodeservice: PaymentModeService, private voucherservice: VoucherService, private paymentservice: PaymentService, private encdecservice: EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService, private emailService: EmailService) {
+  constructor(private registrationservice: RegistrationService, private loaderService: LoaderService, private mealtariffService: MealTariffService, private breakpointObserver: BreakpointObserver, private snackBar: MatSnackBar, private dialog: MatDialog, private menuservice: MenuService, private ordmealservice: OrderedMealService, private httpClient: HttpClient, private fbstaff: FormBuilder, private router: Router, private paymentmodeservice: PaymentModeService, private voucherservice: VoucherService, private paymentservice: PaymentService, private encdecservice: EncrDecrService, private paymentdetailService: PaymentDetailService, private cartService: CartService, private onlinePaymentService: OnlinePaymentService, private emailService: EmailService) {
     // this.validationMessages = {
     //   employeeNo: {
     //     required: 'Employee No is required.',
@@ -311,6 +316,12 @@ export class StaffpaymentComponent implements OnInit {
       AmountPaid: this.options.amount / 100
     };
 
+    this.retry = true;
+    localStorage.setItem('initiatedpayment', JSON.stringify(payment));
+    const localStorageInitiatedPayment = localStorage.getItem('initiatedpayment');
+    this.initiatedPayment = localStorageInitiatedPayment ? JSON.parse(localStorageInitiatedPayment) : null;
+
+
 
     this.onlinePaymentService.postOnlinePayment(payment).subscribe(
       (result: any) => {
@@ -319,6 +330,8 @@ export class StaffpaymentComponent implements OnInit {
 
 
         this.paymentDoneSubject$.next();
+
+
 
 
 
@@ -336,6 +349,8 @@ export class StaffpaymentComponent implements OnInit {
             (updatedPaymentItems: Payment[]) => {
               // Handle successful updates if needed
               // Display a snackbar with the "Payment Successful" message
+              localStorage.removeItem('initiatedpayment');
+              this.retry = false;
               this.snackBar.open('Payment Successful', 'Dismiss', {
                 duration: 3000, // 3 seconds duration for the snackbar
               });
@@ -357,7 +372,11 @@ export class StaffpaymentComponent implements OnInit {
         //console.log("Not successful");
       }
     );
-
+    this.registrationservice.updateUser(this.loggedInUser).subscribe((reg: Registration) => {
+      this.loggedInUser = reg;
+      this.loggedInUser.freeze = true;
+      reg.freeze = true;
+    });
 
   }
 
@@ -375,7 +394,39 @@ export class StaffpaymentComponent implements OnInit {
     this.reference = `${Math.random() * 10000000000000}`;
     this.options.ref = this.reference;
   }
+  Retry() {
+    const localStorageInitiatedPayment = localStorage.getItem('initiatedpayment');
+    this.initiatedPayment = localStorageInitiatedPayment ? JSON.parse(localStorageInitiatedPayment) : null;
 
+
+    this.onlinePaymentService.verifyTransaction(this.initiatedPayment?.TransRefNo.toString()).subscribe((result: OnlinePaymentValidation) => {
+      this.onlinepymtvldn = result;
+      console.log(this.onlinepymtvldn);
+    });
+    if (this.initiatedPayment.TransRefNo == this.onlinepymtvldn?.data.reference) {
+      if (this.onlinepymtvldn.message === "Verification successful" && this.initiatedPayment.AmountPaid === this.onlinepymtvldn.data.requested_amount / 100) {
+        if (this.onlinePaymentService.checkRef(this.initiatedPayment.TransRefNo) === null || this.onlinePaymentService.checkRef(this.initiatedPayment.TransRefNo) === undefined) {
+          console.log('null')
+
+
+
+
+
+          // this.onlinePaymentService.postOnlinePayment(this.initiatedPayment);
+          // this.paymentservice.updatePayment(paymentItem);
+        } else {
+          console.log('else')
+        }
+        // this.registrationservice.updateUser(this.loggedInUser).subscribe((reg: Registration) => {
+        //   this.loggedInUser = reg;
+        //   this.loggedInUser.freeze = true;
+        //   reg.freeze = true;
+        // });
+      }
+    }
+
+
+  }
 
 
   ngOnInit(): void {
@@ -383,6 +434,9 @@ export class StaffpaymentComponent implements OnInit {
 
     this.setRandomPaymentRef()
     localStorage.removeItem('selectedPaymentItems');
+    const localStorageInitiatedPayment = localStorage.getItem('initiatedpayment');
+    this.initiatedPayment = localStorageInitiatedPayment ? JSON.parse(localStorageInitiatedPayment) : null;
+
     // Fetch user payment details from the API (assuming it populates the `paymentDetails` array)
     // const userId = this.Id; // Replace 'userid' with the actual user ID
     // this.paymentdetailService.getPaymentDetailsByUserId(userId).subscribe(

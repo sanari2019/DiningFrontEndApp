@@ -20,6 +20,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "lodash"
+            ],
             "outputHashing": "all",
             "outputPath": "dist/angular-responsive-sidebar",
             "index": "src/index.html",
@@ -79,7 +82,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "angular-responsive-sidebar:build"
+            "browserTarget": "angular-responsive-sidebar:build",
+            "proxyConfig": "proxy.conf.ts"
           },
           "configurations": {
             "production": {

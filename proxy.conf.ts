@@ -1,7 +1,7 @@
 const PROXY_CONFIG = [
   {
     context: ['/api'],
-    target: 'http://localhost:7146',
+    target: 'https://cafeteriaapi.evercare.ng:2020',
     secure: false,
     logLevel: 'debug',
   }

@@ -107,6 +107,7 @@ export class AdministrationComponent implements OnInit, AfterViewInit {
   formattedDate: string;
   dataToDisplay: any;
   selectedChip: string = 'All Meals';
+  isReportTabDisabled: boolean = false;
 
   constructor(private mealActivityService: MealActivityService, private snackBar: MatSnackBar, private availableMealService: AvailableMealService, public dialog: MatDialog, private OnlinePayment: OnlinePaymentService, private Served: ServedService, private fb: FormBuilder, private exportService: ExportService, private _liveAnnouncer: LiveAnnouncer, private ordmealService: OrderedMealService) {
 
@@ -158,11 +159,24 @@ export class AdministrationComponent implements OnInit, AfterViewInit {
     this.availableMealService.getAllAvailableMeals().subscribe((meals) => {
       this.dataSource5 = meals;
     });
+
+    const userJSON = localStorage.getItem('user');
+    const user = userJSON ? JSON.parse(userJSON) : null;
+
+    // Check if the user exists and their custTypeId is 3
+    if (user && user.custTypeId === 4) {
+      // If custTypeId is 3, disable the report tab
+      this.disableReportTab();
+    }
   }
   showSnackbar(message: string) {
     this.snackBar.open(message, 'Close', {
       duration: 2000, // Duration in milliseconds (2 seconds)
     });
+  }
+  disableReportTab() {
+    // Set the isReportTabDisabled variable to true to disable the report tab
+    this.isReportTabDisabled = true;
   }
 
   ngAfterViewInit() {
