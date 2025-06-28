@@ -2,6 +2,10 @@
 
 # compiled output
 /dist
+/dist_old
+/dist_old22
+dist_old.zip
+dist.zip
 /tmp
 /out-tsc
 # Only exists if Bazel was run
