@@ -99,7 +99,7 @@ export class MenuDialogComponent implements OnInit {
 
   calculateTotalDiscountedAmount(): number {
     return this.filteredMenuList.reduce(
-      (total, menu) => (total += menu.tariff * 0.6),
+      (total, menu) => (total += menu.tariff * 0.9),
       0
     );
   }

@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Registration } from '../registration/registration.model';
 import { RegistrationService } from '../registration/registration.service';
 import { EncrDecrService } from '../shared/EncrDecrService.service';
 import { UserService } from '../forgot-password/user.service';
+import { catchError, map } from 'rxjs/operators';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 
 
@@ -16,17 +18,93 @@ export class AuthService {
   public registration: Registration | undefined;
   private pswrd?: string;
   public loginuser: Registration | undefined;
+  logoutTimer: any;
   // public result=0;
+  user: Registration = {
+    id: 0,
+    custTypeId: 0,
+    custId: '',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    password: '',
+    freeze: false,
+    autolock: false
+  }; // Initialize an empty user object
+  freezeStatus: boolean = false;
 
 
 
-  get isLoggedIn() {
-    return this.loggedIn.asObservable();
+  get isLoggedIn(): Observable<boolean> {
+    const userObject = JSON.parse(localStorage.getItem('isLoggedIn') || '{}');
+    if (userObject.id) {
+      return of(true);
+    } else {
+      return this.loggedIn.asObservable();
+    }
   }
+
 
   constructor(
     private router: Router, private regservice: RegistrationService, private encservice: EncrDecrService, private userService: UserService
   ) { }
+
+  getUser(userId: number): Observable<boolean> {
+    return this.regservice.getUser(userId).pipe(
+      map((user: Registration) => {
+        if (user && user.freeze) {
+          this.user = user;
+          this.freezeStatus = user.freeze;
+          return user.freeze;
+        }
+        return false;
+      }),
+      catchError((error) => {
+        console.error('Error fetching user:', error);
+        return of(false); // Return a default value (false) in case of an error
+      })
+    );
+  }
+
+  checkFreezeStatus(): Observable<boolean> {
+    const userObject = JSON.parse(localStorage.getItem('user') || '{}');
+    this.user = userObject;
+    return this.getUser(this.user.id);
+  }
+  toggleFreezeStatus(event: MatSlideToggleChange): void {
+    const newStatus = event.checked; // Get the new status from the toggle event
+
+    // Update the freezeStatus variable
+    this.freezeStatus = newStatus;
+
+    // Update the freeze status in your user object
+    this.user.freeze = newStatus;
+
+    // Update the user's freeze status via the service
+    this.regservice.updateUser(this.user).subscribe(
+      (updatedUser: Registration) => {
+        console.log('Freeze status updated successfully:', updatedUser);
+        // Handle success if needed
+      },
+      (error) => {
+        console.error('Error updating freeze status:', error);
+        // Handle error if the update fails
+      }
+    );
+
+    this.updateUserInLocalStorage(this.user);
+  }
+  updateUserInLocalStorage(updatedUser: any): void {
+    // Retrieve the existing user data from local storage
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // Merge the updated fields with the existing user data
+    const updatedUserData = { ...currentUser, ...updatedUser };
+
+    // Update the 'user' key in local storage with the updated user data
+    localStorage.setItem('user', JSON.stringify(updatedUserData));
+  }
+
 
   //   login(reg: Registration): Number{
 
@@ -76,6 +154,7 @@ export class AuthService {
   //   // return this.notLoggedIn;
   // }
   login(reg: Registration): Observable<string> {
+    const userObject = JSON.parse(localStorage.getItem('user') || '{}');
     return new Observable<string>((observer) => {
       if (reg.userName !== undefined) {
         this.regservice.getUserbyusername(reg.userName)
@@ -85,6 +164,21 @@ export class AuthService {
             if (reg.userName === this.registration?.userName && this.pswrd === this.registration?.password) {
               this.loggedIn.next(true);
               localStorage.setItem('user', JSON.stringify(this.registration));
+              localStorage.setItem('isLoggedIn', 'true');
+              localStorage.setItem('loginTime', Date.now().toString());
+              localStorage.getItem('user') || '{}';
+              const userObject = JSON.parse(localStorage.getItem('user') || '{}');
+              if (userObject.id) {
+                const userId = userObject.id;
+
+                // Now you have the userId, you can use it wherever you need
+                // For example, you can call the `getUser` method with the userId
+                this.getUser(userId);
+
+              }
+
+
+              // this.startLogoutTimer();
               this.notLoggedIn.next(true);
               observer.next(""); // Emit an empty string for successful login.
               this.router.navigate(['/']);
@@ -103,11 +197,31 @@ export class AuthService {
         observer.complete();
       }
     });
+
+
+  }
+
+  // Start the logout timer
+  startLogoutTimer() {
+    const timeout = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+    this.logoutTimer = setTimeout(() => {
+      this.logout(); // Logout function in AuthService
+    }, timeout);
+  }
+
+  // Reset the logout timer on user activity
+  resetLogoutTimer() {
+    clearTimeout(this.logoutTimer);
+    this.startLogoutTimer();
   }
 
 
   logout() {
     this.loggedIn.next(false);
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('loginTime');
+    // clearTimeout(this.logoutTimer);
     this.router.navigate(['/login']);
   }
 }

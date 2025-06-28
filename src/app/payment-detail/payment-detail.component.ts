@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PaymentDetail } from './paymentdetail.model';
 import { PaymentDetailService } from './paymentdetail.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,6 +12,8 @@ import { RegistrationService } from '../registration/registration.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
 import { ServedService } from '../users-payment-info/served.service';
+import { NgForm } from '@angular/forms';
+
 
 
 
@@ -23,7 +25,7 @@ import { ServedService } from '../users-payment-info/served.service';
   styleUrls: ['./payment-detail.component.scss']
 })
 export class PaymentDetailComponent implements OnInit {
-
+  @ViewChild('formRef') formRef!: NgForm;
   pageTitle = 'Vouchers';
   errorMessage = '';
   _listFilter = '';
@@ -41,6 +43,9 @@ export class PaymentDetailComponent implements OnInit {
   loggedInUser: Registration | undefined;
   filterValue: string = '';
   dailyServedCount: number = 0;
+  breakfastCount: number = 0;
+  lunchCount: number = 0;
+  dinnerCount: number = 0;
 
 
 
@@ -107,7 +112,10 @@ export class PaymentDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // Handle dialog close event if needed
       //console.log(`Dialog result: ${result}`);
-      this.onSaveComplete()
+      // this.onSaveComplete()
+      this.applySieveFilters();
+      this.fetchDailyServedCount();
+      this.formRef.resetForm();
     });
   }
 
@@ -195,6 +203,17 @@ export class PaymentDetailComponent implements OnInit {
       .subscribe(count => {
         this.dailyServedCount = count;
       });
+    this.servedService.getBreakfastCount().subscribe(count => {
+      this.breakfastCount = count;
+    });
+
+    this.servedService.getLunchCount().subscribe(count => {
+      this.lunchCount = count;
+    });
+
+    this.servedService.getDinnerCount().subscribe(count => {
+      this.dinnerCount = count;
+    });
   }
 
 

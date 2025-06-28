@@ -85,7 +85,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     lastName: '',
     userName: '',
     password: '',
-    freeze: false
+    freeze: false,
+    autolock: false
   };
   r_user!: Registration;
   isHandset: boolean = false; // Add a property to track handset breakpoint

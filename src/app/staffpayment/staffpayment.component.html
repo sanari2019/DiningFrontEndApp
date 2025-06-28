@@ -63,18 +63,13 @@
       </div>
       <div class="form-group row mb-2">
         <div class="offset-md-2 col-md-4">
-          <button class="btn btn-primary mr-3"
+          <button class=" me-2 px-6 py-2 transition ease-in duration-200 uppercase rounded-full hover:bg-gray-800 hover:text-white border-2 border-gray-900 focus:outline-none"
                   type="submit"
-                  style="width:auto" *ngIf="initiatedPayment === undefined || initiatedPayment === null">
+                  style="width:auto">
                   Add to cart
           </button>
-          <button class="btn btn-outline-secondary mr-3"
-          style="width:80px;"
-          type="button"
-          title="Cancel your edits"
-          [routerLink]="['/payment']">
-    Cancel
-  </button>
+          <button type="button" [routerLink]="['/payment']" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Cancel</button>
+
         </div>
       </div>
     </form>
@@ -120,8 +115,10 @@
             <td>{{ formatWithCommas(pymtdetails.unit * pymtdetails.amount) }}</td> <!-- Calculate and display the Total Amount -->
             <!--<td>{{ pymtdetails.paymentTypeId }}</td> -->
             <td>
-              <button class="btn btn-danger btn-sm" (click)="removeItem(pymtdetails)" *ngIf="(!isHandset) && (initiatedPayment === undefined || initiatedPayment === null) ">Remove</button> <!-- Remove button -->
-              <button mat-icon-button (click)="removeItem(pymtdetails)" *ngIf="(isHandset) && (initiatedPayment === undefined || initiatedPayment === null)">
+              <button type="button" class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" (click)="removeItem(pymtdetails)" *ngIf="(!isHandset)">Remove</button>
+
+               <!--<button class="btn btn-danger btn-sm" (click)="removeItem(pymtdetails)" *ngIf="(!isHandset)">Remove</button> Remove button -->
+              <button mat-icon-button (click)="removeItem(pymtdetails)" *ngIf="(isHandset)">
                 <mat-icon>clear</mat-icon>
               </button> <!-- Remove button -->
             </td>
@@ -150,18 +147,13 @@
       (onClose)="paymentCancel()"
       (callback)="paymentDone($event)"
       (click)="makePayment()"
-      class="btn btn-primary mr-3"
-      *ngIf="initiatedPayment === undefined || initiatedPayment === null"
+      class="bg-gray-300 me-2 px-6 py-2 transition ease-in duration-200 uppercase rounded-full hover:bg-gray-800 hover:text-white border-2 border-gray-900 focus:outline-none"
     >
-      Make Payment
-    </button>
-    <button
     
-    class="btn btn-primary mr-3"
-    *ngIf="initiatedPayment !== undefined && initiatedPayment !== null" (click)="Retry()"
-  >
-    Retry Payment
-  </button>
+    <img alt="paystack" src="https://dashboard.paystack.com/assets/img/logo.svg"/>
+    </button>
+    
+    <button  class=" me-2 px-6 py-2 transition ease-in duration-200 uppercase rounded-full hover:bg-gray-800 hover:text-white border-2 border-gray-900 focus:outline-none" (click)="SquadPay()"><img alt="paystack" src="https://squadco.com/assets/squadbyhabari.svg"/></button>
     
     </div>
   </div>
@@ -221,12 +213,12 @@
         </div>
         <div class="form-group row mb-2">
           <div class="offset-md-2 col-md-4">
-            <button class="btn btn-primary mr-3"
+            <button  class=" me-2 px-6 py-2 transition ease-in duration-200 uppercase rounded-full hover:bg-gray-800 hover:text-white border-2 border-gray-900 focus:outline-none"
                     type="submit">
                     Add to cart
             </button>
-            <button class="btn btn-outline-secondary mr-3"
-            style="width:80px;"
+            <button  class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+            
             type="button"
             title="Cancel your edits"
             [routerLink]="['/payment']">
@@ -268,7 +260,7 @@
               <td>{{ formatWithCommas(orderedMeal.amount) }}</td>
               <!--<td>{{ orderedMeal.paymentTypeId }}</td> -->
               <td>
-                <button class="btn btn-danger btn-sm" (click)="rmvItem(orderedMeal)" *ngIf="!isHandset">Remove</button> <!-- Remove button -->
+                <button class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" (click)="rmvItem(orderedMeal)" *ngIf="!isHandset">Remove</button> <!-- Remove button -->
                 <button mat-icon-button (click)="rmvItem(orderedMeal)" *ngIf="isHandset">
                   <mat-icon>clear</mat-icon>
                 </button> <!-- Remove button -->
@@ -281,12 +273,15 @@
       </div>
     
       <div class="text-right mt-3">
-        <button class="btn btn-primary mr-3" (click)="openDialog()"  [disabled]="orderedMeals.length === 0">
-        Make Payment
+        <button  class="bg-gray-300 me-2 px-6 py-2 transition ease-in duration-200 uppercase rounded-full hover:bg-gray-800 hover:text-white border-2 border-gray-900 focus:outline-none" (click)="openDialog()"  [disabled]="orderedMeals.length === 0">
+        <img alt="paystack" src="https://dashboard.paystack.com/assets/img/logo.svg"/>
       </button>
+      <button  class=" me-2 px-6 py-2 transition ease-in duration-200 uppercase rounded-full hover:bg-gray-800 hover:text-white border-2 border-gray-900 focus:outline-none" (click)="SquadPay()"><img alt="paystack" src="https://squadco.com/assets/squadbyhabari.svg"/></button>
       </div>
     </div>
   </div>
 </mat-tab>
 </mat-tab-group>
+
+<!-- payment.component.html -->
 

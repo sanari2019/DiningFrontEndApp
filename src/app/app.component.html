@@ -38,6 +38,9 @@
       </button>
       <button mat-menu-item (click)="onLogout()" *ngIf="(isLoggedIn$ | async)"><mat-icon aria-hidden="false" aria-label="logout icon" fontIcon="logout" [ariaSetSize]="50" color="warn"></mat-icon>Logout</button>
     </mat-menu>-->
+   <!-- <mat-slide-toggle></mat-slide-toggle>-->
+    <mat-slide-toggle [(ngModel)]="freezeStatus" (change)="toggleFreezeStatus($event)" *ngIf="isLoggedIn$ | async"></mat-slide-toggle>
+
     
      <ng-container *ngIf="isLoggedIn$ | async">
       <button *ngIf="isHandset$ | async; else showAccountButton" mat-icon-button [matMenuTriggerFor]="menu2" aria-label="Example icon-button with a menu" style="margin:0;">
@@ -51,10 +54,13 @@
     
     
     <mat-menu #menu2="matMenu">
-     
       <button mat-menu-item routerLink="/profile" disabled>
         <mat-icon>account_circle</mat-icon>
         <span>Profile</span>
+      </button>
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
       </button>
       <button mat-menu-item (click)="onLogout()" *ngIf="(isLoggedIn$ | async)"><mat-icon aria-hidden="false" aria-label="logout icon" fontIcon="logout" [ariaSetSize]="50" color="warn"></mat-icon>Logout</button>
     </mat-menu>
@@ -97,12 +103,7 @@
         <p>Freeze Status: {{ user.freeze ? 'Frozen' : 'Not Frozen' }}</p>
         
       </div>
-      <div class="item">
-        <label class="switch">
-          <input type="checkbox" id="cheap" [(ngModel)]="freezeStatus" (change)="toggleFreezeStatus()" />
-          <span [ngClass]="{'slider': true, 'round': true, 'frozen': freezeStatus, 'not-frozen': !freezeStatus}"></span>
-        </label>
-      </div>
+   
       
       
      

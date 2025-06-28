@@ -1,0 +1,8 @@
+<div *ngIf="isLoading">
+    <p>Loading...</p>
+  </div>
+  <div *ngIf="!isLoading && paymentContent">
+    <!-- Render the fetched content as HTML -->
+    <div [innerHTML]="paymentContent"></div>
+  </div>
+  

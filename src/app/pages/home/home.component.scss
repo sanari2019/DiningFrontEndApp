@@ -1149,3 +1149,39 @@ p {
     text-shadow: 1px 0 0 rgba(0, 0, 0, 0);
   }
 }
+
+.blink {
+  size: 5PX;
+  -webkit-animation: blink 800ms step-end infinite;
+  animation: blink 800ms step-end infinite;
+}
+
+@-webkit-keyframes blink {
+  50% {
+    background-color: red;
+  }
+}
+
+@keyframes blink {
+  50% {
+    background-color: red;
+  }
+}
+
+.blink2 {
+
+  -webkit-animation: fadeIn 800ms ease-in-out infinite;
+  animation: fadeIn 800ms ease-in-out FIXED;
+}
+
+@-webkit-keyframes fadeIn {
+  50% {
+    background-color: lightgreen;
+  }
+}
+
+@keyframes fadeIn {
+  50% {
+    background-color: lightgreen;
+  }
+}

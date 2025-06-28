@@ -24,6 +24,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { AdministrationComponent } from './pages/Administration/administration.component';
 import { ReportComponent } from './report/report.component';
 import { TransferAndReportsComponent } from './transfer-and-reports/transfer-and-reports.component';
+import { SettingsComponent } from './settings/settings.component';
+import { VerificationsComponent } from './verifications/verifications.component';
 
 
 
@@ -62,11 +64,15 @@ const routes: Routes = [
     component: VoucherNewComponent,
   },
   {
+    path: 'verify',
+    component: VerificationsComponent,
+  },
+  {
     path: 'registrations/:id',
     component: RegistrationEditComponent,
   },
   {
-    path: 'registration',
+    path: 'registration/evercare123__',
     component: RegistrationComponent,
   },
 
@@ -110,6 +116,10 @@ const routes: Routes = [
   {
     path: 'report',
     component: ReportComponent,
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
   },
   {
     path: '**',

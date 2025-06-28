@@ -72,12 +72,12 @@ export class PaymentService {
         catchError(this.handleError)
       );
   }
-  Serve(serv: Served): Observable<Served> {
+  Serve(pymtmm: Payment): Observable<Served> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    serv.id = 0;
-    return this.http.post<Served>(this.envUrl.urlAddress + '/Served', serv, { headers })
+    // serv.id = 0;
+    return this.http.post<Served>(this.envUrl.urlAddress + '/Served', pymtmm, { headers })
       .pipe(
-        tap(data => console.log('Served: ' + JSON.stringify(data))),
+        tap(),
         catchError(this.handleError)
       );
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Registration } from './registration.model';
-import { HttpClient, HttpClientModule, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpClientModule, HttpHeaders, HttpParams, HttpErrorResponse } from "@angular/common/http";
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { EnvironmentUrlService } from '../shared/services/environment-url.service';
@@ -70,18 +70,37 @@ export class RegistrationService {
   }
 
 
+  // createUser(registration: Registration): Observable<Registration> {
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //   registration.id = 0;
+  //   return this.http.post<Registration>(this.envUrl.urlAddress + '/user', registration, { headers })
+  //     .pipe(
+  //       tap(data => {
+  //         // this.sendRegistrationEmail(data); // Send registration email after successful registration
+  //       }),
+  //       catchError(this.handleError)
+  //     );
+  // }
   createUser(registration: Registration): Observable<Registration> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     registration.id = 0;
     return this.http.post<Registration>(this.envUrl.urlAddress + '/user', registration, { headers })
       .pipe(
-        tap(data => {
-
-          // this.sendRegistrationEmail(data); // Send registration email after successful registration
-        }),
-        catchError(this.handleError)
+        catchError((error: HttpErrorResponse) => {
+          let errorMessage = '';
+          if (error.error instanceof ErrorEvent) {
+            // Client-side error
+            errorMessage = `An error occurred: ${error.error.message}`;
+          } else {
+            // Backend returned an unsuccessful response code
+            errorMessage = `Backend returned code ${error.status}: ${error.error}`;
+          }
+          console.error(errorMessage);
+          return throwError(errorMessage);
+        })
       );
   }
+
 
   getRoles(registration: Registration): Observable<Route[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -172,7 +191,8 @@ export class RegistrationService {
       lastName: "",
       userName: "",
       password: "",
-      freeze: false
+      freeze: false,
+      autolock: false
     };
   }
 

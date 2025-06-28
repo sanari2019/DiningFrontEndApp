@@ -1,0 +1,51 @@
+<body>
+    <div class="container">
+        <nav>
+            <h1 class="settingsP">Settings</h1>
+            <div class="close-box">
+                <i class="fa-solid fa-xmark"></i>
+                <p class="closeP"></p>
+            </div>
+        </nav>
+        <div class="main">
+            
+            <hr>
+            <div class="under-hr">
+                <div class="autoplay-box">
+                    <div class="autoplay-caption">
+                        <h5 class="autoplayP">Auto-Lock Account (2FA)</h5>
+                        <p class="autoplayPP"><em>Choose if you want to activate 2-Factor Authentication manual unlock before any dispense. (Recommended) </em></p>
+                    </div>
+                    <mat-slide-toggle [(ngModel)]="autolockStatus" (change)="toggleAutolockStatus($event)"></mat-slide-toggle>
+                </div>
+                <div class="autoplay-box">
+                    <div class="autoplay-caption">
+                        <h5 class="autoplayP">{{ freezeStatus ? 'Unfreeze' : 'Freeze' }}</h5>
+                        <p class="autoplayPP"><em>Choose if you want to {{ freezeStatus ? 'Unfreeze' : 'Freeze' }} your account</em></p>
+                    </div>
+                    <mat-slide-toggle [(ngModel)]="freezeStatus" (change)="toggleFreezeStatus($event)"></mat-slide-toggle>
+                </div>
+                <!--<div class="showphotos-box">
+                    <div class="showphotos-caption">
+                        <h5 class="showP">Show profile photos</h5>
+                        <p class="showPP">Choose whether to show or hide profile photos at other members.</p>
+                    </div>
+                    <div class="slide2">  
+                        <input type="checkbox" value="None" id="slide2" name="check" checked />
+                        <label for="slide2"></label>
+                      </div>
+                </div>
+                <div class="btns-box">
+                    <button class="btn-save">Save</button>
+                    <button class="btn-cancel">Cancel</button>
+                </div>-->
+            </div>
+        </div>
+        <div class="saved-box">
+            <p class="savedP">Saved!</p>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>

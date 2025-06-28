@@ -7,6 +7,7 @@ export class Registration {
   userName: string;
   password: string;
   freeze: boolean;
+  autolock: boolean;
 
   constructor() {
     this.id = 0;
@@ -17,5 +18,6 @@ export class Registration {
     this.userName = "";
     this.password = "";
     this.freeze = false;
+    this.autolock = false;
   }
 }

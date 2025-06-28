@@ -29,6 +29,10 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    localStorage.removeItem('user');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('loginTime');
+    localStorage.clear();
     this.form = this.fb.group({     // {5}
       userName: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]

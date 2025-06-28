@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 // import { PaymentDetail } from '../payment-detail/paymentdetail.model';
 // import { PaymentDetailService } from '../payment-detail/paymentdetail.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,6 +30,9 @@ import { ServedEmail } from './servedEmail.model';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../loader/loader.service';
 import { Observable } from 'rxjs';
+// import { MatDialog } from '@angular/material/dialog';
+import { UsersPaymentInfoDialogComponent } from '../users-payment-info-dialog/users-payment-info-dialog.component';
+
 
 
 
@@ -131,7 +135,9 @@ import { Observable } from 'rxjs';
   styleUrls: ['./users-payment-info.component.scss']
 })
 export class UsersPaymentInfoComponent {
+  @ViewChild('paymentInfoComponent') paymentInfoComponent!: UsersPaymentInfoDialogComponent;
 
+  uservalue!: number;
 
 
   pageTitle = 'Vouchers';
@@ -179,6 +185,7 @@ export class UsersPaymentInfoComponent {
     // this.paymentdetailService.
     this.route.queryParams.subscribe((params) => {
       var paramvalue = params['pymtMain'];
+      this.uservalue = paramvalue;
 
       if (paramvalue) {
         this.getUser(paramvalue);
@@ -245,14 +252,21 @@ export class UsersPaymentInfoComponent {
 
   addItem(pymtmm: Payment): void {
 
-    this.serv.dateserved = new Date();
-    this.serv.paymentMainid = pymtmm.id;
-    this.serv.paymentMain = pymtmm;
-    this.pymtservice.Serve(this.serv)
-      .subscribe({
-        next: () => this.onSaveComplete(),
-        error: err => this.errorMessage = err
-      });
+    // this.serv.dateserved = new Date();
+    // this.serv.paymentMainid = pymtmm.id;
+    // this.serv.paymentMain = pymtmm;
+    // this.pymtservice.Serve(this.serv)
+    //   .subscribe({
+    //     next: () => this.onSaveComplete(),
+    //     error: err => this.errorMessage = err
+    //   });
+    if (pymtmm.opaymentid > 0) {
+      this.pymtservice.Serve(pymtmm).subscribe(response => {
+        this.getUser(this.uservalue);
+      })
+    }
+
+
 
     // this.servedService.addServed(this.serv).subscribe({
     //       error: (err) => {
@@ -276,6 +290,20 @@ export class UsersPaymentInfoComponent {
     // this.loadCartItems();
     this.ngOnInit();
   }
+
+  removeItems(): void {
+    // this.ngOnInit();
+    if (this.cartItems.length > 0) {
+
+      this.servedService.deleteServeds(this.cartItems).subscribe(response => { })
+    } else {
+      console.log('no item');
+    }
+
+    // this.loadCartItems();
+    // this.ngOnInit();
+  }
+
 
   formatWithCommas(value: number | null): string {
     if (value === null) {
@@ -356,64 +384,79 @@ export class UsersPaymentInfoComponent {
   serveItems(): void {
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     let totalAmount = 0;
-    for (const item of this.cartItems) {
-      item.isServed = true; // Set isServed to true
-      item.ServedBy = loggedInUser?.id;
-      // Prepare the ServedEmail model
-      totalAmount += item.paymentMain.amount;
-
-      // Call the updateServed method in your service to update the served item
-      this.servedService.updateServed(item).subscribe(
-        (updatedServed: Served) => {
-          // Handle successful update if needed
-          this.isServedSuccessfully = true;
-          ////console.log("Served item updated successfully");
+    // for (const item of this.cartItems) {
+    //   item.isServed = true; // Set isServed to true
+    //   item.ServedBy = loggedInUser?.id;
+    //   item.user = this.pymtUser;
+    //   // Prepare the ServedEmail model
+    //   totalAmount += item.paymentMain.amount;
+    //   item.totalAmount = totalAmount;
+    //   item.server = loggedInUser?.firstName;
 
 
-          // this.servedEmail.amount = updatedServed.paymentMain.amount;
-
-        },
-        (error: any) => {
-          // Handle error if necessary
-          ////console.log("Failed to update served item");
-        }
-      );
 
 
-    }
-    // this.pymtUser.freeze = true;
-    this.registrationservice.updateUser(this.pymtUser).subscribe((reg: Registration) => {
-      this.pymtUser = reg;
-      this.pymtUser.freeze = true;
-      reg.freeze = true;
-    });
+    // }
+    // // this.pymtUser.freeze = true;
+    // this.registrationservice.updateUser(this.pymtUser).subscribe((reg: Registration) => {
+    //   this.pymtUser = reg;
+    //   this.pymtUser.freeze = true;
+    //   reg.freeze = true;
+    // });
 
-    // Prepare the ServedEmail model using the totalAmount
-    const servedEmail: ServedEmail = new ServedEmail();
-    servedEmail.amount = totalAmount;
-    servedEmail.serversName = loggedInUser?.firstName; // You might need to get the server's name from the backend
-    servedEmail.customerName = this.userFullName;
-    servedEmail.customerFirstName = this.pymtUser.firstName;
-    servedEmail.dateServed = new Date(); // You can set the date here as needed
-    servedEmail.customerUserName = this.pymtUser.userName;
+    // // Prepare the ServedEmail model using the totalAmount
+    // const servedEmail: ServedEmail = new ServedEmail();
+    // servedEmail.amount = totalAmount;
+    // servedEmail.serversName = loggedInUser?.firstName; // You might need to get the server's name from the backend
+    // servedEmail.customerName = this.userFullName;
+    // servedEmail.customerFirstName = this.pymtUser.firstName;
+    // servedEmail.dateServed = new Date(); // You can set the date here as needed
+    // servedEmail.customerUserName = this.pymtUser.userName;
 
-    // Call the sendServedEmail method to send the email
-    this.servedService.sendServedEmail(servedEmail).subscribe(
-      (sentEmailResponse: ServedEmail) => {
-        ////console.log("Served email sent successfully", sentEmailResponse);
-        // Handle successful email sending if needed
+    // // Call the sendServedEmail method to send the email
+    // this.servedService.sendServedEmail(servedEmail).subscribe(
+    //   (sentEmailResponse: ServedEmail) => {
+    //     ////console.log("Served email sent successfully", sentEmailResponse);
+    //     // Handle successful email sending if needed
 
-        // Refresh the cart items and the component
+    //     // Refresh the cart items and the component
+    //     this.loadCartItems();
+    //     this.ngOnInit();
+    //   },
+    //   (error: any) => {
+    //     ////console.log("Failed to send served email", error);
+    //     // Handle email sending error if necessary
+    //   }
+    // );
+
+    // this.registrationservice.updateUser(loggedInUser).subscribe
+    // Call the updateServed method in your service to update the served item
+    // this.cartItems[0].isServed = true; // Set isServed to true
+    this.cartItems[0].ServedBy = loggedInUser?.id;
+    this.cartItems[0].user = this.pymtUser;
+    // Prepare the ServedEmail model
+    // totalAmount += item.paymentMain.amount;
+    // this.cartItems[0].totalAmount = totalAmount;
+
+    this.servedService.updateServed(this.cartItems).subscribe(
+      (updatedServed: Served[]) => {
+        // Handle successful update if needed
+        this.isServedSuccessfully = true;
+        ////console.log("Served item updated successfully");
         this.loadCartItems();
         this.ngOnInit();
+
+
+
+
+        // this.servedEmail.amount = updatedServed.paymentMain.amount;
+
       },
       (error: any) => {
-        ////console.log("Failed to send served email", error);
-        // Handle email sending error if necessary
+        // Handle error if necessary
+        ////console.log("Failed to update served item");
       }
     );
-
-    this.registrationservice.updateUser(loggedInUser).subscribe
   }
 
 

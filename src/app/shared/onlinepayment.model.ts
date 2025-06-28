@@ -4,8 +4,9 @@ export interface OnlinePayment {
     TransDate: Date;
     Paidby: number;
     AmountPaid: number;
+    PymtTypeid: number;
 
-  
+
 
 
 
@@ -16,7 +17,7 @@ export interface OnlinePayment {
     //     this.Paidby= 0;
     //     this.AmountPaid= '';
     //     this.id = 0;
-    
+
     // }
 
 }

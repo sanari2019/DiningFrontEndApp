@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, AbstractControl, ValidatorFn, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, AbstractControl, ValidatorFn, FormControl,FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Registration } from './registration.model';
 import { RegistrationService } from './registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { ConfirmPasswordValidator } from '../shared/confirm-password.validator';
 import { customerType } from '../shared/customertype.model';
+import { MustMatch } from '../_helpers/must-match.validator'
 
 
 @Component({
@@ -17,7 +18,7 @@ import { customerType } from '../shared/customertype.model';
 })
 export class RegistrationComponent implements OnInit {
 
-  registrationForm!: UntypedFormGroup;
+  registrationForm!: FormGroup;
   customerTypes: customerType[] = []; // Array to store customer types
   registration: Registration = new Registration;
   errorMessage: string | undefined;
@@ -27,27 +28,27 @@ export class RegistrationComponent implements OnInit {
   private validationMessages: { [key: string]: { [key: string]: string } };
 
 
-  constructor(private fb: UntypedFormBuilder, private router: Router, private registrationservice: RegistrationService, private encdecservice: EncrDecrService) {
+  constructor(private formBuilder: FormBuilder, private fb: UntypedFormBuilder, private router: Router, private registrationservice: RegistrationService, private encdecservice: EncrDecrService) {
 
     // Defines all of the validation messages for the form.
     //These could instead be retrieved from a file or database.
 
-    this.validationMessages = {
-      firstName: {
-        required: 'first name is required.',
-        minlength: 'First name must be at least three characters.'
-      },
-      lastName: {
-        required: 'last name is required.'
-      },
-      email: {
-        required: 'user name is required.'
-      },
-      password: {
-        required: 'Password is required.'
-      },
+    // this.validationMessages = {
+    //   firstName: {
+    //     required: 'first name is required.',
+    //     minlength: 'First name must be at least three characters.'
+    //   },
+    //   lastName: {
+    //     required: 'last name is required.'
+    //   },
+    //   email: {
+    //     required: 'user name is required.'
+    //   },
+    //   password: {
+    //     required: 'Password is required.'
+    //   },
 
-    };
+    // };
 
 
   }
@@ -70,6 +71,10 @@ export class RegistrationComponent implements OnInit {
   }
   get regEmail() {
     return this.registrationForm.get('userName')
+  }
+
+  get f() {
+    return this.registrationForm.controls;
   }
 
   // Custom email validator to validate email format and convert to lowercase
@@ -124,41 +129,54 @@ export class RegistrationComponent implements OnInit {
   // }
   save(): void {
     this.submitted = true;
+    console.log(FormGroup);
+    // if (this.registrationForm.valid) {
+    //   if (this.registrationForm.dirty) {
+    //     const p = { ...this.registration, ...this.registrationForm.value };
+    //     p.password = this.encdecservice.set('123456$#@$^@1ERF', p.password);
+    //     if (p.userName !== "" || p.custId !== "") {
+    //       this.registrationservice.getUserbyusername(p.userName)
+    //         .subscribe(
+    //           (rslt: Registration) => {
+    //             this.loadedRegistration = rslt;
+    //             if (this.loadedRegistration === null) {
+    //               if (p.id === 0) {
+    //                 if (confirm(`You are about creating an account for user: ${p.firstName + ' ' + p.lastName}?`)) {
+    //                   this.registrationservice.createUser(p)
+    //                     .subscribe({
+    //                       next: () => this.onSaveComplete(),
+    //                       error: err => this.errorMessage = err
+    //                     });
+    //                 }
+    //               }
+    //             } else {
+    //               // The user already exists
+    //               //console.log("User already exists:", this.loadedRegistration);
+    //             }
+    //           },
+    //           (error: any) => {
+    //             console.error("Error occurred while fetching user:", error);
+    //           }
+    //         );
+    //     } else {
+    //       this.onSaveComplete();
+    //     }
+    //   } else {
+    //     this.errorMessage = 'Please correct the validation errors.';
+    //   }
+    // }
+  }
 
+
+  createAccount(){
     if (this.registrationForm.valid) {
       if (this.registrationForm.dirty) {
-        const p = { ...this.registration, ...this.registrationForm.value };
-        p.password = this.encdecservice.set('123456$#@$^@1ERF', p.password);
-        if (p.userName !== "" || p.custId !== "") {
-          this.registrationservice.getUserbyusername(p.userName)
-            .subscribe(
-              (rslt: Registration) => {
-                this.loadedRegistration = rslt;
-                if (this.loadedRegistration === null) {
-                  if (p.id === 0) {
-                    if (confirm(`You are about creating an account for user: ${p.firstName + ' ' + p.lastName}?`)) {
-                      this.registrationservice.createUser(p)
-                        .subscribe({
-                          next: () => this.onSaveComplete(),
-                          error: err => this.errorMessage = err
-                        });
-                    }
-                  }
-                } else {
-                  // The user already exists
-                  //console.log("User already exists:", this.loadedRegistration);
-                }
-              },
-              (error: any) => {
-                console.error("Error occurred while fetching user:", error);
-              }
-            );
-        } else {
-          this.onSaveComplete();
-        }
-      } else {
-        this.errorMessage = 'Please correct the validation errors.';
+
+      }else{
+        this.errorMessage="Untouched Registration Form Field, Review Details"
       }
+    }else{
+      this.errorMessage="Invalid Registration Form, Review Details"
     }
   }
 

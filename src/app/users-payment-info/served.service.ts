@@ -16,8 +16,15 @@ import { ServedSummaryReportModel } from '../pages/Administration/servedSummaryR
 })
 export class ServedService {
   private apiUrl = `${environment.urlAddress}/served`;
+  cartItems: any[] = [];
 
   constructor(private http: HttpClient, private envUrl: EnvironmentUrlService) { }
+
+  removeItems(itemsToRemove: any[]): void {
+    // Implement logic to remove items from cartItems array
+    this.cartItems = this.cartItems.filter(item => !itemsToRemove.includes(item));
+  }
+
 
   getServed(): Observable<Served[]> {
     return this.http.get<Served[]>(this.apiUrl);
@@ -25,6 +32,18 @@ export class ServedService {
 
   getDailyServedCount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/ServedMealsCount`);
+  }
+
+  getBreakfastCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/BreakfastCount`);
+  }
+
+  getLunchCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/LunchCount`);
+  }
+
+  getDinnerCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/DinnerCount`);
   }
 
   getServedById(id: number): Observable<Served> {
@@ -43,11 +62,8 @@ export class ServedService {
   }
 
 
-
-
-
-  updateServed(served: Served): Observable<Served> {
-    return this.http.post<Served>(`${this.apiUrl}/updateServed`, served);
+  updateServed(served: Served[]): Observable<Served[]> {
+    return this.http.post<Served[]>(`${this.apiUrl}/updateServed`, served);
   }
 
   addServed(served: Served): Observable<Served> {
@@ -56,6 +72,9 @@ export class ServedService {
 
   deleteServed(served: Served): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/deleteserved`, served);
+  }
+  deleteServeds(served: Served[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/deleteserveds`, served);
   }
   getServedReport(startDate: Date, endDate: Date): Observable<ServedReportModel[]> {
     const params = {

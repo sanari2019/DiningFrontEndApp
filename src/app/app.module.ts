@@ -93,6 +93,9 @@ import { TransferAndReportsComponent } from './transfer-and-reports/transfer-and
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { UserValidateComponent } from './user-validate/user-validate.component';
+import { SettingsComponent } from './settings/settings.component';
+import { SquadPaymentDialogComponent } from './squad-payment-dialog/squad-payment-dialog.component';
+import { VerificationsComponent } from './verifications/verifications.component';
 
 
 
@@ -117,9 +120,9 @@ export function appInitializer(authService: AuthService, router: Router) {
 
 
 @NgModule({
-  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent, CardComponent, BarChartComponent, DashboardPageComponent, CreatemealdialogComponent, ContactUsDialogComponent, ConfirmationDialogComponent, TransferAndReportsComponent, UserValidateComponent],
+  declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent, CardComponent, BarChartComponent, DashboardPageComponent, CreatemealdialogComponent, ContactUsDialogComponent, ConfirmationDialogComponent, TransferAndReportsComponent, UserValidateComponent, SettingsComponent, SquadPaymentDialogComponent, VerificationsComponent],
   imports: [
-    Angular4PaystackModule.forRoot('pk_test_eb1ec536ffda8c468b1cab7846a0ff1c27e7bb91'),
+    Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
     MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,

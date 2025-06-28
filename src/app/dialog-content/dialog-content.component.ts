@@ -74,21 +74,12 @@ export class DialogContentComponent implements OnInit {
     console.log('Payment initialized');
   }
 
-  async paymentDone(ref: any) {
+  paymentDone(ref: any) {
     // ... Existing code ...
 
     try {
       const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
 
-      const payment: OnlinePayment = {
-        id: 0, // Update with the appropriate ID
-        TransRefNo: this.options.ref.toString(),
-        TransDate: new Date(),
-        Paidby: loggedInUser.id,
-        AmountPaid: this.calculateRemainingAmount()
-      };
-      // Step 1: Post the current payment object
-      const result = await this.onlinePaymentService.postOnlinePayment(payment).toPromise();
 
       // Step 2: Create a new payment object from all the ordered meals
       const paymentFromOrderedMeals: Payment = {
@@ -102,31 +93,47 @@ export class DialogContentComponent implements OnInit {
         unit: 1,
         paymentmodeid: 3,
         servedby: '',
-        opaymentid: result.id, // Use the ID returned from the onlinePaymentService
+        opaymentid: 0, // Use the ID returned from the onlinePaymentService
         paid: false,
         timepaid: new Date(),
         custtypeid: this.loggedInUser.custTypeId,
         VoucherDescription: '',
         // ... Your existing code for creating paymentFromOrderedMeals ...
       };
-      const createdPayment = await this.paymentService.createPayment(paymentFromOrderedMeals).toPromise();
+
+      const payment: OnlinePayment = {
+        id: 0, // Update with the appropriate ID
+        TransRefNo: this.options.ref.toString(),
+        TransDate: new Date(),
+        Paidby: loggedInUser.id,
+        AmountPaid: this.calculateRemainingAmount(),
+        PymtTypeid: 2,
+      };
+
+      const pymnt: Payment[] = []
+      // Step 1: Post the current payment object
+      this.onlinePaymentService.postOnlinePayment(paymentFromOrderedMeals, payment, this.orderedMeals, pymnt).subscribe(data => {
+
+      })
+
+      // const createdPayment = await this.paymentService.createPayment(paymentFromOrderedMeals).toPromise();
 
       // Step 3: Update each ordered meal's Submitted property to true
-      for (const orderedMeal of this.orderedMeals) {
-        orderedMeal.Submitted = true;
-        orderedMeal.paymentMainId = createdPayment.id;
+      // for (const orderedMeal of this.orderedMeals) {
+      //   // orderedMeal.Submitted = true;
+      //   // orderedMeal.paymentMainId = createdPayment.id;
 
-        // Update the individual orderedMeal objects in the array
-        await this.orderedMealService.updateOrder(orderedMeal).toPromise();
-      }
+      //   // Update the individual orderedMeal objects in the array
+      //   // await this.orderedMealService.updateOrder(orderedMeal).toPromise();
+      // }
 
       // Step 4: Update the payment object returned by createPayment
-      createdPayment.paid = true;
-      createdPayment.timepaid = new Date();
-      await this.paymentService.updatePayment(createdPayment).toPromise();
+      // createdPayment.paid = true;
+      // createdPayment.timepaid = new Date();
+      // await this.paymentService.updatePayment(createdPayment).toPromise();
 
       // Manually update the local orderedMeals array instead of calling ngOnInit()
-      this.orderedMeals.forEach(orderedMeal => orderedMeal.Submitted = true);
+      // this.orderedMeals.forEach(orderedMeal => orderedMeal.Submitted = true);
       this.calculateTotalAmount();
       this.calculateRemainingAmount();
 
@@ -135,6 +142,7 @@ export class DialogContentComponent implements OnInit {
       this.snackBar.open('Payment Successful', 'Dismiss', {
         duration: 3000, // 3 seconds duration for the snackbar
       });
+      this.router.navigate(['/dashboard']);
 
     } catch (error) {
       console.error('Payment processing error:', error);
@@ -210,7 +218,7 @@ export class DialogContentComponent implements OnInit {
       return 0; // If custTypeId is 3, return 0 discount
     } else {
       // Apply a 40% discount to the total amount
-      return totalAmount * 0.4;
+      return totalAmount * 0.1;
     }
   }
 

@@ -1,0 +1,185 @@
+
+    
+        <!-- card container -->
+        <div class="container">
+
+            <!-- card wrapper -->
+            <div class="wrapper bg-white rounded-sm shadow-lg">
+                <form [formGroup]="transactionForm">
+
+                    <div class="card px-8">
+                       
+
+                        <div class="card-text">
+                            <h1 class="text-xl md:text-2xl font-bold leading-tight text-gray-900">Verify Transaction</h1>
+                        </div>
+
+                        <div class="card-mail flex items-center ">
+                            <input type="email" formControlName="referenceNumber" class="border-l border-t border-b border-gray-200 rounded-l-md w-full text-base md:text-lg px-3 py-2" placeholder="Enter Your Reference Number">
+                            <button class="bg-orange-500 hover:bg-orange-600 hover:border-orange-600 text-white font-bold capitalize px-3 py-2 text-base md:text-lg rounded-r-md border-t border-r border-b border-orange-500 m-4" (click)="verifypaystackTransaction()">Paystack</button>
+                            <button class="bg-orange-500 hover:bg-orange-600 hover:border-orange-600 text-white font-bold capitalize px-3 py-2 text-base md:text-lg rounded-r-md border-t border-r border-b border-orange-500" (click)="verifysquadTransaction()">Squad</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+    <!-- ====== Cards Section Start -->
+    <section class="bg-gray-2 dark:bg-dark py-4">
+       <div class="container mx-auto">
+          <div class="flex flex-wrap -mx-4">
+             <div class="w-full px-4 md:w-1/2 xl:w-1/3">
+                <div
+                   class="mb-10 overflow-hidden duration-300 bg-white rounded-lg dark:bg-dark-2 shadow-1 hover:shadow-3 dark:shadow-card dark:hover:shadow-3"
+                   >
+                   <h2 class="text-lg font-bold" [ngClass]="{ 'text-green-500': message === 'Found', 'text-red-500': message !== 'Found' }">{{ message }}</h2>
+
+                   <div *ngIf="data">
+                     <div><span class="text-primary-text">Status:</span> <span *ngIf="button==='Paystack'"> {{data.status}} </span><span *ngIf="button==='Squad'"> {{data.success}} </span></div>
+                     <div><span class="text-primary-text">Message:</span>  <span *ngIf="button==='Paystack'">{{data.message}}</span><span *ngIf="button==='Squad'">{{data.message}}</span></div>
+                     <div><span class="text-primary-text">Data Status:</span>  <span *ngIf="button==='Paystack'">{{data.data.status}}</span><span *ngIf="button==='Squad'">{{data.data.status}}</span></div>
+                     <div><span class="text-primary-text">Reference:</span>  <span *ngIf="button==='Paystack'">{{data.data.reference}}</span><span *ngIf="button==='Squad'">{{data.data.transaction_ref}}</span></div>
+                     <div><span class="text-primary-text">Amount Paid:</span>  <span *ngIf="button==='Paystack'">{{ data.data.requested_amount / 100 }}</span><span *ngIf="button==='Squad'">{{ data.data.transaction_amount / 100 }}</span></div>
+                     <div><span class="text-primary-text">Charges:</span>  <span *ngIf="button==='Paystack'">{{ data.data.fees / 100 }}</span><span *ngIf="button==='Squad'">{{ data.data.fee  }}</span></div>
+                     <div><span class="text-primary-text">Customer Email:</span>  <span *ngIf="button==='Paystack'">{{ data.data.customer.email }}</span><span *ngIf="button==='Squad'">{{ data.data.email }}</span></div>
+                     <div><span class="text-primary-text">Transaction Date:</span>  <span *ngIf="button==='Paystack'">{{ data.data.transaction_date | date:'EEEE-MMMM-yyyy' }}</span> <span *ngIf="button==='Squad'">{{ data.data.created_at | date:'EEEE-MMMM-yyyy' }}</span></div>
+                     <button type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Validate Payment and Get Customer Unpaid Cart</button>
+           
+                   </div>
+                   
+                </div>
+             </div>
+             <div class="w-full px-4 md:w-1/2 xl:w-2/3">
+                <div
+                   class="mb-10 overflow-hidden duration-300 bg-white rounded-lg dark:bg-dark-2 shadow-1 hover:shadow-3 dark:shadow-card dark:hover:shadow-3"
+                   >
+                   
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-blue-100 dark:text-blue-100">
+        <thead class="text-xs text-white uppercase bg-blue-600 dark:text-white">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Product name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Color
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Category
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Price
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-blue-500 border-b border-blue-400">
+                <th scope="row" class="px-6 py-4 font-medium text-blue-50 whitespace-nowrap dark:text-blue-100">
+                    Apple MacBook Pro 17"
+                </th>
+                <td class="px-6 py-4">
+                    Silver
+                </td>
+                <td class="px-6 py-4">
+                    Laptop
+                </td>
+                <td class="px-6 py-4">
+                    $2999
+                </td>
+                <td class="px-6 py-4">
+                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                </td>
+            </tr>
+            <tr class="bg-blue-600 border-b border-blue-400">
+                <th scope="row" class="px-6 py-4 font-medium text-blue-50 whitespace-nowrap dark:text-blue-100">
+                    Microsoft Surface Pro
+                </th>
+                <td class="px-6 py-4">
+                    White
+                </td>
+                <td class="px-6 py-4">
+                    Laptop PC
+                </td>
+                <td class="px-6 py-4">
+                    $1999
+                </td>
+                <td class="px-6 py-4">
+                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                </td>
+            </tr>
+            <tr class="bg-blue-500 border-b border-blue-400">
+                <th scope="row" class="px-6 py-4 font-medium text-blue-50 whitespace-nowrap dark:text-blue-100">
+                    Magic Mouse 2
+                </th>
+                <td class="px-6 py-4">
+                    Black
+                </td>
+                <td class="px-6 py-4">
+                    Accessories
+                </td>
+                <td class="px-6 py-4">
+                    $99
+                </td>
+                <td class="px-6 py-4">
+                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                </td>
+            </tr>
+            <tr class="bg-blue-600 border-b border-blue-400">
+                <th scope="row" class="px-6 py-4 font-medium text-blue-50 whitespace-nowrap dark:text-blue-100">
+                    Google Pixel Phone
+                </th>
+                <td class="px-6 py-4">
+                    Gray
+                </td>
+                <td class="px-6 py-4">
+                    Phone
+                </td>
+                <td class="px-6 py-4">
+                    $799
+                </td>
+                <td class="px-6 py-4">
+                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                </td>
+            </tr>
+            <tr class="bg-blue-500 border-blue-40">
+                <th scope="row" class="px-6 py-4 font-medium text-blue-50 whitespace-nowrap dark:text-blue-100">
+                    Apple Watch 5
+                </th>
+                <td class="px-6 py-4">
+                    Red
+                </td>
+                <td class="px-6 py-4">
+                    Wearables
+                </td>
+                <td class="px-6 py-4">
+                    $999
+                </td>
+                <td class="px-6 py-4">
+                    <a href="#" class="font-medium text-white hover:underline">Edit</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+                </div>
+             </div>
+          
+          </div>
+       </div>
+    </section>
+    <section>
+        
+
+<footer class="bg-white dark:bg-gray-900">
+    <div class="mx-auto w-full max-w-screen-xl flex" *ngFor="let voucher of vouchers">
+        <span class="text-sm text-gray-500 dark:text-gray-300 sm:text-center flex">{{voucher.id}}-{{voucher.description}}
+        </span>
+    </div>
+</footer>
+
+    </section>

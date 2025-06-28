@@ -31,9 +31,16 @@
               <td>{{ pymtmm.dateEntered | date: 'medium' }}</td>
               <td>{{ pymtmm.custCode }}</td>
               <td> {{userFullName}} </td>              
-              <td>{{ formatWithCommas(pymtmm.amount) }}</td>
+              <td>{{ formatWithCommas(pymtmm.amount) }}
+                <span *ngIf="pymtmm.voucherId === 17">(sausage)</span>
+                <span *ngIf="pymtmm.voucherId === 19">(scotch_egg)</span>
+                <span *ngIf="pymtmm.voucherId === 16">(water)</span>
+                <span *ngIf="pymtmm.voucherId === 13">(pie)</span>
+                <span *ngIf="pymtmm.voucherId === 21">(old voucher)</span>
+                <span *ngIf="pymtmm.voucherId === 27">(Extra Voucher)</span>
+              </td>
               <td>{{ pymtmm.unit }}</td>
-             <!-- <td>{{ pymtmm.voucherId}}</td> -->
+             <!-- <td>{{ pymtmm.VoucherDescription}}</td> -->
               
               
             

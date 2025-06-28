@@ -18,11 +18,16 @@ import { DialogContentComponent } from '../dialog-content/dialog-content.compone
 
 })
 export class UsersPaymentInfoDialogComponent {
-  constructor(private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) { }
+  constructor(private dialogRef: MatDialogRef<UsersPaymentInfoDialogComponent>, private dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit(): void {
     const paymentbycust = this.data.paymentbycust;
     // Use the paymentbycust data as needed
+  }
+
+
+  onClose(): void {
+    this.dialogRef.close();
   }
 
 

@@ -124,7 +124,7 @@ export class MealNameDialogComponent implements OnInit {
   calculateDiscountAmount(): number {
     const totalAmount = this.calculateTotalAmount();
     // Apply a 40% discount to the total amount
-    return totalAmount * 0.4;
+    return totalAmount * 0.1;
   }
 
   calculateRemainingAmount(): number {

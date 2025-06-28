@@ -31,7 +31,10 @@ export class TransferService {
     }
 
     insertTransfer(transfer: Transfer): Observable<Transfer> {
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json', // Example header, adjust as needed
+            // Add more headers if required by your server
+        });
         transfer.id = 0;
         return this.http.post<Transfer>(this.baseURL, transfer, { headers }).pipe(
             catchError(this.handleError)

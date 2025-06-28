@@ -1,3 +1,4 @@
+import { Registration } from "../registration/registration.model";
 import { Payment } from "../staffpayment/payment.model";
 
 export class Served {
@@ -8,6 +9,9 @@ export class Served {
   paymentMain: Payment;
   paymentMainid: number;
   active: boolean;
+  user: Registration;
+  totalAmount: number;
+  server: string;
 
   constructor() {
     this.id = 0;
@@ -17,6 +21,9 @@ export class Served {
     this.paymentMain = new Payment()
     this.paymentMainid = 0;
     this.active = false;
+    this.user = new Registration();
+    this.totalAmount = 0;
+    this.server = '';
   }
 
 }
