@@ -4,6 +4,9 @@
 /dist
 /dist_old
 /dist_old22
+.dist/*
+/dist*
+.dist_old/*
 dist_old.zip
 dist.zip
 /tmp
@@ -45,6 +48,8 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/dist
+*.zip
 
 # System Files
 .DS_Store
