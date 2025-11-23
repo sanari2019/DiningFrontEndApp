@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { AuthService } from './../auth/auth.service';
-import { MatDialog } from '@angular/material/dialog';
-import { RegistrationDialogComponent } from '../registration-dialog/registration-dialog.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthNewService } from './../auth/auth-new.service';
+import { RegistrationDialogComponent } from '../registration-dialog/registration-dialog.component';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -15,27 +16,31 @@ import { Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit {
   hide = true;
-  form!: FormGroup;                    // {1}
-  private formSubmitAttempt!: boolean; // {2}
+  form!: FormGroup;
+  private formSubmitAttempt = false;
   loginMessage = '';
-  notLoggedIn$!: Observable<boolean>;
+  isLoading = false;
   private loginSubscription: Subscription | undefined;
+  appVersion: string = environment.version;
+  currentYear: number = new Date().getFullYear();
 
   constructor(
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private fb: FormBuilder,         // {3}
-    private authService: AuthService // {4}
+    private fb: FormBuilder,
+    private authNewService: AuthNewService,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    localStorage.removeItem('user');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('loginTime');
+    // Clear any existing session
     localStorage.clear();
-    this.form = this.fb.group({     // {5}
+
+    // Initialize login form
+    this.form = this.fb.group({
       userName: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe: [false]
     });
   }
 
@@ -60,22 +65,82 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.form.valid) {
-      this.loginSubscription = this.authService.login(this.form.value).subscribe((resultMessage: string) => {
-        if (resultMessage === "") {
-          if (this.authService.notLoggedIn) {
-            this.formSubmitAttempt = true;
-          }
-          // Successful login, clear loginMessage and show success flash message.
-          this.loginMessage = "";
-          this.snackBar.open('Login Successful!', 'Close', { duration: 3000 });
-        } else {
-          // Show error flash message.
-          this.loginMessage = resultMessage;
-          this.snackBar.open(resultMessage, 'Close', { duration: 3000 });
-        }
-      });
+    this.formSubmitAttempt = true;
+
+    if (this.form.invalid) {
+      this.loginMessage = 'Please fill in all required fields correctly';
+      return;
     }
+
+    this.isLoading = true;
+    this.loginMessage = '';
+
+    const loginData = {
+      userName: this.form.value.userName.toLowerCase().trim(),
+      password: this.form.value.password,
+      rememberMe: this.form.value.rememberMe || false
+    };
+
+    this.loginSubscription = this.authNewService.login(loginData).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.isLoading = false;
+          this.loginMessage = '';
+
+          // Show success message
+          this.snackBar.open('Login Successful!', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+
+          // Navigate to home page
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 500);
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+
+        // Handle different error types
+        let errorMessage = error.message || 'Login failed. Please try again.';
+        let duration = 5000;
+
+        switch (error.errorType) {
+          case 'NetworkError':
+            errorMessage = 'Cannot connect to server. Please check your connection.';
+            duration = 7000;
+            break;
+          case 'AuthenticationError':
+            errorMessage = 'Invalid email or password. Please try again.';
+            break;
+          case 'UserNotFoundError':
+            errorMessage = 'Account not found. Please check your email address.';
+            break;
+          case 'DatabaseError':
+            errorMessage = 'System error occurred. Please try again later.';
+            duration = 7000;
+            break;
+          case 'AccountFrozenError':
+            errorMessage = 'Your account is frozen. Please contact administrator.';
+            duration = 10000;
+            break;
+          case 'ServerError':
+            errorMessage = 'Server error. Please try again later.';
+            duration = 7000;
+            break;
+        }
+
+        this.loginMessage = errorMessage;
+
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: duration,
+          panelClass: ['error-snackbar']
+        });
+
+        console.error('Login error:', error);
+      }
+    });
   }
 
   ngOnDestroy() {

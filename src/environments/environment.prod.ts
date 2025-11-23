@@ -1,9 +1,11 @@
 export const environment = {
   production: true,
-  // urlAddress: 'https://localhost:7146'
-  urlAddress: "http://localhost:5057"
-  // urlAddress: 'https://cafeteriaapi.evercare.ng:2020'
-  // urlAddress: "http://10.20.20.101:5050"
-  // urlAddress: 'http://10.20.20.104:2020'
+  version: '2.0.1',
+  urlAddress: "https://cafeteriaapi.evercare.ng:2020",
 
+  // Paystack Configuration - Live Keys for Production
+  // WARNING: This should be set via build-time configuration, not committed
+  paystack: {
+    publicKey: "pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439"
+  }
 };

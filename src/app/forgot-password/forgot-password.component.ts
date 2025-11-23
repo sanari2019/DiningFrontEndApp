@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { RegistrationService } from '../registration/registration.service';
-import { Registration } from '../registration/registration.model';
-import { EncrDecrService } from '../shared/EncrDecrService.service';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthNewService } from '../auth/auth-new.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-forgot-password',
@@ -14,12 +15,17 @@ export class ForgotPasswordComponent implements OnInit {
   submitted: boolean = false;
   errorMessage: string | undefined;
   successMessage: string | undefined;
-  loadedRegistration: Registration | null = null;
+  isLoading: boolean = false;
+  appVersion: string = environment.version;
+  currentYear: number = new Date().getFullYear();
+  hide = true;
+  hideConfirm = true;
 
   constructor(
     private formBuilder: FormBuilder,
-    private registrationservice: RegistrationService,
-    private encdecservice: EncrDecrService
+    private authNewService: AuthNewService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
@@ -55,56 +61,84 @@ export class ForgotPasswordComponent implements OnInit {
 
   resetPassword(): void {
     this.submitted = true;
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
 
-    if (this.forgotPasswordForm.valid) {
-      if (this.forgotPasswordForm.dirty) {
-        const { username, newPassword } = this.forgotPasswordForm.value;
-
-        // Check if the username exists in the database
-        this.registrationservice.getUserbyusername(username)
-          .subscribe(
-            (result: Registration) => {
-              this.loadedRegistration = result;
-
-              if (this.loadedRegistration !== null) {
-                // Update the user's password
-                const updatedUser: Registration = {
-                  ...this.loadedRegistration,
-                  password: this.encdecservice.set('123456$#@$^@1ERF', newPassword)
-                };
-
-                this.registrationservice.updateUser(updatedUser)
-                  .subscribe(
-                    () => this.onPasswordResetSuccess(),
-                    (error: any) => this.onPasswordResetError(error)
-                  );
-              } else {
-                this.errorMessage = `Username '${username}' does not exist.`;
-              }
-            },
-            (error: any) => this.onPasswordResetError(error)
-          );
-      } else {
-        this.errorMessage = 'Please enter your username and new password.';
-      }
-    } else {
+    if (this.forgotPasswordForm.invalid) {
       this.errorMessage = 'Please correct the validation errors.';
+      return;
     }
-  }
 
-  onPasswordResetSuccess(): void {
-    this.successMessage = 'Your password has been successfully reset.';
-    this.forgotPasswordForm.reset();
+    this.isLoading = true;
+    const { username, newPassword, confirmPassword } = this.forgotPasswordForm.value;
+
+    this.authNewService.resetPassword({ userName: username, newPassword, confirmPassword }).subscribe({
+      next: (result) => {
+        this.isLoading = false;
+        if (result.success) {
+          this.successMessage = 'Your password has been successfully reset.';
+          this.forgotPasswordForm.reset();
+          this.submitted = false;
+
+          // Show success message
+          this.snackBar.open('Password reset successful! Redirecting to login...', 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+
+        // Handle different error types
+        let errorMessage = error.message || 'Failed to reset password. Please try again.';
+        let duration = 5000;
+
+        switch (error.errorType) {
+          case 'NetworkError':
+            errorMessage = 'Cannot connect to server. Please check your connection.';
+            duration = 7000;
+            break;
+          case 'UserNotFoundError':
+            errorMessage = `Username '${username}' does not exist. Please check your email address.`;
+            break;
+          case 'ValidationError':
+            errorMessage = 'Please provide a valid username and password.';
+            break;
+          case 'DatabaseError':
+            errorMessage = 'System error occurred. Please try again later.';
+            duration = 7000;
+            break;
+          case 'ServerError':
+            errorMessage = 'Server error. Please try again later.';
+            duration = 7000;
+            break;
+        }
+
+        this.errorMessage = errorMessage;
+
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: duration,
+          panelClass: ['error-snackbar']
+        });
+
+        console.error('Password reset error:', error);
+      }
+    });
   }
 
   goBack(): void {
-    // Redirect to the login page
-    window.location.href = '../login';
+    // Navigate back to the login page
+    this.router.navigate(['/login']);
   }
-  
 
-  onPasswordResetError(error: any): void {
-    this.errorMessage = 'Failed to reset the password. Please try again.';
-    console.error(error);
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.forgotPasswordForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
   }
 }

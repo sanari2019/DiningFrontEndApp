@@ -72,7 +72,13 @@ export class OutsourcedpaymentComponent implements OnInit {
   options: PaystackOptions = {
     amount: 0, // Prepopulate with the total amount from selected checkboxes
     email: 'newemail', // Prepopulate with the user's email
-    ref: `${Math.ceil(Math.random() * 10000000000000)}`
+    ref: `${Math.ceil(Math.random() * 10000000000000)}`,
+    metadata: {
+      user_id: 0,
+      voucher_id: 0,
+      payment_type: 'outsourced',
+      custom_fields: []
+    }
   };
 
 
@@ -189,6 +195,15 @@ export class OutsourcedpaymentComponent implements OnInit {
     // Initialize other data (e.g., user's email)
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     this.options.email = loggedInUser?.userName;
+    // Set metadata for Paystack webhook processing
+    this.options.metadata = {
+      user_id: loggedInUser?.id,
+      voucher_id: 0,
+      payment_type: 'outsourced',
+      custom_fields: [
+        { display_name: 'Customer ID', variable_name: 'customer_id', value: loggedInUser?.custId || '' }
+      ]
+    };
     this.setRandomPaymentRef();
 
 

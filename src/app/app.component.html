@@ -1,142 +1,104 @@
-<mat-toolbar class="mat-elevation-z8 equal-boxes">
-  <div>
-    <button aria-label="Toggle sidenav"  *ngIf="drawer?.mode === 'over' && 'isHandset$ | async'" (click)="drawer.toggle()">
-      <mat-icon aria-label="Side nav toggle icon"> menu </mat-icon>
-    </button>
-    
-  </div>
-    <div id="brand" *ngIf="isLoggedIn$ | async">
-      <p>Cafeteria</p>
-    </div>
-    <div id="brand" *ngIf="!(isLoggedIn$ | async)" style="background: #004a9f; color: white; padding: 0 45% 0 45%;width: 100%;" >
-      <p style="display: flex; align-items: center; padding: 8px 0;"><!--<img src="assets/images/Evercare-Logo.jpg" alt="Logo" class="logo-image" />-->
-      Evercare's Cafeteria<p>
-    </div>
-    <!-- <button mat-button id="btnloginuser" *ngIf="isLoggedIn$">{{'Welcome '+authService.registration?.firstName}}</button> -->
+<!-- Auth routes render full-screen -->
+<ng-container *ngIf="isAuthPage; else shell">
+  <router-outlet></router-outlet>
+</ng-container>
 
-    <div id="login">
-    <!--  <button mat-button matBadgeColor="warn" matBadge="7" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()" *ngIf="(isLoggedIn$ | async) && !(isHandset$ | async)">Notification</button>-->
-    <button mat-button routerLink="login" *ngIf="!isLoggedIn$ " >Login</button>
-    
-    <!-- <button mat-button routerLink="registration" *ngIf="isLoggedIn$">Register</button> -->
-     <!--<ng-container *ngIf="isLoggedIn$ | async">
-      <button *ngIf="isHandset$ | async; else showNotiButton" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" style="margin:0;" matBadge="15" matBadgeColor="warn" (click)="toggleBadgeVisibility()">
-        <mat-icon>notifications</mat-icon>
-      </button>
-    </ng-container>
-    
-    <ng-template #showNotiButton>
-      <button mat-button [matMenuTriggerFor]="menu" matBadge="15" matBadgeColor="warn" (click)="toggleBadgeVisibility()">Notifications</button>
-    </ng-template>
-    
-    
-    <mat-menu #menu="matMenu">
-     
-      <button mat-menu-item>
-        <mat-icon>notifications</mat-icon>
-        <span>Notification</span>
-      </button>
-      <button mat-menu-item (click)="onLogout()" *ngIf="(isLoggedIn$ | async)"><mat-icon aria-hidden="false" aria-label="logout icon" fontIcon="logout" [ariaSetSize]="50" color="warn"></mat-icon>Logout</button>
-    </mat-menu>-->
-   <!-- <mat-slide-toggle></mat-slide-toggle>-->
-    <mat-slide-toggle [(ngModel)]="freezeStatus" (change)="toggleFreezeStatus($event)" *ngIf="isLoggedIn$ | async"></mat-slide-toggle>
+<ng-template #shell>
+  <div class="main">
+    <div class="side-navbar" [class.active]="sidebarActive">
+      <ul>
+        <li class="brand" data-label="Cafeteria">
+          <a (click)="navigateHome()">
+            <span class="icon brand-icon">
+              <img src="assets/images/logo_transparent.ico" alt="Cafeteria logo" />
+            </span>
+            <span class="text brand-text brand-inline">Cafeteria</span>
+          </a>
+        </li>
 
-    
-     <ng-container *ngIf="isLoggedIn$ | async">
-      <button *ngIf="isHandset$ | async; else showAccountButton" mat-icon-button [matMenuTriggerFor]="menu2" aria-label="Example icon-button with a menu" style="margin:0;">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-    </ng-container>
-    
-    <ng-template #showAccountButton>
-      <button mat-button [matMenuTriggerFor]="menu2">Account</button>
-    </ng-template>
-    
-    
-    <mat-menu #menu2="matMenu">
-      <button mat-menu-item routerLink="/profile" disabled>
-        <mat-icon>account_circle</mat-icon>
-        <span>Profile</span>
-      </button>
-      <button mat-menu-item routerLink="/settings">
-        <mat-icon>settings</mat-icon>
-        <span>Settings</span>
-      </button>
-      <button mat-menu-item (click)="onLogout()" *ngIf="(isLoggedIn$ | async)"><mat-icon aria-hidden="false" aria-label="logout icon" fontIcon="logout" [ariaSetSize]="50" color="warn"></mat-icon>Logout</button>
-    </mat-menu>
+        <li data-label="Home">
+          <a (click)="navigateHome()" [class.active]="isHomeActive()">
+            <span class="icon"><i class='bx bxs-home-circle'></i></span>
+            <span class="text">Home</span>
+          </a>
+        </li>
 
+        <li *ngFor="let rte of routes" [attr.data-label]="rte.menuName">
+          <a (click)="navigateurl(rte)" [class.active]="isRouteActive(rte)">
+            <span class="icon"><i class='bx' [ngClass]="getBoxIcon(rte)"></i></span>
+            <span class="text">{{ rte.menuName }}</span>
+          </a>
+        </li>
 
-   </div>
-   
-</mat-toolbar>
-  
-<mat-sidenav-container>
-  <!-- <mat-sidenav #sidenav="matSidenav" *ngIf="isLoggedIn$ | async" mode='side' class="mat-elevation-z8 "> -->
-  <mat-sidenav *ngIf="isLoggedIn$ | async" #drawer [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-  [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)" class="mat-elevation-z8"> 
-    <button mat-button class="menu-button" routerLink="home">
-      <!--<mat-icon>Menu</mat-icon>-->
-      <span  style="color:#faebd7;">Welcome, {{ this.registration?.firstName }}</span>
-    </button>
-    <mat-divider></mat-divider>
-    <!-- <button mat-button  class="menu-button" routerLink="/home"> -->
-      <!--<mat-icon>Administration</mat-icon>-->
-      <!-- <span>Home</span> -->
-    <!-- </button> -->
+        <li class="logout" data-label="Logout">
+          <a (click)="onLogout()">
+            <span class="icon"><i class='bx bxs-log-out'></i></span>
+            <span class="text">Logout</span>
+          </a>
+        </li>
+      </ul>
 
-    <div *ngFor="let rte of routes">
-      <button mat-button class="menu-button" (click)="navigateurl(rte)">
-        <span style="color:#faebd7;">{{ rte.menuName }}</span>
-      </button>
-    </div>
-
-    <mat-divider></mat-divider>
-    <!--<button mat-button class="menu-button" routerLink="/report">-->
-      <!--<mat-icon>Administration</mat-icon>-->
-      <!--<span>Reports</span>
-    </button>-->
-
-    <div class="mb-4">
-      <div>
-       
-        
-        <p>Freeze Status: {{ user.freeze ? 'Frozen' : 'Not Frozen' }}</p>
-        
+      <div class="sidebar-footer">
+        <div class="footer-line">
+          <i class="bx bx-copyright"></i>
+          <p class="footer-text">2025 Evercare</p>
+        </div>
+        <div class="footer-line">
+          <i class="bx bxs-info-circle"></i>
+          <p class="footer-version">v{{ appVersion }}</p>
+        </div>
       </div>
-   
-      
-      
-     
     </div>
 
-    <!--<button mat-button class="menu-button" routerLink="/report">
-      <mat-icon>report</mat-icon>
-      <span>Report</span>
-    </button>-->
+    <div class="content" [class.active]="sidebarActive">
+      <div class="top-navbar">
+        <div class='bx bx-menu' id="menu-icon" (click)="toggleSidebarState()"></div>
+        <div class="top-actions">
+          <div class="badge-wrap" (click)="toggleNotifications()" tabindex="0">
+            <i class='bx bx-bell'></i>
+            <span class="badge" *ngIf="notifications.length">{{ notifications.length }}</span>
+            <div class="dropdown" *ngIf="showNotifications">
+              <div class="dropdown-item" *ngFor="let note of notifications | slice:0:5">
+                {{ note }}
+              </div>
+              <button mat-button class="dropdown-btn">View all</button>
+            </div>
+          </div>
+          <div class="badge-wrap" (click)="toggleCart()" tabindex="0">
+            <i class='bx bx-cart'></i>
+            <span class="badge" *ngIf="cartItems.length">{{ cartItems.length }}</span>
+            <div class="dropdown" *ngIf="showCart">
+              <div class="dropdown-item" *ngFor="let item of cartItems | slice:0:5">
+                {{ item.name || item }}
+              </div>
+              <button mat-button class="dropdown-btn">View all</button>
+            </div>
+          </div>
+          <div class="avatar dropdown-trigger" (click)="toggleProfile()" tabindex="0">
+            {{ getInitials(registration) }}
+            <div class="dropdown" *ngIf="showProfile">
+              <button mat-button (click)="navigateProfile()">Profile</button>
+              <button mat-button (click)="navigateSettings()">Settings</button>
+              <button mat-button (click)="onLogout()">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- ... Your main content ... -->
-
-<app-footer></app-footer>
-
-   
-  </mat-sidenav>
-
-  <app-loader></app-loader>
-  
-  <mat-sidenav-content >
-    <div *ngIf="isLoading$ | async">
-      <mat-progress-spinner class="spinner"
-        mode="indeterminate"
-        diameter="50"
-        color="primary"
-      ></mat-progress-spinner>
+      <div class="content-area">
+        <app-loader></app-loader>
+        <div *ngIf="isLoading$ | async">
+          <mat-progress-spinner
+            class="spinner"
+            mode="indeterminate"
+            diameter="50"
+            color="primary"
+          ></mat-progress-spinner>
+        </div>
+        <div class="content-inner mat-elevation-z8" [class.hide]="isLoading$ | async">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
     </div>
-    <div class="content mat-elevation-z8" [class.hide]="isLoading$ | async">
-      <router-outlet></router-outlet>
-    </div>
-    
-    
-  </mat-sidenav-content>
-</mat-sidenav-container>
-
-
+  </div>
+</ng-template>

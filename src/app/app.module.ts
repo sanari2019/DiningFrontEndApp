@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { Angular4PaystackModule } from 'angular4-paystack';
 import { BrowserModule } from '@angular/platform-browser';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -8,6 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
@@ -64,6 +66,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PaymentbreakdownComponent } from './paymentbreakdown/paymentbreakdown.component';
 import { APP_INITIALIZER } from '@angular/core';
 import { Router } from '@angular/router';
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { TokenService } from './services/token.service';
+import { AuthNewService } from './auth/auth-new.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -122,12 +127,13 @@ export function appInitializer(authService: AuthService, router: Router) {
 @NgModule({
   declarations: [FooterComponent, AppComponent, AppMenuComponent, HomeComponent, ForgotPasswordComponent, ProfileComponent, AdministrationComponent, AboutComponent, HelpComponent, NotFoundComponent, LoginComponent, RegistrationComponent, RegistrationEditComponent, RegistrationDetailComponent, RegistrationListComponent, PaymentComponent, VoucherComponent, StaffpaymentComponent, PaymentDetailComponent, VoucherNewComponent, OutsourcedpaymentComponent, GuestpaymentComponent, OnlinepaymentComponent, EmailComponent, UsersPaymentInfoComponent, WelcomeComponent, UsersPaymentInfoDialogComponent, MenuDialogComponent, DialogContentComponent, RegistrationDialogComponent, MealNameDialogComponent, FooterComponent, LoaderComponent, PaymentbreakdownComponent, ReportComponent, CardComponent, BarChartComponent, DashboardPageComponent, CreatemealdialogComponent, ContactUsDialogComponent, ConfirmationDialogComponent, TransferAndReportsComponent, UserValidateComponent, SettingsComponent, SquadPaymentDialogComponent, VerificationsComponent],
   imports: [
-    Angular4PaystackModule.forRoot('pk_live_0c3efb6f38cda963be8920383c3f5dbb4474c439'),
+    Angular4PaystackModule.forRoot(environment.paystack.publicKey),
     MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatTooltipModule,
     MatTableExporterModule,
     MatExpansionModule,
     DxButtonModule,
@@ -167,12 +173,23 @@ export function appInitializer(authService: AuthService, router: Router) {
     MatChipsModule
 
   ],
-  providers: [ExportService, { provide: LocationStrategy, useClass: HashLocationStrategy }, { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }, EncrDecrService, AuthService, {
-    provide: APP_INITIALIZER,
-    useFactory: appInitializer,
-    multi: true,
-    deps: [AuthService, Router],
-  }, AuthGuard],
+  providers: [
+    ExportService,
+    TokenService,
+    AuthNewService,
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    EncrDecrService,
+    AuthService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializer,
+      multi: true,
+      deps: [AuthService, Router],
+    },
+    AuthGuard
+  ],
   bootstrap: [AppComponent],
   // entryComponents: [LoaderComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

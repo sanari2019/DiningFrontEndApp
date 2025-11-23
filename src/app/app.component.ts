@@ -4,19 +4,18 @@ import {
   Breakpoints,
   BreakpointState,
 } from '@angular/cdk/layout';
-import { MatSidenav } from '@angular/material/sidenav';
-import { catchError, delay, filter, finalize } from 'rxjs/operators';
+import { catchError, filter, finalize, map } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AuthService } from './auth/auth.service';
-import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Registration } from './registration/registration.model';
 import { Route } from './shared/route.model';
 import { RegistrationService } from './registration/registration.service';
-import { map } from 'rxjs/operators';
 import { LoaderService } from './loader/loader.service';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { environment } from '../environments/environment';
 
 @UntilDestroy()
 @Component({
@@ -29,9 +28,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   isLoading$: Observable<boolean>;
   isLoggedIn$!: Observable<boolean>;
   isHandset$: Observable<boolean>;
+  isAuthPage = false;
 
   // ViewChild references
-  @ViewChild('drawer') drawer: any;
   @ViewChild(MatAccordion) accordion!: MatAccordion;
 
   // Component properties
@@ -42,6 +41,13 @@ export class AppComponent implements OnInit, AfterViewInit {
   hidden = false;
   freezeStatus = false;
   currentRoute: Route | undefined;
+  sidebarActive = false;
+  appVersion: string = environment.version;
+  notifications: string[] = ['Order ready for pickup', 'Voucher expiring soon', 'New meal added', 'Payment received', 'System maintenance'];
+  cartItems: Array<{ name: string }> = [{ name: 'Meal A' }, { name: 'Meal B' }, { name: 'Voucher C' }];
+  showNotifications = false;
+  showProfile = false;
+  showCart = false;
 
   // User object with default values
   user: Registration = {
@@ -80,23 +86,37 @@ export class AppComponent implements OnInit, AfterViewInit {
     // this.authService.resetLogoutTimer();
   }
 
+  @HostListener('document:click', ['$event'])
+  closeDropdownsOnOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const withinTop = target.closest('.top-actions');
+    if (!withinTop) {
+      this.showNotifications = false;
+      this.showCart = false;
+      this.showProfile = false;
+    }
+  }
+
   ngOnInit(): void {
     this.initializeApp();
+    this.checkAuthRoute(this.router.url);
+
+    this.router.events
+      .pipe(
+        untilDestroyed(this),
+        filter((e) => e instanceof NavigationEnd)
+      )
+      .subscribe(() => {
+        this.checkAuthRoute(this.router.url);
+      });
   }
 
   /**
    * Main initialization method
    */
   private initializeApp(): void {
-    // Check if user authentication exists
     this.isLoggedIn$ = this.authService.isLoggedIn;
-    
-    if (!this.isLoggedIn$) {
-      this.redirectToLogin();
-      return;
-    }
 
-    // Subscribe to authentication state changes
     this.isLoggedIn$
       .pipe(untilDestroyed(this))
       .subscribe({
@@ -406,17 +426,90 @@ export class AppComponent implements OnInit, AfterViewInit {
     return this.loggedIn.asObservable();
   }
 
+  toggleSidebarState(): void {
+    this.sidebarActive = !this.sidebarActive;
+  }
+
+  toggleNotifications(force?: boolean): void {
+    this.showNotifications = typeof force === 'boolean' ? force : !this.showNotifications;
+    if (this.showNotifications) {
+      this.showCart = false;
+      this.showProfile = false;
+    }
+  }
+
+  toggleCart(force?: boolean): void {
+    this.showCart = typeof force === 'boolean' ? force : !this.showCart;
+    if (this.showCart) {
+      this.showNotifications = false;
+      this.showProfile = false;
+    }
+  }
+
+  toggleProfile(force?: boolean): void {
+    this.showProfile = typeof force === 'boolean' ? force : !this.showProfile;
+    if (this.showProfile) {
+      this.showNotifications = false;
+      this.showCart = false;
+    }
+  }
+
+  navigateHome(): void {
+    this.router.navigate(['/']);
+    localStorage.removeItem('page');
+  }
+
+  navigateProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  navigateSettings(): void {
+    this.router.navigate(['/settings']);
+  }
+
+  isHomeActive(): boolean {
+    const url = this.router.url || '';
+    return url === '/' || url === '/home' || url === '';
+  }
+
+  isRouteActive(route: Route): boolean {
+    if (!route?.path) {
+      return false;
+    }
+    return (this.router.url || '').includes(`/${route.path}`);
+  }
+
+  getBoxIcon(route: Route): string {
+    const key = (route?.menuName || '').toLowerCase();
+    const mapIcons: Record<string, string> = {
+      home: 'bxs-home-circle',
+      payment: 'bxs-credit-card',
+      vouchers: 'bxs-coupon',
+      voucher: 'bxs-coupon',
+      meals: 'bx-bowl-hot',
+      meal: 'bx-bowl-hot',
+      servers: 'bx-server',
+      administration: 'bxs-cog',
+      settings: 'bxs-cog',
+      dashboard: 'bxs-dashboard',
+      support: 'bxs-help-circle',
+      wallet: 'bxs-wallet'
+    };
+    return mapIcons[key] || 'bx-right-arrow';
+  }
+
+  getInitials(reg?: Registration | undefined): string {
+    const first = reg?.firstName ? reg.firstName[0] : this.user.firstName ? this.user.firstName[0] : '';
+    const last = reg?.lastName ? reg.lastName[0] : this.user.lastName ? this.user.lastName[0] : '';
+    const initials = `${first}${last}` || 'C';
+    return initials.toUpperCase();
+  }
+
+  private checkAuthRoute(url: string): void {
+    this.isAuthPage = url.includes('/login') || url.includes('/forgot-password');
+  }
+
   ngAfterViewInit(): void {
-    // Auto-close drawer on navigation for mobile
-    this.router.events
-      .pipe(
-        untilDestroyed(this),
-        filter((e) => e instanceof NavigationEnd)
-      )
-      .subscribe(() => {
-        if (this.drawer?.mode === 'over') {
-          this.drawer?.close();
-        }
-      });
+    // no-op for now
   }
 }

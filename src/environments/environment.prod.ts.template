@@ -1,0 +1,15 @@
+// SETUP: Copy this file to environment.prod.ts and fill in production values
+// IMPORTANT: Never commit environment.prod.ts to version control
+
+export const environment = {
+  production: true,
+  version: '2.0.1',
+  urlAddress: "https://cafeteriaapi.evercare.ng:2020",
+
+  // Paystack Configuration (Live Keys for Production)
+  paystack: {
+    publicKey: "pk_live_YOUR_LIVE_PUBLIC_KEY_HERE",
+    // Note: Secret key should NEVER be in frontend code
+    // All payment verification should be done server-side
+  }
+};

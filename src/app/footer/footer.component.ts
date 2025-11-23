@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-footer',
@@ -6,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
-
+  version = environment.version;
+  currentYear = new Date().getFullYear();
 }

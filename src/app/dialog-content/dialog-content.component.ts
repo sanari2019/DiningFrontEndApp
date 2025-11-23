@@ -35,7 +35,13 @@ export class DialogContentComponent implements OnInit {
     {
       amount: 0, // Prepopulate with the total amount from selected checkboxes
       email: '', // Prepopulate with the user's email
-      ref: `${Math.ceil(Math.random() * 10000000000000)}`
+      ref: `${Math.ceil(Math.random() * 10000000000000)}`,
+      metadata: {
+        user_id: 0,
+        voucher_id: 10, // Ordered meals use voucherId 10
+        payment_type: 'ordered_meal',
+        custom_fields: []
+      }
     };
   orderedMeals: OrderedMeal[];
   loggedInUser: any;
@@ -176,7 +182,15 @@ export class DialogContentComponent implements OnInit {
 
       this.options.email = this.loggedInUser.userName; // Set the email to the logged-in user's email
       this.options.amount = this.calculateRemainingAmount() * 100; // Set the amount to the remaining amount in kobo (multiply by 100)
-
+      // Set metadata for Paystack webhook processing (ordered meals)
+      this.options.metadata = {
+        user_id: this.loggedInUser.id,
+        voucher_id: 10, // Ordered meals use voucherId 10
+        payment_type: 'ordered_meal',
+        custom_fields: [
+          { display_name: 'Customer ID', variable_name: 'customer_id', value: this.loggedInUser.custId || '' }
+        ]
+      };
     }
     this.getOrderedMeals();
 

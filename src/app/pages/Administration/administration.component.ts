@@ -132,6 +132,17 @@ export class AdministrationComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['dateServed', 'custTypeName', 'menuName', 'maxTarriff', 'dateEntered'];
   displayedTotalRevenueColumns: string[] = ['transDate', 'username', 'customerType', 'amountPaid'];
   displayedTotalServedColumns: string[] = ['dateServed', 'servedBy', 'customerType', 'voucherDescription', 'amount'];
+  today: Date = new Date();
+  activity = [
+    { title: 'Voucher batch generated', time: '2 mins ago', value: '+12', type: 'success' },
+    { title: 'Server sync delayed', time: '10 mins ago', value: '-3%', type: 'warn' },
+    { title: 'New registration', time: '26 mins ago', value: '+4', type: 'success' }
+  ];
+  servers = [
+    { name: 'Payments API', region: 'eu-west-1', ok: true },
+    { name: 'Reporting Node', region: 'us-east-1', ok: true },
+    { name: 'Voucher Engine', region: 'eu-west-2', ok: false }
+  ];
   displayedTotalServedSummaryColumns: string[] = ['month', 'day', 'voucherDescription', 'totalServedIDs'];
   displayedUnservedReportColumns: string[] = ['enteredByUsername', 'dateEntered', 'voucherDescription', 'servedUnits', 'totalUnits', 'remainingUnits']
   dataSource = new MatTableDataSource<ServedAlacarteVoucherModel>();

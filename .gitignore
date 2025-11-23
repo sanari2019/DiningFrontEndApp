@@ -1,5 +1,20 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+# ===========================================
+# SECRETS AND ENVIRONMENT FILES - CRITICAL
+# ===========================================
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+
+# Angular environment files with secrets
+# Copy from environment.ts.template and environment.prod.ts.template
+src/environments/environment.ts
+src/environments/environment.prod.ts
+src/environments/environment.local.ts
+
 # compiled output
 /dist
 /dist_old
@@ -56,4 +71,4 @@ testem.log
 Thumbs.db
 
 
-/node_modules
+/node_modulesnul

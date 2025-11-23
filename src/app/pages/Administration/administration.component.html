@@ -1,7 +1,89 @@
 
-<mat-tab-group  mat-align-tabs="center" > 
-   
-    <mat-tab label="Meal Controller">
+<mat-tab-group mat-align-tabs="center">
+
+  <mat-tab label="Dashboard">
+    <div class="admin-dashboard">
+      <header class="dash-head">
+        <div class="dash-title">
+          <p class="dash-crumb">Administration</p>
+          <h2>Dashboard</h2>
+          <div class="dash-breadcrumb">
+            <mat-icon>home</mat-icon>
+            <span>Control</span>
+          </div>
+        </div>
+        <div class="dash-actions">
+          <button mat-flat-button color="primary">Today · {{ today | date:'MMM d' }}</button>
+          <button mat-stroked-button color="primary">View All</button>
+        </div>
+      </header>
+
+      <div class="dash-cards">
+        <mat-card class="dash-card accent">
+          <div class="card-top">
+            <p>Latest</p>
+            <mat-icon>more_horiz</mat-icon>
+          </div>
+          <h3>Contrary to popular belief</h3>
+          <p class="card-sub">There are many variations of passages</p>
+          <div class="stats-row">
+            <div><span class="stat up">+1.92%</span><small>QWDR</small></div>
+            <div><span class="stat down">-0.92%</span><small>WSDF</small></div>
+            <div><span class="stat up">+1.12%</span><small>AENV</small></div>
+          </div>
+        </mat-card>
+
+        <mat-card class="dash-card neutral">
+          <p class="label">Revenue</p>
+          <h3>$845,1258</h3>
+          <p class="muted">9.15% decrease from last month</p>
+          <button mat-stroked-button color="primary" class="inline-btn">View</button>
+        </mat-card>
+
+        <mat-card class="dash-card neutral">
+          <p class="label">Control</p>
+          <h3>Server Uptime</h3>
+          <p class="muted">99.4% last 24h</p>
+          <button mat-stroked-button color="primary" class="inline-btn">Details</button>
+        </mat-card>
+      </div>
+
+      <div class="dash-grid">
+        <mat-card class="dash-panel">
+          <div class="panel-head">
+            <h4>Recent Activity</h4>
+            <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+          </div>
+          <div class="activity-row" *ngFor="let item of activity">
+            <div class="dot" [class.success]="item.type==='success'" [class.warn]="item.type==='warn'"></div>
+            <div class="activity-copy">
+              <p class="title">{{ item.title }}</p>
+              <p class="muted">{{ item.time }}</p>
+            </div>
+            <span class="badge">{{ item.value }}</span>
+          </div>
+        </mat-card>
+        <mat-card class="dash-panel">
+          <div class="panel-head">
+            <h4>Server Status</h4>
+            <button mat-icon-button><mat-icon>refresh</mat-icon></button>
+          </div>
+          <div class="status-list">
+            <div class="status-row" *ngFor="let srv of servers">
+              <mat-icon class="status-icon" [class.ok]="srv.ok">dns</mat-icon>
+              <div class="status-copy">
+                <p class="title">{{ srv.name }}</p>
+                <p class="muted">{{ srv.region }}</p>
+              </div>
+              <span class="badge" [class.ok]="srv.ok">{{ srv.ok ? 'Online' : 'Degraded' }}</span>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Meal Controller">
 
 
       

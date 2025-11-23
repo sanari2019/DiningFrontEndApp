@@ -193,6 +193,12 @@ export class StaffpaymentComponent implements OnInit {
         amount: 0, // Prepopulate with the total amount from selected checkboxes
         email: 'newemail', // Prepopulate with the user's email
         ref: this.generateTransactionRef(),
+        metadata: {
+            user_id: 0,
+            voucher_id: 0,
+            payment_type: 'voucher',
+            custom_fields: []
+        }
     };
     // initiatePayment() {
     //     const payload = {
@@ -735,6 +741,15 @@ export class StaffpaymentComponent implements OnInit {
         // Initialize other data (e.g., user's email)
         const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
         this.options.email = loggedInUser?.userName;
+        // Set metadata for Paystack webhook processing
+        this.options.metadata = {
+            user_id: loggedInUser?.id,
+            voucher_id: 0, // Will be updated when calculating total
+            payment_type: 'voucher',
+            custom_fields: [
+                { display_name: 'Customer ID', variable_name: 'customer_id', value: loggedInUser?.custId || '' }
+            ]
+        };
         this.setRandomPaymentRef();
 
 

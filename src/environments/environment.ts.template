@@ -1,15 +1,19 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+//
+// SETUP: Copy this file to environment.ts and fill in the values
 
 export const environment = {
   production: false,
   version: '2.0.1',
   urlAddress: "http://localhost:5057",
 
-  // Paystack Configuration - Test Keys for Development
+  // Paystack Configuration (Test Keys for Development)
   paystack: {
-    publicKey: "pk_test_418a0e4090b6ab2302709bec6f22ba34e0d7e921"
+    publicKey: "pk_test_YOUR_PUBLIC_KEY_HERE",
+    // Note: Secret key should NEVER be in frontend code
+    // All payment verification should be done server-side
   }
 };
 

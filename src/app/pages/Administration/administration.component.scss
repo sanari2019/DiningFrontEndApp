@@ -154,3 +154,183 @@ p {
 .mat-raised-button.mat-primary {
     background: #2196f3;
 }
+
+/* Dashboard tab styles */
+.admin-dashboard {
+    background: #1f2a3d;
+    color: #e8f0ff;
+    padding: 16px;
+}
+
+.dash-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: linear-gradient(90deg, #2d69ff, #2f3f70);
+    padding: 16px 18px;
+    border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+.dash-title h2 {
+    margin: 6px 0 4px;
+}
+
+.dash-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #c9ddff;
+}
+
+.dash-breadcrumb mat-icon {
+    font-size: 18px;
+}
+
+.dash-actions button {
+    margin-left: 8px;
+}
+
+.dash-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 18px 0;
+}
+
+.dash-card {
+    border-radius: 14px;
+    min-height: 180px;
+}
+
+.dash-card.accent {
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), transparent 45%), #314c79;
+    color: #fff;
+}
+
+.dash-card.neutral {
+    background: #27344c;
+    color: #e8f0ff;
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-sub {
+    color: #c0cde8;
+    margin: 4px 0 12px;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.stats-row small {
+    display: block;
+    color: #c0cde8;
+}
+
+.stat {
+    font-weight: 700;
+    display: block;
+}
+
+.stat.up {
+    color: #8ef0c0;
+}
+
+.stat.down {
+    color: #ff9a9a;
+}
+
+.muted {
+    color: #b7c4df;
+    margin: 4px 0;
+}
+
+.inline-btn {
+    margin-top: 12px;
+}
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.dash-panel {
+    background: #24334d;
+    color: #e8f0ff;
+    border-radius: 12px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.activity-row, .status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.activity-row:last-child,
+.status-row:last-child {
+    border-bottom: none;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #8ef0c0;
+}
+
+.dot.warn {
+    background: #ffb15e;
+}
+
+.activity-copy .title,
+.status-copy .title {
+    margin: 0;
+    font-weight: 600;
+}
+
+.badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.badge.ok {
+    background: rgba(142,240,192,0.2);
+    color: #8ef0c0;
+}
+
+.status-icon.ok {
+    color: #8ef0c0;
+}
+
+@media (max-width: 768px) {
+    .dash-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

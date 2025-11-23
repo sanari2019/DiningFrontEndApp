@@ -124,6 +124,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       quantity: [null, Validators.required],
     });
     this.Feedbackform = this.fb.group({
+      supportType: ['feedback', Validators.required],
       experience: ['', Validators.required],
       contactOption: [this.contactOption]
     });
@@ -244,7 +245,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   postFeedback() {
     const experienceback = this.Feedbackform.value.experience;
-    const contact = this.Feedbackform.value.contact;
+    const supportType = this.Feedbackform.value.supportType || 'feedback';
     const UserJSON = localStorage.getItem('user');
 
     if (this.Feedbackform.valid && UserJSON) {
@@ -254,6 +255,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         userId: fUser.id,
         experience: experienceback,
         contactOption: this.contactOption,
+        supportType: supportType
       }
       this.feedbackService.postFeedback(feedback).subscribe((data: Feedback) => {
         this.feedbackobj = data;
@@ -264,9 +266,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     } else {
       this.notifyError('Incomplete Form / undefined User')
     }
-
-
-
   }
 
   complete() {
