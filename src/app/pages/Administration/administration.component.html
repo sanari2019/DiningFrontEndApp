@@ -3,52 +3,78 @@
 
   <mat-tab label="Dashboard">
     <div class="admin-dashboard">
-      <header class="dash-head">
-        <div class="dash-title">
-          <p class="dash-crumb">Administration</p>
-          <h2>Dashboard</h2>
-          <div class="dash-breadcrumb">
-            <mat-icon>home</mat-icon>
-            <span>Control</span>
-          </div>
+      <div class="admin-hero">
+        <div>
+          <p class="welcome-text">WELCOME BACK {{ userLastName | uppercase }}</p>
+          <h2 class="hero-title">Administration Dashboard</h2>
         </div>
-        <div class="dash-actions">
-          <button mat-flat-button color="primary">Today · {{ today | date:'MMM d' }}</button>
-          <button mat-stroked-button color="primary">View All</button>
+        <div class="hero-actions">
+          <mat-form-field appearance="outline" class="date-filter">
+            <mat-label>Date range</mat-label>
+            <mat-select [(value)]="selectedDateFilter" (selectionChange)="onDateFilterChange($event.value)">
+              <mat-option *ngFor="let opt of dateFilters" [value]="opt.value">{{ opt.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-      </header>
-
-      <div class="dash-cards">
-        <mat-card class="dash-card accent">
-          <div class="card-top">
-            <p>Latest</p>
-            <mat-icon>more_horiz</mat-icon>
-          </div>
-          <h3>Contrary to popular belief</h3>
-          <p class="card-sub">There are many variations of passages</p>
-          <div class="stats-row">
-            <div><span class="stat up">+1.92%</span><small>QWDR</small></div>
-            <div><span class="stat down">-0.92%</span><small>WSDF</small></div>
-            <div><span class="stat up">+1.12%</span><small>AENV</small></div>
-          </div>
-        </mat-card>
-
-        <mat-card class="dash-card neutral">
-          <p class="label">Revenue</p>
-          <h3>$845,1258</h3>
-          <p class="muted">9.15% decrease from last month</p>
-          <button mat-stroked-button color="primary" class="inline-btn">View</button>
-        </mat-card>
-
-        <mat-card class="dash-card neutral">
-          <p class="label">Control</p>
-          <h3>Server Uptime</h3>
-          <p class="muted">99.4% last 24h</p>
-          <button mat-stroked-button color="primary" class="inline-btn">Details</button>
-        </mat-card>
       </div>
 
-      <div class="dash-grid">
+      <section class="admin-wallet revenue-card">
+        <div class="wallet-left">
+          <p class="welcome-text">REVENUE</p>
+          <div class="wallet-row">
+            <div class="wallet-label">
+              <mat-icon>payments</mat-icon>
+              <span>Revenue</span>
+            </div>
+          </div>
+          <div class="wallet-amount">NGN845,1258</div>
+          <p class="revenue-sub">
+            <mat-icon class="rev-arrow" [ngClass]="{ down: revenueChange < 0, up: revenueChange > 0 }">
+              {{ revenueChange < 0 ? 'arrow_downward' : 'arrow_upward' }}
+            </mat-icon>
+            {{ revenueChange | number:'1.2-2' }}% from last month
+          </p>
+        </div>
+        <div class="wallet-badges">
+          <div class="mini-card gradient-blue">
+            <p>New Users</p>
+            <h4>{{ userCount || 0 }}</h4>
+          </div>
+          <div class="mini-card gradient-teal">
+            <p>Served Total</p>
+            <h4>{{ totalServedCount }}</h4>
+          </div>
+          <div class="mini-card gradient-purple">
+            <p>Served Vouchers</p>
+            <h4>{{ servedVouchers || 0 }}</h4>
+          </div>
+          <div class="mini-card gradient-slate">
+            <p>Served Alacarte</p>
+            <h4>{{ servedAlacarte || 0 }}</h4>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid">
+        <div class="chart-card">
+          <h4>Voucher Breakdown by Date Range</h4>
+          <div class="chart-placeholder">Chart 1</div>
+        </div>
+        <div class="chart-card">
+          <h4>Month on Month Served (Last 3 Months)</h4>
+          <div class="chart-placeholder">Chart 2</div>
+        </div>
+        <div class="chart-card">
+          <h4>Top 5 Vouchers Bought (by Date Range)</h4>
+          <div class="chart-placeholder">Chart 3</div>
+        </div>
+        <div class="chart-card">
+          <h4>Most Bought Meals</h4>
+          <div class="chart-placeholder">Chart 4</div>
+        </div>
+      </section>
+
+      <div class="dash-grid single">
         <mat-card class="dash-panel">
           <div class="panel-head">
             <h4>Recent Activity</h4>
@@ -61,22 +87,6 @@
               <p class="muted">{{ item.time }}</p>
             </div>
             <span class="badge">{{ item.value }}</span>
-          </div>
-        </mat-card>
-        <mat-card class="dash-panel">
-          <div class="panel-head">
-            <h4>Server Status</h4>
-            <button mat-icon-button><mat-icon>refresh</mat-icon></button>
-          </div>
-          <div class="status-list">
-            <div class="status-row" *ngFor="let srv of servers">
-              <mat-icon class="status-icon" [class.ok]="srv.ok">dns</mat-icon>
-              <div class="status-copy">
-                <p class="title">{{ srv.name }}</p>
-                <p class="muted">{{ srv.region }}</p>
-              </div>
-              <span class="badge" [class.ok]="srv.ok">{{ srv.ok ? 'Online' : 'Degraded' }}</span>
-            </div>
           </div>
         </mat-card>
       </div>

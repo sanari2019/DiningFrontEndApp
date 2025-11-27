@@ -14,7 +14,7 @@
   <tbody>
     <tr *ngFor="let orderedMeal of this.orderedMeals">
       <!--<td>{{ orderedMeal.dateEntered | date }}</td>-->
-      <td colspan="2">{{ orderedMeal.menu?.name }}</td>
+      <td colspan="2">{{ orderedMeal.menu.name }}</td>
       <td colspan="2">{{ formatWithCommas(orderedMeal.amount) }}</td>
     </tr>
   </tbody>
@@ -36,4 +36,3 @@
 <div class="button-container">
   <button mat-button (click)="closeDialog()">Close</button>
 </div>
-

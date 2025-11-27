@@ -1,55 +1,40 @@
-<div class="card">
-  <div class="card-header">
-    {{pageTitle}}
-  </div>
-
- 
-
-  <div class="hero_sec d-flex  align-items-center">
-    <div class="container item-center align-center" style="background-color: rgb(0, 35, 85); border-radius: 10px;">
-      <div class="col-span-2 col-start-1 grid grid-cols-2 gap-6 py-4 sm:grid-cols-4 px-8">
-        <div class="">
-          <p class=" text-white text-sm">SERVED TODAY</p>
-          <p class="text-xl font-medium  text-white">{{dailyServedCount}}</p>
-        </div>
-        <div class="">
-          <p class=" text-white text-sm">Breakfast</p>
-          <p class="text-xl font-medium  text-white">{{breakfastCount}}</p>
-        </div>
-        <div class="">
-          <p class=" text-white text-sm">Lunch</p>
-          <p class="text-xl font-medium  text-white">{{lunchCount}}</p>
-        </div>
-        <div class="">
-          <p class=" text-white text-sm">Dinner</p>
-          <p class="text-xl font-medium text-white">{{dinnerCount}}</p>
+<div class="card voucher-detail-shell">
+  <section class="wallet-card payment-wallet">
+    <div class="wallet-left">
+    <p class="welcome-text">WELCOME BACK {{ (user.lastName || 'USER') | uppercase }}</p>
+      <div class="wallet-row">
+        <div class="wallet-label">
+          <mat-icon>restaurant</mat-icon>
+          <span>SERVED TODAY</span>
         </div>
       </div>
+      <div class="wallet-amount">{{ dailyServedCount }}</div>
     </div>
-  </div>
+    <div class="wallet-badges">
+      <div class="mini-card gradient-blue">
+        <p>Breakfast</p>
+        <h4>{{ breakfastCount }}</h4>
+      </div>
+      <div class="mini-card gradient-teal">
+        <p>Lunch</p>
+        <h4>{{ lunchCount }}</h4>
+      </div>
+      <div class="mini-card gradient-purple">
+        <p>Dinner</p>
+        <h4>{{ dinnerCount }}</h4>
+      </div>
+    </div>
+  </section>
 
   <div class="card-body">
-    <div class="row">
-      
-      <div class="col-md-4">
-        <form novalidate #formRef="ngForm" (ngSubmit)="applySieveFilters()" class="booking-form form-inline">
-         
-          <input type="text" name="custcode" [(ngModel)]="filterValue" required placeholder="Customer Code" />
-          <button type="submit" class="btn btn-secondary booking-form--submit" [disabled]="formRef.invalid">Search</button>
-        </form>
-        
-      </div>
-      
-
-    </div>
-    
-    
-    
-    <div class="row"
-         *ngIf="listFilter">
-      <div class="col-md-6">
-       <!-- <h4>Filtered by: {{listFilter}}</h4> -->
-      </div>
+    <div class="search-shell">
+      <form novalidate #formRef="ngForm" (ngSubmit)="applySieveFilters()" class="booking-form modern-search">
+        <div class="search-field">
+          <mat-icon>search</mat-icon>
+          <input type="text" name="custcode" [(ngModel)]="filterValue" required placeholder="Search by customer code" />
+        </div>
+        <button type="submit" class="pill-button" [disabled]="formRef.invalid">Search</button>
+      </form>
     </div>
 
     <div class="table-responsive">

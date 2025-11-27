@@ -41,3 +41,197 @@
         align-items: stretch;
     }
 }
+.payment-wallet {
+  margin: 1rem 12px 1.5rem;
+}
+
+/* Wallet styling borrowed from Home */
+.wallet-card.payment-wallet {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+  color: #fff;
+  border-radius: 28px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow:
+    0 24px 64px rgba(30, 58, 138, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.wallet-card.payment-wallet::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.wallet-card.payment-wallet:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow:
+    0 32px 80px rgba(30, 58, 138, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+    0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-card.payment-wallet:hover::before {
+  opacity: 1;
+}
+
+.wallet-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-text {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wallet-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wallet-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.wallet-amount {
+  margin: 0.25rem 0 0.6rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.wallet-badges {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.15rem;
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  min-width: 320px;
+  max-width: 520px;
+}
+
+.mini-card {
+  padding: 0.9rem 0.85rem;
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0) 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  color: #fff;
+  transition: all 0.25s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+  }
+}
+
+.mini-card p {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  opacity: 0.9;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mini-card h4 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+}
+
+.gradient-blue,
+.gradient-teal,
+.gradient-purple {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.voucher-detail-shell {
+  margin: 0 12px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.search-shell {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.modern-search {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .search-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #e2e8f0;
+
+    mat-icon {
+      color: #94a3b8;
+    }
+
+    input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e2e8f0;
+      min-width: 220px;
+    }
+  }
+
+  .pill-button {
+    border-radius: 12px;
+    padding: 0.8rem 1.6rem;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    color: #0f172a;
+    background: #ffffff;
+    font-weight: 700;
+
+    &:hover {
+      border-color: rgba(15, 23, 42, 0.25);
+      background: #f8fafc;
+    }
+  }
+}

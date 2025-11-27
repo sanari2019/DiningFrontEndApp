@@ -108,6 +108,22 @@ export class AdministrationComponent implements OnInit, AfterViewInit {
   dataToDisplay: any;
   selectedChip: string = 'All Meals';
   isReportTabDisabled: boolean = false;
+  userLastName: string = 'USER';
+  totalServedCount: number = 0;
+  breakfastCount = 0;
+  lunchCount = 0;
+  dinnerCount = 0;
+  dateFilters = [
+    { label: 'This Month', value: 'thisMonth' },
+    { label: 'Today', value: 'today' },
+    { label: 'Last 7 Days', value: 'last7' },
+    { label: 'Last 30 Days', value: 'last30' }
+  ];
+  selectedDateFilter = 'thisMonth';
+  userCount = 0;
+  servedVouchers = 0;
+  servedAlacarte = 0;
+  revenueChange = -9.15;
 
   constructor(private mealActivityService: MealActivityService, private snackBar: MatSnackBar, private availableMealService: AvailableMealService, public dialog: MatDialog, private OnlinePayment: OnlinePaymentService, private Served: ServedService, private fb: FormBuilder, private exportService: ExportService, private _liveAnnouncer: LiveAnnouncer, private ordmealService: OrderedMealService) {
 
@@ -169,10 +185,21 @@ export class AdministrationComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.availableMealService.getAllAvailableMeals().subscribe((meals) => {
       this.dataSource5 = meals;
+      this.computeMealCounts();
     });
 
     const userJSON = localStorage.getItem('user');
-    const user = userJSON ? JSON.parse(userJSON) : null;
+    const userDataJSON = localStorage.getItem('user_data');
+    const user = userJSON ? JSON.parse(userJSON) : (userDataJSON ? JSON.parse(userDataJSON) : null);
+    if (user) {
+      this.userLastName = user.lastName || this.userLastName;
+      const servedId = user.id || user.userId;
+      if (servedId) {
+        this.Served.getHistoryRecords(servedId).subscribe(records => {
+          this.totalServedCount = records.length;
+        });
+      }
+    }
 
     // Check if the user exists and their custTypeId is 3
     if (user && user.custTypeId === 4) {
@@ -194,6 +221,20 @@ export class AdministrationComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
     this.dataSource = new MatTableDataSource(this.servedData);
     this.dataSource.paginator = this.paginator;
+  }
+
+  computeMealCounts() {
+    this.breakfastCount = this.dataSource5.filter(m => (m.mealType || '').toLowerCase().includes('breakfast')).length;
+    this.lunchCount = this.dataSource5.filter(m => (m.mealType || '').toLowerCase().includes('lunch')).length;
+    this.dinnerCount = this.dataSource5.filter(m => (m.mealType || '').toLowerCase().includes('dinner')).length;
+  }
+
+  onDateFilterChange(_value: string) {
+    // TODO: hook into reports/filters as needed
+  }
+
+  onViewAll() {
+    // placeholder action for View All
   }
 
   getActiveMeals() {

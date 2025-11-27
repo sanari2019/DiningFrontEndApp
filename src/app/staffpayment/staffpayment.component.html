@@ -57,7 +57,7 @@
         <div class="col-md-8">
           <select class="form-control" placeholder="Payment Mode (required)" formControlName="paymentmodeid" [(ngModel)]="selectedOption">
             <option value="default">--Select--</option>
-            <option [value]="paymentmodes[2]?.id">{{ paymentmodes[2]?.name }}</option>
+            <option [value]="paymentmodes[2].id">{{ paymentmodes[2].name }}</option>
         </select>
         </div>
       </div>

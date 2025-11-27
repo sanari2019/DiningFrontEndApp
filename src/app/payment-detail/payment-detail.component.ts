@@ -46,6 +46,7 @@ export class PaymentDetailComponent implements OnInit {
   breakfastCount: number = 0;
   lunchCount: number = 0;
   dinnerCount: number = 0;
+  user: Registration = new Registration();
 
 
 
@@ -159,6 +160,16 @@ export class PaymentDetailComponent implements OnInit {
   // }
 
   ngOnInit(): void {
+    const userJSON = localStorage.getItem('user');
+    const userDataJSON = localStorage.getItem('user_data');
+    if (userJSON || userDataJSON) {
+      const u = userJSON ? JSON.parse(userJSON) : {};
+      const u2 = userDataJSON ? JSON.parse(userDataJSON) : {};
+      this.user.firstName = u.firstName || u2.firstName || '';
+      this.user.lastName = u.lastName || u2.lastName || '';
+      this.user.id = u.id || u2.id || u.userId || 0;
+    }
+
     this.fetchDailyServedCount();
     // this.route.queryParams.subscribe(params => {
     //   // const enteredBy = params['enteredBy'];
