@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthNewService } from './../auth/auth-new.service';
+import { AuthService } from './../auth/auth.service';
 import { RegistrationDialogComponent } from '../registration-dialog/registration-dialog.component';
 import { environment } from '../../environments/environment';
 
@@ -29,6 +30,7 @@ export class LoginComponent implements OnInit {
     private dialog: MatDialog,
     private fb: FormBuilder,
     private authNewService: AuthNewService,
+    private authService: AuthService,
     private router: Router
   ) { }
 
@@ -86,6 +88,24 @@ export class LoginComponent implements OnInit {
         if (result.success) {
           this.isLoading = false;
           this.loginMessage = '';
+
+          // Sync user data to legacy AuthService for AppComponent
+          const userData = this.authNewService.currentUser;
+          if (userData) {
+            this.authService.registration = {
+              id: userData.id,
+              custTypeId: userData.custTypeId,
+              custId: userData.custId,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              userName: userData.userName,
+              password: '',
+              freeze: userData.freeze || false,
+              autolock: false
+            };
+            // Trigger the BehaviorSubject to notify AppComponent
+            this.authService.notifyLoginSuccess();
+          }
 
           // Show success message
           this.snackBar.open('Login Successful!', 'Close', {

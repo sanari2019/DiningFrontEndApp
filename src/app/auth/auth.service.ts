@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Registration } from '../registration/registration.model';
@@ -13,13 +12,12 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Injectable()
 export class AuthService {
-  private loggedIn = new BehaviorSubject<boolean>(false);
+  private loggedIn = new BehaviorSubject<boolean>(this.checkInitialLoginStatus());
   public notLoggedIn = new BehaviorSubject<boolean>(false);
   public registration: Registration | undefined;
   private pswrd?: string;
   public loginuser: Registration | undefined;
   logoutTimer: any;
-  // public result=0;
   user: Registration = {
     id: 0,
     custTypeId: 0,
@@ -30,18 +28,117 @@ export class AuthService {
     password: '',
     freeze: false,
     autolock: false
-  }; // Initialize an empty user object
+  };
   freezeStatus: boolean = false;
 
+  /**
+   * Check initial login status from localStorage on service initialization
+   */
+  private checkInitialLoginStatus(): boolean {
+    // Check for JWT token first (from AuthNewService)
+    const authToken = localStorage.getItem('auth_token');
+    if (authToken) {
+      // Also restore registration from user_data
+      const userData = localStorage.getItem('user_data');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          this.registration = {
+            id: user.id,
+            custTypeId: user.custTypeId,
+            custId: user.custId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            userName: user.userName,
+            password: '',
+            freeze: user.freeze || false,
+            autolock: false
+          };
+        } catch (e) {
+          console.error('Error parsing user_data:', e);
+        }
+      }
+      return true;
+    }
 
+    // Fallback to old auth method
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn === 'true') {
+      const userString = localStorage.getItem('user');
+      if (userString) {
+        try {
+          const userObject = JSON.parse(userString);
+          if (userObject && userObject.id) {
+            this.registration = userObject;
+            return true;
+          }
+        } catch (e) {
+          console.error('Error parsing user:', e);
+        }
+      }
+    }
+
+    return false;
+  }
 
   get isLoggedIn(): Observable<boolean> {
-    const userObject = JSON.parse(localStorage.getItem('isLoggedIn') || '{}');
-    if (userObject.id) {
+    // Check for JWT token first
+    const authToken = localStorage.getItem('auth_token');
+    if (authToken) {
+      // Restore registration if not set
+      if (!this.registration) {
+        const userData = localStorage.getItem('user_data');
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            this.registration = {
+              id: user.id,
+              custTypeId: user.custTypeId,
+              custId: user.custId,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              userName: user.userName,
+              password: '',
+              freeze: user.freeze || false,
+              autolock: false
+            };
+          } catch (e) {
+            console.error('Error parsing user_data:', e);
+          }
+        }
+      }
+      this.loggedIn.next(true);
       return of(true);
-    } else {
-      return this.loggedIn.asObservable();
     }
+
+    // Fallback to old auth method
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn === 'true') {
+      const userString = localStorage.getItem('user');
+      if (userString) {
+        try {
+          const userObject = JSON.parse(userString);
+          if (userObject && userObject.id) {
+            if (!this.registration) {
+              this.registration = userObject;
+            }
+            this.loggedIn.next(true);
+            return of(true);
+          }
+        } catch (e) {
+          console.error('Error parsing user:', e);
+        }
+      }
+    }
+
+    return this.loggedIn.asObservable();
+  }
+
+  /**
+   * Trigger authentication state change - call after successful login from AuthNewService
+   */
+  notifyLoginSuccess(): void {
+    this.loggedIn.next(true);
   }
 
 

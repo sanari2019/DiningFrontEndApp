@@ -1,282 +1,150 @@
-
-<div class="card red" *ngIf="freezeStatus">
-	
-	  <p>Freeze Status: {{ freezeStatus ? 'Frozen' : 'Not Frozen' }}</p>
-
-</div>
-
-
-
-
-<header >
-	<div id="header">
-		<div class="six">
-			<h1><strong>My Dashboard</strong><br>
-			  <span>Summary</span>
-			</h1>
-		</div>
-	</div>
-	  <div>
-		<div class="hero_sec d-flex  align-items-center">
-			<div class="container p-3" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
-				<div class="row">
-					<div class="col-lg-3 col-md-6" [class.shake]="shakeState === 'shakeStart'" (click)="openPaymentBreakdownDialog()" matTooltip="Click to see details">
-						<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3"
-							data-tor="inview:bg(primary) , hover:bg(danger)">
-							<div class="hstack gap-3">
-								<div class="p-2">
-									<h3 class="fs-6 text-black-50 lh-1">TOTAL BALANCE</h3>
-									<strong class="fs-5 lh-1" style="color: rgb(0, 35, 85);">{{ totalAmount | currency: 'NGN' }}</strong>
-								</div>
-								<div class="p-2 ms-auto rounded-circle badge" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
-								  <mat-icon> functions</mat-icon>
-									<i class="fa-brands fa-btc color-white fs-5 d-inline-block"></i>
-								</div>
-							</div>
-							<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
-									class="link-info text-decoration-none fw-bold">Your total balance</a>
-								</p>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6"  *ngFor="let voucherId of totalAmountByVoucherId | keyvalue" style="margin-top:5px">
-						<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3"  [ngClass]="getCardClass(voucherId.key)">
-							<div class="hstack gap-3">
-								<div class="p-2">
-									<h3 class="fs-6 text-black-50 lh-1">{{ getVoucherDescription(voucherId.key) | async }}</h3>
-									<strong class="fs-5 lh-1" style="color: rgb(0, 35, 85);">{{ voucherId.value | currency: 'NGN' }}</strong>
-								</div>
-								<div class="p-2 ms-auto rounded-circle bg-danger badge ">
-									<i class="fa-solid fa-earth-asia color-white fs-5"></i>
-								</div>
-							</div>
-							<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
-									class="link-info text-decoration-none fw-bold"><b>{{ voucherStats[+voucherId.key].totalUnits }}</b>  units - {{ getVoucherDescription(voucherId.key) | async }}</a>
-							</p>
-						</div>
-					</div>
-					<!--<div class="col-lg-3 col-md-6">
-						<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3">
-							<div class="hstack gap-3">
-								<div class="p-2">
-									<h3 class="fs-6 text-black-50 lh-1">NEW CLIENTS</h3>
-									<strong class="fs-5 lh-1">+3,462</strong>
-								</div>
-								<div class="p-2 ms-auto rounded-circle bg-info badge ">
-									<i class="fa-solid fa-file-invoice color-white fs-5"></i>
-								</div>
-							</div>
-							<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
-									class="link-danger text-decoration-none fw-bold">-2%</a>
-								last quarter</p>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="card bg-white rounded-4 p-2 mb-lg-0 mb-3">
-							<div class="hstack gap-3">
-								<div class="p-2">
-									<h3 class="fs-6 text-black-50 lh-1">SALES</h3>
-									<strong class="fs-5 lh-1">$103,430</strong>
-								</div>
-								<div class="p-2 ms-auto rounded-circle bg-warning badge ">
-									<i class="fa-solid fa-cart-shopping color-white fs-5"></i>
-								</div>
-							</div>
-							<p class="text-black-50 fw-semibold fs-6 ps-2"><a href="#"
-									class="link-info text-decoration-none fw-bold">+5%</a>
-								than last month</p>
-						</div>
-					</div>-->
-				</div>
-			</div>
-		  </div>
-	  <!-- <mat-form-field color="accent">
-		<input matInput 
-		  [matDatepicker]="picker" 
-		  placeholder="Choose a date"
-		  color="#FFF"
-		  (click)="picker.open()"
-		  >
-		<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-		<mat-datepicker #picker ></mat-datepicker>
-	  </mat-form-field> -->
+<div class="home-wrapper">
+  <div class="freeze-alert" *ngIf="freezeStatus">
+    <mat-icon>warning</mat-icon>
+    <span>Your account is currently frozen. Please contact support.</span>
   </div>
-</header>
 
-<mat-divider></mat-divider>  
-<section>
-	<div id="header">
-		<div class="six">
-			<h1>Now Available<br>
-			  <span>Currently available for staff</span>
-			</h1>
-		</div>
-	</div>
-	<div class="row">
-		<div class="row" *ngIf="activeMeals && activeMeals.length > 0">
-			<div class="col-md-4 col-sm-6 col-xs-12" *ngFor="let meal of activeMeals">
-			  <div class="card2"  *ngIf="shouldDisplayMeal(meal.mealType)">
-				<div class="cover" style="background-image: url({{meal.image}});">
-				  <h1>{{ meal.mealName }}</h1>
-				  <span class="price">{{ meal.mealType}}</span>
-				  <div class="card-back">
-					<a (click)="redirectToPayment()">Buy Now</a>
-				  </div>
-				</div>
-			  </div>
-			</div>
-		</div>
-		<div class="repetitionBox up" *ngIf="!activeMeals || activeMeals.length < 1">
-			<h2>No meal Available, Kindly Visit the Cafeteria</h2>
-			<h2>No meal Available, Kindly Visit the Cafeteria</h2>
-		  </div>
-	</div>
-</section>
+  <section class="wallet-card" (click)="openPaymentBreakdownDialog()">
+    <div class="wallet-left">
+      <p class="welcome-text">WELCOME BACK {{ (user?.lastName || 'USER') | uppercase }}</p>
+      <div class="wallet-row">
+        <div class="wallet-label">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <span>WALLET</span>
+        </div>
+      </div>
+      <div class="wallet-amount">NGN {{ totalAmount | number:'1.2-2' }}</div>
+      <div class="wallet-actions">
+        <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Add Money</button>
+        <button mat-stroked-button color="accent" class="pill-button" [disabled]="totalAmount <= 0">Send Money</button>
+      </div>
+    </div>
+    <div class="wallet-badges">
+      <div class="mini-card gradient-blue">
+        <p>Voucher Types</p>
+        <h4>{{ getVoucherTypesCount() }}</h4>
+      </div>
+      <div class="mini-card gradient-teal">
+        <p>Meals (Ala carte)</p>
+        <h4>{{ getMealCount() }}</h4>
+      </div>
+      <div class="mini-card gradient-purple">
+        <p>Recent Actions</p>
+        <h4>{{ recentTransactions?.length || 0 }}</h4>
+      </div>
+    </div>
+  </section>
 
+  <section class="dashboard-grid">
+    <div class="card-block">
+      <div class="card-header">
+        <div class="card-title-block">
+          <p class="eyebrow">VOUCHERS</p>
+          <h3>Distribution</h3>
+        </div>
+        <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Buy</button>
+      </div>
+      <ng-container *ngIf="(totalAmountByVoucherId | keyvalue)?.length; else emptyVouchers">
+        <div class="list">
+          <div class="list-row" *ngFor="let voucherId of totalAmountByVoucherId | keyvalue">
+            <div>
+              <p class="label">{{ getVoucherDescription(voucherId.key) | async }}</p>
+              <p class="sub">{{ voucherStats[+voucherId.key].totalUnits }} units available</p>
+            </div>
+            <span class="value">{{ voucherId.value | currency: 'NGN' }}</span>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #emptyVouchers>
+        <div class="empty-box">
+          <div class="empty-box__text">No vouchers yet</div>
+          <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Buy</button>
+        </div>
+      </ng-template>
+    </div>
 
+    <div class="card-block">
+      <div class="card-header">
+        <div class="card-title-block">
+          <p class="eyebrow">MEALS</p>
+          <h3>Menu</h3>
+        </div>
+        <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Order Meals</button>
+      </div>
+      <div class="meal-list" *ngIf="activeMeals && activeMeals.length > 0">
+        <ng-container *ngFor="let meal of activeMeals">
+          <ng-container *ngIf="shouldDisplayMeal(meal.mealType)">
+            <div class="meal-row">
+              <div class="meal-info">
+                <p class="label">{{ meal.mealName }}</p>
+                <p class="sub text-capitalize">{{ meal.mealType }}</p>
+              </div>
+              <button mat-button color="primary" (click)="redirectToPayment()">Buy</button>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="empty-state" *ngIf="!activeMeals || activeMeals.length < 1">
+        <mat-icon>restaurant_menu</mat-icon>
+        <p>No meals available right now.</p>
+      </div>
+    </div>
 
+    <div class="card-block">
+      <div class="card-header">
+        <div class="card-title-block">
+          <p class="eyebrow">RECENT ACTIVITY</p>
+          <h3>Timeline</h3>
+        </div>
+        <div class="activity-controls">
+          <mat-select class="pill-select" [(value)]="activityRange" (selectionChange)="filterRecentTransactions()" aria-label="Activity range">
+            <mat-option value="today">Today</mat-option>
+            <mat-option value="7d">Last 7 days</mat-option>
+            <mat-option value="1m">Last 1 month</mat-option>
+          </mat-select>
+        </div>
+      </div>
+      <div class="list" *ngIf="filteredRecentTransactions && filteredRecentTransactions.length">
+        <div class="list-row" *ngFor="let transaction of visibleRecentTransactions">
+          <div>
+            <p class="label">{{ transaction.SourceTable }}</p>
+            <p class="sub">{{ transaction.DateServed | date: 'short' }}</p>
+          </div>
+          <div class="value">
+            <span>{{ transaction.Amount | currency: 'NGN' }}</span>
+            <small>{{ transaction.Unit }} units</small>
+          </div>
+        </div>
+        <div class="list-actions" *ngIf="filteredRecentTransactions.length > pageSize">
+          <button mat-stroked-button color="primary" (click)="toggleActivityView()">
+            {{ showAllActivity ? 'Show Less' : 'See All' }}
+          </button>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="!filteredRecentTransactions || !filteredRecentTransactions.length">
+        <mat-icon>receipt</mat-icon>
+        <p>No recent activity</p>
+      </div>
+    </div>
 
-	
-<!--<div class="container-fluid">
-	<div class="row">
-		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 my-3" style="width:100%;">
-			<div class="card-list">
-				<div class="row">
-					<div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4" [class.shake]="shakeState === 'shakeStart'" (click)="openPaymentBreakdownDialog()" matTooltip="Click to see details">
-						<div class="card black">
-							<div class="title">total balance</div>
-							<i class="zmdi zmdi-upload"></i>
-							<div class="value">{{ totalAmount | currency: 'NGN' }}</div>
-							
-							<div class="stat">Your total balance</div>
-						</div>
-					</div>
-					<div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4" *ngFor="let voucherId of totalAmountByVoucherId | keyvalue">
-						<div [ngClass]="getCardClass(voucherId.key)">
-							<div class="title">{{ getVoucherDescription(voucherId.key) | async }}</div>
-							<i class="zmdi zmdi-upload"></i>
-							<div class="value">{{ voucherId.value | currency: 'NGN' }}</div>
-							<div class="stat"><b>{{ voucherStats[+voucherId.key].totalUnits }}</b>  units - {{ getVoucherDescription(voucherId.key) | async }}</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="projects mb-4" style="color:black;">
-				<div class="projects-inner">
-				
-			
-					
-					
-					
-					
-						<div>
-						
-					
-						
-						
-					  </div>
-					  
-					
-				</div>
-			</div>
-		</main>
-	</div>
-</div>-->
-
-
-
-  
-	<section class="dash-row" id="dash-row">
-	  <mat-card style="display: flex; flex-direction: column;" id="mat-card">
-		<mat-card-title>
-		  Welcome {{ user.firstName }}
-		</mat-card-title>
-		<mat-card-subtitle>We've created your personalized analytics report</mat-card-subtitle>
-		<mat-card-content style="display: flex; justify-content: center; align-items: center; flex: 1;">	
-		  <img mat-card-image style="height: 170px" src="https://gistcdn.githack.com/mike-schultz/10a1a059f77cc33a350d85a0870397e2/raw/d11f4b4804d9a49faec957a1d51c3d4e5174477c/data_xmfy.svg"/>
-		</mat-card-content>
-		<mat-card-footer  id="footer">
-  
-		  <button mat-button mat-raised-button color="primary"  (click)="openContactDialog()" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">Contact Support</button>
-		</mat-card-footer>
-		</mat-card>
-	  <mat-card id="card-0-2">
-		<mat-card-title >
-		  Transfer Request Form
-		</mat-card-title>
-		<mat-card-subtitle>Make a Transfer <span (click)= ResetForm() style="color: red; cursor: pointer;" class='pop-outin'> Reset Form </span></mat-card-subtitle>
-		<!--<zingchart-angular [config]="allocatedBudget" [height]="'250px'"></zingchart-angular>-->
-		<form  [formGroup]="Transferform">
-			<div class="row gx-3">
-				<div class="col-12">
-					<div class="d-flex flex-column">
-						<p class="text mb-1">Select Voucher</p>
-						<select class="form-control mb-3" formControlName="voucher"style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
-							<option>--</option>
-							<option *ngFor="let payment of payments" [ngValue]="payment.id">
-							{{ payment.unit }} units - {{ payment.amount }} Voucher
-							</option>
-						</select>					  
-					</div>
-				</div>
-				<div class="col-12">
-					<div class="d-flex flex-column">
-						<p class="text mb-1">Friend's Email Address</p>
-						<input class="form-control mb-3" type="text" placeholder="samuel.anari@evercare.ng" formControlName="user"style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="d-flex flex-column">
-						<p class="text mb-1">Quantity</p>
-						<input class="form-control mb-3 pt-2 " type="number" placeholder="2" formControlName="quantity" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="btn btn-primary mb-3" (click)="isValidated ? complete() : openUserValidateDialog()">
-					  <span class="ps-3">{{ isValidated ? ' Send' : 'Validate' }}<span class="arrow"></span></span>
-					  <span class="fas fa-arrow-right"></span>
-					</div>
-				  </div>
-				  
-			</div>
-		</form>
-	
-	  </mat-card>
-	  <mat-card id="card-0-2">
-		<mat-card-title >
-		  Give Feedback
-		</mat-card-title>
-		<mat-card-subtitle>Feedbacks & Suggestions	</mat-card-subtitle>
-		<!--<zingchart-angular [config]="allocatedBudget" [height]="'250px'"></zingchart-angular>-->
-		<form class="container" [formGroup]="Feedbackform">
-			
-		  
-			<div class="feedback-msg">
-			  <p class="para">
-				What is your experience?
-			  </p>
-			  <textarea name="experience" id="experience-textarea"  formControlName="experience"></textarea>
-			</div>
-		  
-			<div class="agreement">
-				<div class="checkbox">
-					<input type="checkbox" name="contactOption" id="contactOption" formControlName="contactOption" [(ngModel)]="contactOption">
-					<label for="contactOption">I may be contacted about this feedback <a href="#">Privacy Policy</a>.</label>
-				</div>
-			  <!--<div class="checkbox">
-				<input type="checkbox" name="" id="">
-				<label for="">I'd like to help improve by joining the <a href="#">Reasearch Group</a>.</label>
-			  </div>-->
-			</div>
-		  
-			<div class="buttons">
-			  <button mat-button mat-raised-button color="primary" (click)="postFeedback()" style="background-color: rgb(0, 35, 85); border: 2px solid #000; border-radius: 10px;">Submit</button>
-			</div>
-		  </form>
-  
-	  </mat-card>
-	</section>
-
-	
-  
-
-  
+    <div class="card-block">
+      <div class="card-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div class="actions-grid">
+        <button mat-stroked-button color="primary" (click)="redirectToPayment()">
+          <mat-icon>shopping_bag</mat-icon> Buy Voucher
+        </button>
+        <button mat-stroked-button color="accent" (click)="redirectToPayment()">
+          <mat-icon>fastfood</mat-icon> Order Meals
+        </button>
+        <button mat-stroked-button color="primary" (click)="openPaymentBreakdownDialog()">
+          <mat-icon>account_balance_wallet</mat-icon> Wallet Breakdown
+        </button>
+        <button mat-stroked-button color="warn" (click)="openContactDialog()">
+          <mat-icon>support_agent</mat-icon> Contact Support
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

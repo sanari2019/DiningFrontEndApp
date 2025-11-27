@@ -94,6 +94,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
   contactOption: boolean = false;
   transferTransaction!: TransferTransaction;
   pymtid: number = 0;
+  activityRange: 'today' | '7d' | '1m' = 'today';
+  filteredRecentTransactions: HistoryRecords[] = [];
+  showAllActivity = false;
+  pageSize = 8;
 
 
 
@@ -232,6 +236,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.activeMeals = data;
     });
 
+    this.filterRecentTransactions();
 
   }
 
@@ -745,6 +750,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       console.log('Freeze status updated successfully:', records);
       this.recentTransactions = records;
       console.log('Freeze status updated successfully:', this.recentTransactions);
+      this.filterRecentTransactions();
     });
   }
   formatWithCommas(value: number | null): string {
@@ -809,6 +815,51 @@ export class HomeComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+  }
+
+  getVoucherTypesCount(): number {
+    return this.totalAmountByVoucherId ? Object.keys(this.totalAmountByVoucherId).length : 0;
+  }
+
+  getMealCount(): number {
+    if (!this.activeMeals) {
+      return 0;
+    }
+    return this.activeMeals.filter(meal => this.shouldDisplayMeal(meal.mealType)).length;
+  }
+
+  filterRecentTransactions(): void {
+    const now = new Date();
+    this.filteredRecentTransactions = (this.recentTransactions || []).filter(tx => {
+      const txDate = tx.DateServed ? new Date(tx.DateServed) : null;
+      if (!txDate) {
+        return false;
+      }
+      if (this.activityRange === 'today') {
+        return txDate.toDateString() === now.toDateString();
+      }
+      if (this.activityRange === '7d') {
+        const diff = now.getTime() - txDate.getTime();
+        return diff <= 7 * 24 * 60 * 60 * 1000;
+      }
+      if (this.activityRange === '1m') {
+        const diff = now.getTime() - txDate.getTime();
+        return diff <= 30 * 24 * 60 * 60 * 1000;
+      }
+      return true;
+    });
+    this.showAllActivity = false;
+  }
+
+  get visibleRecentTransactions(): HistoryRecords[] {
+    if (this.showAllActivity) {
+      return this.filteredRecentTransactions;
+    }
+    return this.filteredRecentTransactions.slice(0, this.pageSize);
+  }
+
+  toggleActivityView(): void {
+    this.showAllActivity = !this.showAllActivity;
   }
 
   shouldDisplayMeal(mealType: string): boolean {

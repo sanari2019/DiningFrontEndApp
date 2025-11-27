@@ -6,15 +6,13 @@
 <ng-template #shell>
   <div class="main">
     <div class="side-navbar" [class.active]="sidebarActive">
+      <div class="sidebar-brand">
+        <span class="icon brand-icon">
+          <img src="assets/images/logo_transparent.ico" alt="Cafeteria logo" />
+        </span>
+        <span class="text brand-text">Cafeteria</span>
+      </div>
       <ul>
-        <li class="brand" data-label="Cafeteria">
-          <a (click)="navigateHome()">
-            <span class="icon brand-icon">
-              <img src="assets/images/logo_transparent.ico" alt="Cafeteria logo" />
-            </span>
-            <span class="text brand-text brand-inline">Cafeteria</span>
-          </a>
-        </li>
 
         <li data-label="Home">
           <a (click)="navigateHome()" [class.active]="isHomeActive()">
@@ -39,20 +37,21 @@
       </ul>
 
       <div class="sidebar-footer">
-        <div class="footer-line">
+        <div class="footer-line single">
           <i class="bx bx-copyright"></i>
-          <p class="footer-text">2025 Evercare</p>
-        </div>
-        <div class="footer-line">
-          <i class="bx bxs-info-circle"></i>
-          <p class="footer-version">v{{ appVersion }}</p>
+          <span class="footer-text">2025 Evercare • v{{ appVersion }}</span>
         </div>
       </div>
     </div>
 
     <div class="content" [class.active]="sidebarActive">
       <div class="top-navbar">
-        <div class='bx bx-menu' id="menu-icon" (click)="toggleSidebarState()"></div>
+        <div class="nav-left">
+          <div class='bx bx-menu' id="menu-icon" (click)="toggleSidebarState()"></div>
+          <div class="mobile-brand" *ngIf="!sidebarActive">
+            <img src="assets/images/logo_transparent.ico" alt="Cafeteria logo" />
+          </div>
+        </div>
         <div class="top-actions">
           <div class="badge-wrap" (click)="toggleNotifications()" tabindex="0">
             <i class='bx bx-bell'></i>
@@ -77,9 +76,11 @@
           <div class="avatar dropdown-trigger" (click)="toggleProfile()" tabindex="0">
             {{ getInitials(registration) }}
             <div class="dropdown" *ngIf="showProfile">
-              <button mat-button (click)="navigateProfile()">Profile</button>
-              <button mat-button (click)="navigateSettings()">Settings</button>
-              <button mat-button (click)="onLogout()">Logout</button>
+              <ul class="dropdown-list">
+                <li><button mat-button (click)="navigateProfile()"><i class='bx bxs-user'></i> Profile</button></li>
+                <li><button mat-button (click)="navigateSettings()"><i class='bx bxs-cog'></i> Settings</button></li>
+                <li><button mat-button (click)="onLogout()"><i class='bx bxs-log-out'></i> Logout</button></li>
+              </ul>
             </div>
           </div>
         </div>
@@ -95,7 +96,7 @@
             color="primary"
           ></mat-progress-spinner>
         </div>
-        <div class="content-inner mat-elevation-z8" [class.hide]="isLoading$ | async">
+        <div class="content-inner" [class.hide]="isLoading$ | async">
           <router-outlet></router-outlet>
         </div>
       </div>

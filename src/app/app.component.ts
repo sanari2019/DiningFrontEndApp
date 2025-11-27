@@ -28,6 +28,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   isLoading$: Observable<boolean>;
   isLoggedIn$!: Observable<boolean>;
   isHandset$: Observable<boolean>;
+  isHandset = false;
   isAuthPage = false;
 
   // ViewChild references
@@ -101,6 +102,18 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.initializeApp();
     this.checkAuthRoute(this.router.url);
 
+    this.bootstrapFromStorage();
+    this.ensureRoutesLoaded();
+
+    this.isHandset$
+      .pipe(untilDestroyed(this))
+      .subscribe((matches) => {
+        this.isHandset = matches;
+        if (matches) {
+          this.sidebarActive = false;
+        }
+      });
+
     this.router.events
       .pipe(
         untilDestroyed(this),
@@ -123,6 +136,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         next: (isAuthenticated: boolean) => {
           if (isAuthenticated) {
             this.handleAuthenticatedUser();
+            this.ensureRoutesLoaded();
           } else {
             this.redirectToLogin();
           }
@@ -139,20 +153,35 @@ export class AppComponent implements OnInit, AfterViewInit {
    */
   private handleAuthenticatedUser(): void {
     try {
-      // Get registration data from AuthService
+      // Get registration data from AuthService first
       this.registration = this.authService.registration;
-      
+
+      // If not found in AuthService, try to get from localStorage
       if (!this.registration) {
-        console.warn('No registration data found in AuthService');
+        console.warn('No registration data found in AuthService, checking localStorage');
+        const storedUser = this.getUserFromLocalStorage();
+        if (storedUser) {
+          this.registration = storedUser;
+          // Also update AuthService registration for consistency
+          this.authService.registration = storedUser;
+        }
+      }
+
+      if (!this.registration) {
+        console.error('No user data found - redirecting to login');
         this.redirectToLogin();
         return;
       }
 
+      // Keep lightweight user names in sync for initials/display
+      this.syncUserFromRegistration();
+
       // Set welcome message
       this.setWelcomeMessage();
 
-      // Load user data and routes in parallel
+      // Load user data and routes
       this.loadUserDataAndRoutes();
+      this.ensureRoutesLoaded();
 
       // Handle page restoration
       this.handlePageRestoration();
@@ -250,9 +279,30 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   /**
    * Get user data from localStorage safely
+   * Checks both 'user_data' (from AuthNewService/JWT) and 'user' (legacy) keys
    */
   private getUserFromLocalStorage(): Registration | null {
     try {
+      // First check user_data (from AuthNewService/JWT login)
+      const userDataString = localStorage.getItem('user_data');
+      if (userDataString && userDataString !== '{}' && userDataString !== '[]') {
+        const userData = JSON.parse(userDataString);
+        if (userData && userData.id) {
+          return {
+            id: userData.id,
+            custTypeId: userData.custTypeId,
+            custId: userData.custId,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            userName: userData.userName,
+            password: '',
+            freeze: userData.freeze || false,
+            autolock: false
+          };
+        }
+      }
+
+      // Fallback to legacy 'user' key
       const userString = localStorage.getItem('user');
       if (!userString || userString === '{}' || userString === '[]') {
         return null;
@@ -260,7 +310,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       return JSON.parse(userString);
     } catch (error) {
       console.error('Error parsing user from localStorage:', error);
-      localStorage.removeItem('user'); // Clear invalid data
       return null;
     }
   }
@@ -367,6 +416,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     this.router.navigate([`/${route.path}`]);
     localStorage.setItem('page', JSON.stringify(route));
+    this.closeSidebarAfterNav();
   }
 
   /**
@@ -386,9 +436,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   onLogout(): void {
     // Clear authentication
     this.authService.logout();
-    
-    // Clear all localStorage data
-    const keysToRemove = ['user', 'page', 'selectedPaymentItems', 'isLoggedIn', 'loginTime'];
+
+    // Clear all localStorage data (including JWT tokens from AuthNewService)
+    const keysToRemove = ['user', 'user_data', 'auth_token', 'refresh_token', 'page', 'selectedPaymentItems', 'isLoggedIn', 'loginTime'];
     keysToRemove.forEach(key => localStorage.removeItem(key));
     
     // Reset component state
@@ -457,6 +507,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   navigateHome(): void {
     this.router.navigate(['/']);
     localStorage.removeItem('page');
+    this.closeSidebarAfterNav();
   }
 
   navigateProfile(): void {
@@ -476,7 +527,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     if (!route?.path) {
       return false;
     }
-    return (this.router.url || '').includes(`/${route.path}`);
+    const current = (this.router.url || '').split('?')[0];
+    return current === `/${route.path}` || current === `/${route.path}/`;
   }
 
   getBoxIcon(route: Route): string {
@@ -507,6 +559,53 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   private checkAuthRoute(url: string): void {
     this.isAuthPage = url.includes('/login') || url.includes('/forgot-password');
+  }
+
+  /**
+   * Bootstrap auth/route data from localStorage so sidebar routes render without a reload
+   */
+  private bootstrapFromStorage(): void {
+    const storedUser = this.getUserFromLocalStorage();
+    if (storedUser) {
+      this.registration = storedUser;
+      this.authService.registration = storedUser;
+      this.syncUserFromRegistration();
+      this.loggedIn.next(true);
+      if (!this.routes.length) {
+        this.loadUserDataAndRoutes();
+      }
+    }
+  }
+
+  /**
+   * Ensure routes are loaded when registration is present
+   */
+  private ensureRoutesLoaded(): void {
+    if (this.registration && !this.routes.length) {
+      this.loadUserDataAndRoutes();
+    }
+  }
+
+  /**
+   * Keep lightweight user object aligned with registration for initials/display
+   */
+  private syncUserFromRegistration(): void {
+    if (!this.registration) return;
+    this.user = {
+      ...this.user,
+      firstName: this.registration.firstName || this.user.firstName,
+      lastName: this.registration.lastName || this.user.lastName,
+      userName: this.registration.userName || this.user.userName,
+      custId: this.registration.custId || this.user.custId,
+      custTypeId: this.registration.custTypeId || this.user.custTypeId,
+      id: this.registration.id || this.user.id
+    };
+  }
+
+  private closeSidebarAfterNav(): void {
+    if (this.sidebarActive) {
+      this.sidebarActive = false;
+    }
   }
 
   ngAfterViewInit(): void {
