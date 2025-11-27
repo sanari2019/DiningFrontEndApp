@@ -1,4 +1,4 @@
-import { Component, OnInit, VERSION, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, VERSION, ElementRef, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
 // import { Component, OnInit } from '@angular/core';
 import { Registration } from 'src/app/registration/registration.model';
 import { RegistrationService } from 'src/app/registration/registration.service';
@@ -10,7 +10,7 @@ import { Payment } from 'src/app/staffpayment/payment.model';
 import { VoucherService } from 'src/app/voucher/voucher.service';
 import { Voucher } from 'src/app/voucher/voucher.model';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap, finalize } from 'rxjs/operators';
 import { HistoryRecords } from './historyrecords.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PaymentbreakdownComponent } from 'src/app/paymentbreakdown/paymentbreakdown.component';
@@ -42,8 +42,13 @@ import { UserValidateComponent } from 'src/app/user-validate/user-validate.compo
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { data } from 'jquery';
 import { TransferTransaction } from 'src/app/shared/transferTransaction.model';
+import { PaystackOptions } from 'angular4-paystack';
+import { OnlinePayment } from 'src/app/shared/onlinepayment.model';
+import { OnlinePaymentService } from 'src/app/shared/onlinepayment.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
+@UntilDestroy()
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -98,6 +103,39 @@ export class HomeComponent implements OnInit, AfterViewInit {
   filteredRecentTransactions: HistoryRecords[] = [];
   showAllActivity = false;
   pageSize = 8;
+  @ViewChild('addMoneyDialog') addMoneyDialog!: TemplateRef<any>;
+  @ViewChild('buyVoucherDialog') buyVoucherDialog!: TemplateRef<any>;
+  @ViewChild('buyMealDialog') buyMealDialog!: TemplateRef<any>;
+  @ViewChild('disputeDialog') disputeDialog!: TemplateRef<any>;
+  @ViewChild('feedbackDialog') feedbackDialog!: TemplateRef<any>;
+  amountControl = new FormControl(0, [Validators.min(0)]);
+  quickAmounts = [100, 200, 500, 800, 1000];
+  allVouchers: Voucher[] = [];
+  voucherSearchTerm = '';
+  voucherQuantityMap: { [key: number]: number } = {};
+  voucherCart: { id: number; qty: number }[] = [];
+  voucherCurrentPage: number = 1;
+  voucherPageSize: number = 4;
+  mealSearchTerm = '';
+  mealQuantityMap: { [key: string]: number } = {};
+  mealCart: { key: string; qty: number }[] = [];
+  fallbackMeals: AvailableMeal[] = [
+    { mealName: 'Sunrise Pancakes', mealType: 'breakfast' } as AvailableMeal,
+    { mealName: 'Grilled Chicken Bowl', mealType: 'lunch' } as AvailableMeal,
+    { mealName: 'Roasted Veggie Pasta', mealType: 'dinner' } as AvailableMeal
+  ];
+  mealsLoaded = false;
+  disputeForm: FormGroup = this.fb.group({
+    paymentMethod: ['', Validators.required],
+    description: ['', Validators.required],
+  });
+  paystackOptions: PaystackOptions = {
+    amount: 0,
+    email: '',
+    ref: '',
+    metadata: {}
+  };
+  isProcessingPayment = false;
 
 
 
@@ -120,7 +158,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private transferService: TransferService,
     private feedbackService: FeedbackService,
     private paymentDetailService: PaymentDetailService,
-    private voucherService: VoucherService) {
+    private voucherService: VoucherService,
+    private onlinePaymentService: OnlinePaymentService,
+    private snackBar: MatSnackBar) {
 
     this.Transferform = this.fb.group({
       voucher: [null, Validators.required],
@@ -165,15 +205,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-
+    // Set responsive voucher page size
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .pipe(untilDestroyed(this))
+      .subscribe((state) => {
+        this.voucherPageSize = state.matches ? 1 : 4;
+      });
 
     // Fetch the logged-in user from local storage
     const loggedInUserData = localStorage.getItem('user');
+    const storedUserData = localStorage.getItem('user_data');
 
-    if (loggedInUserData) {
-      const loggedInUser = JSON.parse(loggedInUserData);
-      this.user.firstName = loggedInUser.firstName;
-      this.ServedBy = loggedInUser.id;
+    if (loggedInUserData || storedUserData) {
+      const loggedInUser = loggedInUserData ? JSON.parse(loggedInUserData) : {};
+      const userData = storedUserData ? JSON.parse(storedUserData) : {};
+
+      this.user.firstName = loggedInUser.firstName || userData.firstName || '';
+      this.user.lastName = loggedInUser.lastName || userData.lastName || '';
+      this.user.freeze = loggedInUser.freeze ?? userData.freeze ?? false;
+      this.freezeStatus = this.user.freeze;
+      this.ServedBy = loggedInUser.id || userData.id || loggedInUser.userId || 0;
       // this.getHistoryRecords(this.ServedBy);
       // this.getUser(loggedInUser.id);
       // Fetch the payment details for the logged-in user
@@ -234,10 +285,25 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.availablemealService.getActiveMeals().subscribe(data => {
       // Handle the data returned by the service
       this.activeMeals = data;
+      this.mealsLoaded = true;
+    }, () => {
+      this.mealsLoaded = true;
+    });
+
+    // Load all vouchers for the buy voucher dialog
+    this.voucherService.getVouchers().subscribe({
+      next: (vouchers) => {
+        this.allVouchers = vouchers || [];
+      },
+      error: (err) => {
+        console.error('Error loading vouchers:', err);
+        this.allVouchers = [];
+      }
     });
 
     this.filterRecentTransactions();
-
+    this.initPaystackOptions();
+    this.amountControl.valueChanges.pipe(untilDestroyed(this)).subscribe(val => this.updatePaystackOptions(val || 0));
   }
 
   notifyError(message: any): void {
@@ -734,16 +800,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   toggleFreezeStatus(): void {
     this.user.freeze = !this.user.freeze; // Toggle the freeze status
+    this.freezeStatus = this.user.freeze;
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      localStorage.setItem('user', JSON.stringify({ ...parsed, freeze: this.user.freeze }));
+    }
 
     this.registrationService.updateUser(this.user).subscribe(
-      (updatedUser: Registration) => {
+      () => {
         console.log('Freeze status updated successfully:');
       },
       (error) => {
         console.error('Error updating freeze status:', error);
       }
     );
-
   }
   getHistoryRecords(ServedBy: number): void {
     this.servedService.getHistoryRecords(ServedBy).subscribe((records: HistoryRecords[]) => {
@@ -860,6 +932,297 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   toggleActivityView(): void {
     this.showAllActivity = !this.showAllActivity;
+  }
+
+  openAddMoneyDialog(): void {
+    if (this.addMoneyDialog) {
+      this.dialog.open(this.addMoneyDialog, {
+        width: '420px',
+        panelClass: 'add-money-dialog-panel'
+      });
+    }
+  }
+
+  addQuickAmount(amount: number): void {
+    const current = this.amountControl.value || 0;
+    this.amountControl.setValue(current + amount);
+  }
+
+  clearAmount(): void {
+    this.amountControl.setValue(0);
+  }
+
+  payWithPaystack(): void {
+    this.redirectToPayment();
+  }
+
+  payWithSquad(): void {
+    this.redirectToPayment();
+  }
+
+  openBuyVoucherDialog(): void {
+    if (this.buyVoucherDialog) {
+      this.dialog.open(this.buyVoucherDialog, {
+        width: '600px',
+        panelClass: 'add-money-dialog-panel'
+      });
+    }
+  }
+
+  filteredVouchers(): Voucher[] {
+    if (!this.allVouchers || this.allVouchers.length === 0) {
+      return [];
+    }
+
+    if (!this.voucherSearchTerm) {
+      return this.allVouchers;
+    }
+
+    const term = this.voucherSearchTerm.toLowerCase();
+    return this.allVouchers.filter(voucher => {
+      return (
+        voucher.id.toString().includes(term) ||
+        voucher.amount.toString().includes(term) ||
+        voucher.description.toLowerCase().includes(term) ||
+        voucher.custname.toLowerCase().includes(term)
+      );
+    });
+  }
+
+  onVoucherSearchChange(): void {
+    this.voucherCurrentPage = 1; // Reset to first page when search changes
+  }
+
+  paginatedVouchers(): Voucher[] {
+    const filtered = this.filteredVouchers();
+    const startIndex = (this.voucherCurrentPage - 1) * this.voucherPageSize;
+    const endIndex = startIndex + this.voucherPageSize;
+    return filtered.slice(startIndex, endIndex);
+  }
+
+  getTotalVoucherPages(): number {
+    const filtered = this.filteredVouchers();
+    return Math.ceil(filtered.length / this.voucherPageSize);
+  }
+
+  voucherPreviousPage(): void {
+    if (this.voucherCurrentPage > 1) {
+      this.voucherCurrentPage--;
+    }
+  }
+
+  voucherNextPage(): void {
+    if (this.voucherCurrentPage < this.getTotalVoucherPages()) {
+      this.voucherCurrentPage++;
+    }
+  }
+
+  changeVoucherQty(id: number, delta: number): void {
+    const current = this.voucherQuantityMap[id] || 0;
+    const next = Math.max(0, current + delta);
+    this.voucherQuantityMap[id] = next;
+  }
+
+  addVoucherToCart(id: number): void {
+    const qty = this.voucherQuantityMap[id] || 0;
+    if (qty <= 0) return;
+    const existing = this.voucherCart.find(v => v.id === id);
+    if (existing) {
+      existing.qty = qty;
+    } else {
+      this.voucherCart.push({ id, qty });
+    }
+  }
+
+  openOrderMealDialog(): void {
+    if (this.buyMealDialog) {
+      this.dialog.open(this.buyMealDialog, {
+        width: '600px',
+        panelClass: 'add-money-dialog-panel'
+      });
+    }
+  }
+
+  filteredMeals(): AvailableMeal[] {
+    if (!this.activeMeals) {
+      return [];
+    }
+    const term = this.mealSearchTerm.toLowerCase();
+    return this.activeMeals.filter(meal => {
+      const matchesType = this.shouldDisplayMeal(meal.mealType);
+      const matchesTerm = !term || meal.mealName.toLowerCase().includes(term) || meal.mealType.toLowerCase().includes(term);
+      return matchesType && matchesTerm;
+    });
+  }
+
+  changeMealQty(key: string, delta: number): void {
+    const current = this.mealQuantityMap[key] || 0;
+    const next = Math.max(0, current + delta);
+    this.mealQuantityMap[key] = next;
+  }
+
+  addMealToCart(key: string): void {
+    const qty = this.mealQuantityMap[key] || 0;
+    if (qty <= 0) return;
+    const existing = this.mealCart.find(m => m.key === key);
+    if (existing) {
+      existing.qty = qty;
+    } else {
+      this.mealCart.push({ key, qty });
+    }
+  }
+
+  getMealImage(mealType: string): string {
+    const type = (mealType || '').toLowerCase();
+    if (type.includes('breakfast')) {
+      return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=60';
+    }
+    if (type.includes('lunch')) {
+      return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=60';
+    }
+    if (type.includes('dinner')) {
+      return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=60';
+    }
+    return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=60';
+  }
+
+  openDisputeDialog(): void {
+    if (this.disputeDialog) {
+      this.dialog.open(this.disputeDialog, {
+        width: '420px',
+        panelClass: 'add-money-dialog-panel'
+      });
+    }
+  }
+
+  submitDispute(): void {
+    if (this.disputeForm.valid) {
+      // Placeholder for API submission
+      console.log('Dispute submitted', this.disputeForm.value);
+      this.disputeForm.reset();
+    }
+  }
+
+  resetDispute(): void {
+    this.disputeForm.reset();
+  }
+
+  openFeedbackDialog(): void {
+    if (this.feedbackDialog) {
+      this.dialog.open(this.feedbackDialog, {
+        width: '480px',
+        panelClass: 'add-money-dialog-panel'
+      });
+    }
+  }
+
+  submitFeedback(): void {
+    if (this.Feedbackform.valid) {
+      this.postFeedback();
+    }
+  }
+
+  initPaystackOptions(): void {
+    const userJSON = localStorage.getItem('user');
+    const userDataJSON = localStorage.getItem('user_data');
+    const u = userJSON ? JSON.parse(userJSON) : {};
+    const u2 = userDataJSON ? JSON.parse(userDataJSON) : {};
+    const email = u.userName || u2.userName || u.email || u2.email || '';
+    const userId = u.id || u2.id || 0;
+    this.paystackOptions = {
+      amount: (this.amountControl.value || 0) * 100,
+      email,
+      ref: this.generateTransactionRef(),
+      metadata: {
+        user_id: userId,
+        payment_type: 'wallet_topup'
+      }
+    };
+  }
+
+  updatePaystackOptions(amount: number): void {
+    this.paystackOptions = {
+      ...this.paystackOptions,
+      amount: Math.max(0, amount) * 100,
+      ref: this.generateTransactionRef()
+    };
+  }
+
+  generateTransactionRef(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let ref = '';
+    for (let i = 0; i < 12; i++) {
+      ref += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return ref;
+  }
+
+  paymentInit(): void {
+    // placeholder for paystack init
+  }
+
+  paymentDone(event: any): void {
+    const reference = event?.reference || event?.ref;
+    const amount = this.amountControl.value || 0;
+    const userJSON = localStorage.getItem('user');
+    const userDataJSON = localStorage.getItem('user_data');
+    const u = userJSON ? JSON.parse(userJSON) : {};
+    const u2 = userDataJSON ? JSON.parse(userDataJSON) : {};
+    const userId = u.id || u2.id || 0;
+
+    if (!reference) {
+      this.snackBar.open('Unable to verify payment reference.', 'Dismiss', { duration: 3000 });
+      return;
+    }
+
+    const walletPayment = new Payment();
+    walletPayment.amount = amount;
+    walletPayment.unit = 1;
+    walletPayment.voucherId = 0;
+    walletPayment.paymentType = 3; // wallet top-up
+    walletPayment.paid = true;
+    walletPayment.timepaid = new Date();
+    walletPayment.dateEntered = new Date();
+    walletPayment.paymentmodeid = 3; // paystack
+    walletPayment.custCode = u.custId || u2.custId || '';
+    walletPayment.custtypeid = u.custTypeId || u2.custTypeId || 0;
+    walletPayment.enteredBy = (userId || '').toString();
+
+    const payment: OnlinePayment = {
+      id: 0,
+      TransRefNo: reference,
+      TransDate: new Date(),
+      Paidby: userId,
+      AmountPaid: amount,
+      PymtTypeid: 3 // wallet funding
+    };
+
+    this.isProcessingPayment = true;
+    this.onlinePaymentService.verifyPaystackTransaction(reference).pipe(
+      switchMap((verification) => {
+        const verifiedAmount = ((verification?.data?.amount ?? amount * 100) / 100);
+        payment.AmountPaid = verifiedAmount;
+        walletPayment.amount = verifiedAmount;
+        const emptyPayment = new Payment();
+        return this.onlinePaymentService.postOnlinePayment(emptyPayment, payment, [], [walletPayment]);
+      }),
+      finalize(() => this.isProcessingPayment = false)
+    ).subscribe({
+      next: () => {
+        this.snackBar.open('Wallet funded successfully.', 'Dismiss', { duration: 3000 });
+        this.totalAmount = (this.totalAmount || 0) + (amount || 0);
+        this.amountControl.setValue(0);
+        this.updatePaystackOptions(0);
+      },
+      error: (err) => {
+        console.error('Payment recording failed', err);
+        this.snackBar.open('Payment verified but could not be recorded. Please contact support.', 'Dismiss', { duration: 4000 });
+      }
+    });
+  }
+
+  paymentCancel(): void {
+    console.log('Paystack closed');
   }
 
   shouldDisplayMeal(mealType: string): boolean {

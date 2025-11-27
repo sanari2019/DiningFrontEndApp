@@ -1,21 +1,20 @@
 <div class="home-wrapper">
-  <div class="freeze-alert" *ngIf="freezeStatus">
-    <mat-icon>warning</mat-icon>
-    <span>Your account is currently frozen. Please contact support.</span>
-  </div>
-
-  <section class="wallet-card" (click)="openPaymentBreakdownDialog()">
+  <section class="wallet-card">
     <div class="wallet-left">
-      <p class="welcome-text">WELCOME BACK {{ (user?.lastName || 'USER') | uppercase }}</p>
+    <p class="welcome-text">WELCOME BACK {{ (user.lastName || 'USER') | uppercase }}</p>
       <div class="wallet-row">
         <div class="wallet-label">
           <mat-icon>account_balance_wallet</mat-icon>
           <span>WALLET</span>
+          <mat-icon class="freeze-lock" [class.frozen]="freezeStatus">{{ freezeStatus ? 'lock' : 'lock_open' }}</mat-icon>
+          <mat-slide-toggle color="accent" [checked]="user.freeze" (change)="toggleFreezeStatus()" class="wallet-toggle">
+            {{ user.freeze ? 'Frozen' : 'Active' }}
+          </mat-slide-toggle>
         </div>
       </div>
       <div class="wallet-amount">NGN {{ totalAmount | number:'1.2-2' }}</div>
       <div class="wallet-actions">
-        <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Add Money</button>
+        <button mat-stroked-button color="primary" class="pill-button" (click)="openAddMoneyDialog()">Add Money</button>
         <button mat-stroked-button color="accent" class="pill-button" [disabled]="totalAmount <= 0">Send Money</button>
       </div>
     </div>
@@ -30,8 +29,31 @@
       </div>
       <div class="mini-card gradient-purple">
         <p>Recent Actions</p>
-        <h4>{{ recentTransactions?.length || 0 }}</h4>
+        <h4>{{ recentTransactions.length || 0 }}</h4>
       </div>
+    </div>
+  </section>
+
+  <section class="card-block info-wide">
+    <div class="info-header">
+      <p class="eyebrow">Spotlight</p>
+      <h3 class="info-title">Popular Meals</h3>
+      <button *ngIf="(activeMeals?.length || 0) > 3" mat-stroked-button color="primary" class="pill-button small" (click)="openOrderMealDialog()">See All</button>
+    </div>
+    <div class="info-row">
+      <div class="empty-state spotlight-empty" *ngIf="mealsLoaded && (!activeMeals || activeMeals.length < 1)">
+        <mat-icon>restaurant_menu</mat-icon>
+        <p>No available meals</p>
+      </div>
+      <ng-container *ngIf="activeMeals && activeMeals.length">
+        <div class="info-item card-tile" *ngFor="let meal of activeMeals | slice:0:3">
+          <div class="tile-image" [style.background-image]="'url(' + getMealImage(meal.mealType) + ')'"></div>
+          <div class="tile-body">
+            <p class="label">{{ meal.mealName }}</p>
+            <p class="sub text-capitalize">{{ meal.mealType }}</p>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </section>
 
@@ -42,7 +64,7 @@
           <p class="eyebrow">VOUCHERS</p>
           <h3>Distribution</h3>
         </div>
-        <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Buy</button>
+        <button mat-stroked-button color="primary" class="pill-button" (click)="openBuyVoucherDialog()">Buy</button>
       </div>
       <ng-container *ngIf="(totalAmountByVoucherId | keyvalue)?.length; else emptyVouchers">
         <div class="list">
@@ -57,8 +79,8 @@
       </ng-container>
       <ng-template #emptyVouchers>
         <div class="empty-box">
-          <div class="empty-box__text">No vouchers yet</div>
-          <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Buy</button>
+          <div class="empty-box__text">You have no available voucher</div>
+          <button mat-stroked-button color="primary" class="pill-button" (click)="openBuyVoucherDialog()">Buy</button>
         </div>
       </ng-template>
     </div>
@@ -69,24 +91,12 @@
           <p class="eyebrow">MEALS</p>
           <h3>Menu</h3>
         </div>
-        <button mat-stroked-button color="primary" class="pill-button" (click)="redirectToPayment()">Order Meals</button>
+        <button mat-stroked-button color="primary" class="pill-button" (click)="openOrderMealDialog()">Order Meals</button>
       </div>
-      <div class="meal-list" *ngIf="activeMeals && activeMeals.length > 0">
-        <ng-container *ngFor="let meal of activeMeals">
-          <ng-container *ngIf="shouldDisplayMeal(meal.mealType)">
-            <div class="meal-row">
-              <div class="meal-info">
-                <p class="label">{{ meal.mealName }}</p>
-                <p class="sub text-capitalize">{{ meal.mealType }}</p>
-              </div>
-              <button mat-button color="primary" (click)="redirectToPayment()">Buy</button>
-            </div>
-          </ng-container>
-        </ng-container>
-      </div>
-      <div class="empty-state" *ngIf="!activeMeals || activeMeals.length < 1">
-        <mat-icon>restaurant_menu</mat-icon>
-        <p>No meals available right now.</p>
+      <div class="meals-split">
+        <div class="meal-text-only">
+          <p>You have no available Alacarte</p>
+        </div>
       </div>
     </div>
 
@@ -132,19 +142,221 @@
         <h3>Quick Actions</h3>
       </div>
       <div class="actions-grid">
-        <button mat-stroked-button color="primary" (click)="redirectToPayment()">
-          <mat-icon>shopping_bag</mat-icon> Buy Voucher
+        <button mat-stroked-button color="primary" class="pill-button" (click)="openDisputeDialog()">
+          <mat-icon>gavel</mat-icon> Raise a Dispute
         </button>
-        <button mat-stroked-button color="accent" (click)="redirectToPayment()">
-          <mat-icon>fastfood</mat-icon> Order Meals
+        <button mat-stroked-button color="accent" class="pill-button" (click)="openFeedbackDialog()">
+          <mat-icon>feedback</mat-icon> Give Feedback
         </button>
-        <button mat-stroked-button color="primary" (click)="openPaymentBreakdownDialog()">
-          <mat-icon>account_balance_wallet</mat-icon> Wallet Breakdown
-        </button>
-        <button mat-stroked-button color="warn" (click)="openContactDialog()">
-          <mat-icon>support_agent</mat-icon> Contact Support
+        <button mat-stroked-button color="warn" class="pill-button" (click)="openContactDialog()">
+          <mat-icon>support_agent</mat-icon> Ask for Immediate Support
         </button>
       </div>
     </div>
   </section>
+
+  <ng-template #addMoneyDialog>
+    <div class="add-money-dialog">
+      <button mat-icon-button class="close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <h3>Add Money</h3>
+      <p class="subtext">Top up your wallet using Paystack or Squad.</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" min="0" [formControl]="amountControl" placeholder="0.00" />
+        <span matPrefix>NGN&nbsp;</span>
+        <button mat-icon-button matSuffix type="button" aria-label="Clear amount" class="clear-suffix" (click)="clearAmount()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="quick-amounts">
+        <button type="button" *ngFor="let amt of quickAmounts" class="pill-button ghost" (click)="addQuickAmount(amt)">
+          NGN {{ amt | number:'1.0-0' }}
+        </button>
+      </div>
+
+      <div class="payment-actions">
+        <button angular4-paystack
+                [paystackOptions]="paystackOptions"
+                (paymentInit)="paymentInit()"
+                (callback)="paymentDone($event)"
+                (onClose)="paymentCancel()"
+                class="pill-button full"
+                [disabled]="(amountControl.value || 0) < 1">
+          Pay with Paystack
+        </button>
+        <button mat-stroked-button color="accent" class="pill-button full" [disabled]="(amountControl.value || 0) < 1" (click)="payWithSquad()">Pay with Squad</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #buyVoucherDialog>
+    <div class="add-money-dialog">
+      <button mat-icon-button class="close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <h3>Buy Voucher</h3>
+      <p class="subtext">Search and add vouchers to your cart.</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Search voucher</mat-label>
+        <input matInput type="text" [(ngModel)]="voucherSearchTerm" placeholder="Search by amount or name" (input)="onVoucherSearchChange()" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="voucher-grid">
+        <div class="voucher-card" *ngFor="let voucher of paginatedVouchers()">
+          <div class="voucher-top">
+            <p class="eyebrow">ID #{{ voucher.id }}</p>
+            <span class="badge">Available</span>
+          </div>
+          <div class="voucher-info">
+            <p class="label">{{ voucher.description }}</p>
+            <p class="price">{{ voucher.amount | currency:'NGN' }}</p>
+            <p class="sub">Type: {{ voucher.custname }}</p>
+          </div>
+          <div class="voucher-actions">
+            <div class="qty">
+              <button type="button" (click)="changeVoucherQty(voucher.id, -1)">-</button>
+              <span>{{ voucherQuantityMap[voucher.id] || 0 }}</span>
+              <button type="button" (click)="changeVoucherQty(voucher.id, 1)">+</button>
+            </div>
+            <button type="button" class="pill-button ghost" (click)="addVoucherToCart(voucher.id)" [disabled]="!voucherQuantityMap[voucher.id] || voucherQuantityMap[voucher.id] === 0" aria-label="Add to cart">
+              <mat-icon>add_shopping_cart</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="!filteredVouchers().length">
+          <mat-icon>inventory_2</mat-icon>
+          <p>No vouchers found</p>
+        </div>
+      </div>
+
+      <div class="pagination-controls" *ngIf="filteredVouchers().length > voucherPageSize">
+        <button type="button" class="pagination-btn" [disabled]="voucherCurrentPage === 1" (click)="voucherPreviousPage()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="page-info">{{ voucherCurrentPage }} / {{ getTotalVoucherPages() }}</span>
+        <button type="button" class="pagination-btn" [disabled]="voucherCurrentPage === getTotalVoucherPages()" (click)="voucherNextPage()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #buyMealDialog>
+    <div class="add-money-dialog">
+      <button mat-icon-button class="close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <h3>Order Meals</h3>
+      <p class="subtext">Search and add available meals.</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Search meals</mat-label>
+        <input matInput type="text" [(ngModel)]="mealSearchTerm" placeholder="Search by name or type" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="voucher-grid">
+        <div class="voucher-card" *ngFor="let meal of filteredMeals()">
+          <div class="voucher-top">
+            <p class="eyebrow text-capitalize">{{ meal.mealType }}</p>
+            <span class="badge">Available</span>
+          </div>
+          <div class="voucher-info">
+            <p class="label">{{ meal.mealName }}</p>
+            <p class="sub">Serving window applies</p>
+          </div>
+          <div class="voucher-actions">
+            <div class="qty">
+              <button type="button" (click)="changeMealQty(meal.mealName, -1)">-</button>
+              <span>{{ mealQuantityMap[meal.mealName] || 0 }}</span>
+              <button type="button" (click)="changeMealQty(meal.mealName, 1)">+</button>
+            </div>
+            <button type="button" class="pill-button ghost" (click)="addMealToCart(meal.mealName)">
+              <mat-icon>add_shopping_cart</mat-icon>
+              Add to cart
+            </button>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="!filteredMeals().length">
+          <mat-icon>fastfood</mat-icon>
+          <p>No meals found</p>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #disputeDialog>
+    <div class="add-money-dialog">
+      <button mat-icon-button class="close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <h3>Raise a Dispute</h3>
+      <p class="subtext">Tell us what went wrong.</p>
+
+      <form [formGroup]="disputeForm" class="dispute-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Payment Method</mat-label>
+          <mat-select formControlName="paymentMethod">
+            <mat-option value="paystack">Paystack</mat-option>
+            <mat-option value="squad">Squad</mat-option>
+            <mat-option value="wallet">Wallet</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="3" formControlName="description" placeholder="Describe the issue"></textarea>
+        </mat-form-field>
+
+        <div class="payment-actions">
+          <button mat-stroked-button color="primary" class="pill-button full" [disabled]="disputeForm.invalid" (click)="submitDispute()">Send</button>
+          <button mat-stroked-button color="warn" class="pill-button full" type="button" (click)="resetDispute()">Clear</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+  <ng-template #feedbackDialog>
+    <div class="add-money-dialog">
+      <button mat-icon-button class="close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <h3>Give Feedback</h3>
+      <p class="subtext">Share your experience so we can improve.</p>
+
+      <form [formGroup]="Feedbackform" class="feedback-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="supportType">
+            <mat-option value="feedback">Feedback</mat-option>
+            <mat-option value="complaint">Complaint</mat-option>
+            <mat-option value="suggestion">Suggestion</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput rows="3" formControlName="experience" placeholder="Tell us what happened"></textarea>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="contactOption">Allow follow-up contact</mat-checkbox>
+
+        <div class="payment-actions">
+          <button mat-stroked-button color="primary" class="pill-button full" [disabled]="Feedbackform.invalid" (click)="submitFeedback()">Send</button>
+          <button mat-stroked-button color="warn" class="pill-button full" type="button" (click)="Feedbackform.reset()">Clear</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
 </div>
